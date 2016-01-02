@@ -79,8 +79,9 @@
     <ClInclude Include="ModuleFadeToBlack.h" />
     <ClInclude Include="ModuleInput.h" />
     <ClInclude Include="ModuleParticleSystem.h" />
-    <ClInclude Include="ModulePlayer.h" />
     <ClInclude Include="ModulePlayerDhalsim.h" />
+    <ClInclude Include="ModulePlayerOne.h" />
+    <ClInclude Include="ModulePlayerTwo.h" />
     <ClInclude Include="ModuleRender.h" />
     <ClInclude Include="ModuleSceneBison.h" />
     <ClInclude Include="ModuleTextures.h" />
@@ -96,8 +97,9 @@
     <ClCompile Include="ModuleFadeToBlack.cpp" />
     <ClCompile Include="ModuleInput.cpp" />
     <ClCompile Include="ModuleParticleSystem.cpp" />
-    <ClCompile Include="ModulePlayer.cpp" />
     <ClCompile Include="ModulePlayerDhalsim.cpp" />
+    <ClCompile Include="ModulePlayerOne.cpp" />
+    <ClCompile Include="ModulePlayerTwo.cpp" />
     <ClCompile Include="ModuleRender.cpp" />
     <ClCompile Include="ModuleSceneBison.cpp" />
     <ClCompile Include="ModuleTextures.cpp" />

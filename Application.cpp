@@ -6,29 +6,35 @@
 #include "ModuleAudio.h"
 #include "ModuleFadeToBlack.h"
 #include "ModuleSceneBison.h"
-#include "ModulePlayer.h"
 #include "ModulePlayerDhalsim.h"
 #include "ModuleParticleSystem.h"
 #include "ModuleCollisions.h"
+#include "ModulePlayerOne.h"
+#include "ModulePlayerTwo.h"
 
 using namespace std;
 
 Application::Application()
 {
+
+
 	// Order matters: they will init/start/pre/update/post in this order
 	modules.push_back(input = new ModuleInput());
 	modules.push_back(window = new ModuleWindow());
 
-	modules.push_back(renderer = new ModuleRender());
 	modules.push_back(textures = new ModuleTextures());
 	modules.push_back(audio = new ModuleAudio());
+	modules.push_back(particles = new ModuleParticleSystem());
+	modules.push_back(collisions = new ModuleCollisions());
+	modules.push_back(fade = new ModuleFadeToBlack());
 
 	// Game Modules
 	modules.push_back(scene_bison = new ModuleSceneBison(false));
-	modules.push_back(player_dhalsim = new ModulePlayerDhalsim(false));
-	modules.push_back(fade = new ModuleFadeToBlack());
-	modules.push_back(particles = new ModuleParticleSystem());
-	modules.push_back(collisions = new ModuleCollisions());
+	modules.push_back(player_one = new ModulePlayerOne(false));
+	modules.push_back(player_two = new ModulePlayerTwo(false));
+
+	modules.push_back(renderer = new ModuleRender());
+
 }
 
 Application::~Application()

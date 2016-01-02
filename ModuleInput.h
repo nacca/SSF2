@@ -9,6 +9,7 @@
 #include "SDL/include/SDL_scancode.h"
 
 #define NUM_MOUSE_BUTTONS 5
+#define NUM_JOYSTICK_BUTTONS 14
 
 enum EventWindow
 {
@@ -54,6 +55,11 @@ public:
 		return keyboard[id];
 	}
 
+	KeyState GetButton(int id) const
+	{
+		return joystick_buttons[id];
+	}
+
 	KeyState GetMouseButtonDown(int id) const
 	{
 		return mouse_buttons[id - 1];
@@ -73,6 +79,8 @@ private:
 	bool		windowEvents[WE_COUNT];
 	KeyState*	keyboard;
 	KeyState	mouse_buttons[NUM_MOUSE_BUTTONS];
+	KeyState*	joystick_keystate;
+	KeyState	joystick_buttons[NUM_JOYSTICK_BUTTONS];
 	iPoint mouse_motion;
 	iPoint mouse;
 	SDL_Joystick* joystick;

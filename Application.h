@@ -16,6 +16,8 @@ class ModuleSceneBison;
 class ModulePlayerDhalsim;
 class ModuleParticleSystem;
 class ModuleCollisions;
+class ModulePlayerOne;
+class ModulePlayerTwo;
 
 class Application
 {
@@ -40,6 +42,8 @@ public:
 	ModulePlayerDhalsim* player_dhalsim;
 	ModuleParticleSystem* particles;
 	ModuleCollisions* collisions;
+	ModulePlayerOne* player_one;
+	ModulePlayerTwo* player_two;
 
 private:
 	std::list<Module*> modules;

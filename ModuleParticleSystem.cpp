@@ -64,7 +64,7 @@ bool ModuleParticleSystem::CleanUp()
 bool ModuleParticleSystem::newParticle(iPoint pos, SDL_Rect rec, SDL_Texture* graphics, Animation particleAnimation, int speed)
 {
 	LOG("NEW PARTICLE");
-	Collider* collider = new Collider( rec, PARTICLES, this );
+	Collider* collider = new Collider( rec, COLLIDER_PARTICLES, this );
 	Particle* particle = new Particle { pos, collider, graphics, particleAnimation, speed, false };
 	App->collisions->AddCollider(collider);
 	particleList.push_back(particle);
@@ -78,7 +78,6 @@ void ModuleParticleSystem::OnCollision(Collider* c1, Collider* c2)
 		if ((*it1)->collider == c1)
 		{
 				(*it1)->impact = true;
-				LOG("COLISION!");
 		}		
 	}
 }

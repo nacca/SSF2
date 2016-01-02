@@ -3,6 +3,9 @@
 #include "ModuleInput.h"
 #include "SDL/include/SDL.h"
 
+#include <iostream>
+using namespace std;
+
 #define MAX_KEYS 300
 
 ModuleInput::ModuleInput() : Module(), mouse({0, 0}), mouse_motion({0,0})
@@ -63,6 +66,8 @@ bool ModuleInput::Init()
 // Called before the first frame
 bool ModuleInput::Start()
 {
+	for (int i = 0; i < NUM_JOYSTICK_BUTTONS; ++i)
+		joystick_buttons[i] = KEY_IDLE;
 	return true;
 }
 
@@ -74,6 +79,14 @@ update_status ModuleInput::PreUpdate()
 	mouse_motion = {0, 0};
 	memset(windowEvents, false, WE_COUNT * sizeof(bool));
 	
+	for (int i = 0; i < NUM_JOYSTICK_BUTTONS; ++i)
+	{
+		if (joystick_buttons[i] == KEY_DOWN)
+			joystick_buttons[i] = KEY_REPEAT;
+		if (joystick_buttons[i] == KEY_UP)
+			joystick_buttons[i] = KEY_IDLE;
+	}
+
 	const Uint8* keys = SDL_GetKeyboardState(NULL);
 
 	for(int i = 0; i < MAX_KEYS; ++i)
@@ -147,7 +160,7 @@ update_status ModuleInput::PreUpdate()
 			break;
 
 			case SDL_JOYAXISMOTION:
-				if (event.jaxis.which == 0)
+/*				if (event.jaxis.which == 0)
 				{
 					if (event.jaxis.axis == 0)
 					{
@@ -179,11 +192,15 @@ update_status ModuleInput::PreUpdate()
 							yDir = 0;
 						}
 					}
-				}
+				}*/
 			break;
 
 			case SDL_JOYBUTTONDOWN:
-				LOG("BUTTON EVENT");
+				joystick_buttons[event.jbutton.button] = KEY_DOWN;
+			break;
+
+			case SDL_JOYBUTTONUP:
+				joystick_buttons[event.jbutton.button] = KEY_UP;
 			break;
 
 		}

@@ -9,9 +9,12 @@ void log(const char file[], int line, const char* format, ...);
 
 enum collider_type
 {
-	PLAYER,
-	PARTICLES,
-	OTHERS
+	COLLIDER_PLAYER_ONE,
+	COLLIDER_ATTACK_PLAYER_ONE,
+	COLLIDER_PLAYER_TWO,
+	COLLIDER_ATTACK_PLAYER_TWO,
+	COLLIDER_PARTICLES,
+	COLLIDER_OTHERS
 };
 
 enum update_status
@@ -27,7 +30,13 @@ enum player_state
 	PLAYER_WALKING_FORWARD,
 	PLAYER_WALKING_BACKWARD,
 	PLAYER_JUMPING_STATIC,
-	PLAYER_CROUCHING
+	PLAYER_CROUCHING,
+	PLAYER_LEFT_PUNCH,
+	PLAYER_LEFT_KICK,
+	PLAYER_HIT,
+	PLAYER_FACE_HIT,
+	PLAYER_CROUCH_HIT,
+	PLAYER_KO
 };
 
 // Deletes a buffer
@@ -53,7 +62,7 @@ enum player_state
 // Configuration -----------
 #define SCREEN_WIDTH 256
 #define SCREEN_HEIGHT 224
-#define SCREEN_SIZE 4
+#define SCREEN_SIZE 2
 #define FULLSCREEN false
 #define VSYNC true
 #define TITLE "Street Fighter 2 - Tribute"

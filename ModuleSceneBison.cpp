@@ -8,6 +8,9 @@
 #include "ModuleFadeToBlack.h"
 #include "SDL/include/SDL.h"
 #include "ModulePlayerDhalsim.h"
+#include "ModulePlayerOne.h"
+#include "ModulePlayerTwo.h"
+#include <math.h>
 
 // Reference at https://www.youtube.com/watch?v=OEhmUuehGOA
 
@@ -79,22 +82,37 @@ ModuleSceneBison::ModuleSceneBison(bool start_enabled) : Module(start_enabled)
 	two_boys.w = 20;
 	two_boys.h = 58;
 
-	two_mans_one_ground.frames.push_back({ 144, 336, 24, 56 });
-	two_mans_one_ground.frames.push_back({ 481, 432, 24, 56 });
+	two_mans_one_ground.frames.push_back({ 144, 336, 24, 56 }); two_mans_one_ground.pivots.push_back(28);
+	two_mans_one_ground.frames.push_back({ 481, 432, 24, 56 }); two_mans_one_ground.pivots.push_back(28);
 	two_mans_one_ground.speed = 0.1f;
 
-	praying_man_ground.frames.push_back({ 177, 333, 30, 63 });
-	praying_man_ground.frames.push_back({ 374, 432, 30, 63 });
+	praying_man_ground.frames.push_back({ 177, 333, 30, 63 }); praying_man_ground.pivots.push_back(32);
+	praying_man_ground.frames.push_back({ 374, 432, 30, 63 }); praying_man_ground.pivots.push_back(32);
 	praying_man_ground.speed = 0.1f;
 
-	praying_man_up.frames.push_back({ 368, 329, 32, 62 });
-	praying_man_up.frames.push_back({ 229, 432, 32, 62 });
+	praying_man_up.frames.push_back({ 368, 329, 32, 62 }); praying_man_up.pivots.push_back(31);
+	praying_man_up.frames.push_back({ 229, 432, 32, 62 }); praying_man_up.pivots.push_back(31);
 	praying_man_up.speed = 0.1f;
 
-	three_man.frames.push_back({ 320, 336, 39, 56 });
-	three_man.frames.push_back({ 275, 432, 39, 56 });
+	three_man.frames.push_back({ 320, 336, 39, 56 }); three_man.pivots.push_back(28);
+	three_man.frames.push_back({ 275, 432, 39, 56 }); three_man.pivots.push_back(28);
 	three_man.speed = 0.1f;
-	
+
+	life.x = 2;
+	life.y = 2;
+	life.w = 198;
+	life.h = 14;
+
+	zero.x = 0;		zero.y = 36;	zero.w = 8;		zero.h = 14;
+	one.x = 10;		one.y = 36;		one.w = 6;		one.h = 14;
+	two.x = 20;		two.y = 36;		two.w = 8;		two.h = 14;
+	three.x = 30;	three.y = 36;	three.w = 8;	three.h = 14;
+	four.x = 40;	four.y = 36;	four.w = 8;		four.h = 14;
+	five.x = 50;	five.y = 36;	five.w = 8;		five.h = 14;
+	six.x = 60;		six.y = 36;		six.w = 8;		six.h = 14;
+	seven.x = 70;	seven.y = 36;	seven.w = 8;	seven.h = 14;
+	eight.x = 80;	eight.y = 36;	eight.w = 8;	eight.h = 14;
+	nine.x = 90;	nine.y = 36;	nine.w = 8;		nine.h = 14;
 
 }
 
@@ -107,9 +125,15 @@ bool ModuleSceneBison::Start()
 	LOG("Loading bison scene");
 	
 	graphics = App->textures->Load("bison_stage_v2.png");
+	miscellaneous = App->textures->Load("miscellaneous_v2.png");
 
-	if (!App->player_dhalsim->Enable())
+	if (!App->player_one->Enable())
 		return false;
+
+	if (!App->player_two->Enable())
+		return false;
+
+	initialTime = SDL_GetTicks();
 
 	//App->audio->PlayMusic("bison.wav");
 	
@@ -122,8 +146,10 @@ bool ModuleSceneBison::CleanUp()
 	LOG("Unloading bison scene");
 
 	App->textures->Unload(graphics);
-	App->player_dhalsim->Disable();
-	
+	App->textures->Unload(miscellaneous);
+	App->player_one->Disable();
+	App->player_two->Disable();
+
 	return true;
 }
 
@@ -147,6 +173,37 @@ update_status ModuleSceneBison::Update()
 	App->renderer->Blit(graphics, 177 - 28, 31 + 85, &(praying_man_ground.GetCurrentFrame()), 1.0f); //
 	App->renderer->Blit(graphics, 369 - 28, 31 + 81, &(praying_man_up.GetCurrentFrame()), 1.0f); //
 	App->renderer->Blit(graphics, 320 - 28, 31 + 88, &(three_man.GetCurrentFrame()), 1.0f); //
+
+	//Life rectangles
+	App->renderer->Blit(miscellaneous, 30, 34, &life, 0.0f); //
+	SDL_SetRenderDrawColor(App->renderer->renderer, 255, 255, 0, 255);
+	SDL_Rect rec_aux = { 32, 37, App->player_one->life, 8 };
+	App->renderer->DrawStaticRect(&rec_aux);
+	rec_aux = { 137, 37, App->player_two->life, 8 };
+	App->renderer->DrawStaticRect(&rec_aux);
+	SDL_SetRenderDrawColor(App->renderer->renderer, 255, 0, 0, 255);
+	rec_aux = { 32+App->player_one->life, 37, 89-App->player_one->life, 8 };
+	App->renderer->DrawStaticRect(&rec_aux);
+	rec_aux = { 137 + App->player_two->life, 37, 89-App->player_two->life, 8 };
+	App->renderer->DrawStaticRect(&rec_aux);
+
+	//Time manager
+	Uint32 timeNow = SDL_GetTicks();
+	timeNow -= initialTime;
+	timeNow /= 1000;
+	timeNow = 99 - timeNow;
+	if (timeNow < 0)
+		timeNow = 0;
+
+	SDL_Rect numberRect;
+	numberRect.x = floor(timeNow / 10)*10 ;
+	numberRect.y = 36;
+	numberRect.w = 8;
+	numberRect.h = 14;
+	App->renderer->Blit(miscellaneous, 121, 50, &numberRect, 0.0f); //
+	numberRect.x = floor(timeNow % 10)*10;
+	App->renderer->Blit(miscellaneous, 129, 50, &numberRect, 0.0f); //
+
 
 	App->renderer->Blit(graphics, 0, -(int)(App->renderer->camera.y / SCREEN_SIZE), &black_surface, 0.0f); // Black Surface
 	App->renderer->Blit(graphics, 0, 214 - (int)(App->renderer->camera.y / SCREEN_SIZE), &black_surface2, 0.0f); // Black Surface

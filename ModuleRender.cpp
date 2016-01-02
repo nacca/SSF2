@@ -6,6 +6,8 @@
 #include "SDL/include/SDL.h"
 #include <iostream>
 
+using namespace std;
+
 ModuleRender::ModuleRender()
 {
 	camera.x = - (100 * SCREEN_SIZE);
@@ -52,8 +54,7 @@ update_status ModuleRender::PreUpdate()
 update_status ModuleRender::Update()
 {
 	// debug camera
-	int speed = 5;
-	std::cout << "camera.x: " << App->renderer->camera.x << "; camera.y: " << App->renderer->camera.y << std::endl;
+/*	int speed = 5;
 
 	if (App->input->GetKey(SDL_SCANCODE_UP) == KEY_REPEAT)
 	{
@@ -79,6 +80,8 @@ update_status ModuleRender::Update()
 			App->renderer->camera.x -= speed;
 	}
 
+	//std::cout << camera.x << " : " << camera.w << std::endl;
+*/
 	return UPDATE_CONTINUE;
 }
 
@@ -103,7 +106,7 @@ bool ModuleRender::CleanUp()
 }
 
 // Blit to screen
-bool ModuleRender::Blit(SDL_Texture* texture, int x, int y, SDL_Rect* section, float speed)
+bool ModuleRender::Blit(SDL_Texture* texture, int x, int y, SDL_Rect* section, float speed, SDL_RendererFlip flip_texture)
 {
 	bool ret = true;
 	SDL_Rect rect;
@@ -123,7 +126,7 @@ bool ModuleRender::Blit(SDL_Texture* texture, int x, int y, SDL_Rect* section, f
 	rect.w *= SCREEN_SIZE;
 	rect.h *= SCREEN_SIZE;
 
-	if(SDL_RenderCopy(renderer, texture, section, &rect) != 0)
+	if (SDL_RenderCopyEx(renderer, texture, section, &rect, 0.0f, NULL, flip_texture) != 0)
 	{
 		LOG("Cannot blit to screen. SDL_RenderCopy error: %s", SDL_GetError());
 		ret = false;
@@ -134,13 +137,43 @@ bool ModuleRender::Blit(SDL_Texture* texture, int x, int y, SDL_Rect* section, f
 
 bool ModuleRender::DrawRect(SDL_Rect* rec)
 {
+	cout << "REC" << endl;
+	cout << rec->x << " , " << rec->y << " , " << rec->w << " , " << rec->h << endl;
 	SDL_Rect rec_aux;
 	rec_aux.x = rec->x * SCREEN_SIZE + App->renderer->camera.x;
 	rec_aux.y = rec->y * SCREEN_SIZE + App->renderer->camera.y;
 	rec_aux.w = rec->w * SCREEN_SIZE;
 	rec_aux.h = rec->h * SCREEN_SIZE;
+	cout << rec_aux.x << " , " << rec_aux.y << " , " << rec_aux.w << " , " << rec_aux.h << endl;
 
 	if(SDL_RenderFillRect(renderer, &rec_aux) != 0)
 		return false;
 	return true;
+}
+
+bool ModuleRender::DrawStaticRect(SDL_Rect* rec)
+{
+	SDL_Rect rec_aux;
+	rec_aux.x = rec->x * SCREEN_SIZE;
+	rec_aux.y = rec->y * SCREEN_SIZE;
+	rec_aux.w = rec->w * SCREEN_SIZE;
+	rec_aux.h = rec->h * SCREEN_SIZE;
+
+	if (SDL_RenderFillRect(renderer, &rec_aux) != 0)
+		return false;
+	return true;
+}
+
+bool ModuleRender::ScreenLeftLimit() const
+{
+	if (camera.x == 0)
+		return true;
+	return false;
+}
+
+bool ModuleRender::ScreenRightLimit() const
+{
+	if (camera.x == -(200 * SCREEN_SIZE))
+		return true;
+	return false;
 }

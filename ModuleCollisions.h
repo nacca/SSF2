@@ -15,6 +15,7 @@ public:
 	virtual ~ModuleCollisions();
 
 	virtual bool Start();
+	virtual update_status PreUpdate();
 	virtual update_status Update();
 	virtual update_status PostUpdate();
 	virtual bool CleanUp();
