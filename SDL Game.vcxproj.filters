@@ -58,9 +58,6 @@
     <ClInclude Include="ModuleParticleSystem.h">
       <Filter>Core Modules</Filter>
     </ClInclude>
-    <ClInclude Include="Collider.h">
-      <Filter>Utils</Filter>
-    </ClInclude>
     <ClInclude Include="ModuleCollisions.h">
       <Filter>Core Modules</Filter>
     </ClInclude>
@@ -69,6 +66,15 @@
     </ClInclude>
     <ClInclude Include="ModulePlayerTwo.h">
       <Filter>Game Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="Animation2.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="ModuleComboDetection.h">
+      <Filter>Game Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="ParticleAnimation.h">
+      <Filter>Utils</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -115,6 +121,9 @@
       <Filter>Game Modules</Filter>
     </ClCompile>
     <ClCompile Include="ModulePlayerTwo.cpp">
+      <Filter>Game Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="ModuleComboDetection.cpp">
       <Filter>Game Modules</Filter>
     </ClCompile>
   </ItemGroup>

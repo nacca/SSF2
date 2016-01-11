@@ -79,7 +79,6 @@ private:
 	bool		windowEvents[WE_COUNT];
 	KeyState*	keyboard;
 	KeyState	mouse_buttons[NUM_MOUSE_BUTTONS];
-	KeyState*	joystick_keystate;
 	KeyState	joystick_buttons[NUM_JOYSTICK_BUTTONS];
 	iPoint mouse_motion;
 	iPoint mouse;

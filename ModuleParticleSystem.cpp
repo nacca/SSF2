@@ -6,8 +6,9 @@
 #include "ModuleTextures.h"
 #include "SDL/include/SDL.h"
 #include "ModuleCollisions.h"
-#include "Collider.h"
 #include <queue>
+#include "ParticleAnimation.h"
+
 
 
 ModuleParticleSystem::ModuleParticleSystem(bool start_enabled) : Module(start_enabled)
@@ -26,12 +27,32 @@ bool ModuleParticleSystem::Start()
 update_status ModuleParticleSystem::Update()
 {
 	for (list<Particle*>::iterator it = particleList.begin(); it != particleList.end(); ++it)
-	{
-		if (!(*it)->impact)
+	{		
+		++(*it)->counter;
+		if (!(*it)->impact && (*it)->counter % 4 != 0)
 		{
-			(*it)->collider->rect.x += (*it)->speed;
 			(*it)->position.x += (*it)->speed;
-			App->renderer->Blit((*it)->graphics, (*it)->position.x - 13, (*it)->position.y - 8, &((*it)->particleAnimation.GetCurrentFrame()));
+			(*it)->collider->rect.x = (*it)->position.x + (*it)->particleAnimation.GetCurrentCollider().x;
+			(*it)->collider->rect.y = (*it)->position.y + (*it)->particleAnimation.GetCurrentCollider().y;
+			(*it)->collider->rect.w = (*it)->particleAnimation.GetCurrentCollider().w;
+			(*it)->collider->rect.h = (*it)->particleAnimation.GetCurrentCollider().h;
+			if ((*it)->speed > 0){
+				App->renderer->Blit((*it)->graphics, (*it)->position.x - (*it)->particleAnimation.GetCurrentPivot(), (*it)->position.y - (*it)->particleAnimation.GetCurrentFrame().h, &((*it)->particleAnimation.GetCurrentFrame()));
+			}
+			else if ((*it)->speed < 0){
+				App->renderer->Blit((*it)->graphics, (*it)->position.x - (*it)->particleAnimation.GetCurrentPivot(), (*it)->position.y - (*it)->particleAnimation.GetCurrentFrame().h, &((*it)->particleAnimation.GetCurrentFrame()), 1.0f, SDL_FLIP_HORIZONTAL);
+			}
+			(*it)->particleAnimation.NextFrame();
+		}
+		else if ((*it)->impact && !(*it)->erase)
+		{
+			if (!(*it)->particleDestruction.IsEnded())
+			{
+				App->renderer->Blit((*it)->graphics, (*it)->position.x - (*it)->particleDestruction.GetCurrentPivot(), (*it)->position.y - (*it)->particleDestruction.GetCurrentFrame().h, &((*it)->particleDestruction.GetCurrentFrame()));
+				(*it)->particleDestruction.NextFrame();
+			}
+			else
+				(*it)->erase = true;
 		}
 	}
 
@@ -40,17 +61,16 @@ update_status ModuleParticleSystem::Update()
 
 update_status ModuleParticleSystem::PostUpdate()
 {
-	queue<list<Particle*>::iterator> queueIterators;
-	for (list<Particle*>::iterator it = particleList.begin(); it != particleList.end(); ++it)
+	for (list<Particle*>::iterator it = particleList.begin(); it != particleList.end(); )
 	{
-		if ((*it)->impact)
-			queueIterators.push(it);
-	}
-	while (!queueIterators.empty())
-	{
-		list<Particle*>::iterator it = queueIterators.front();
-		particleList.erase(it);
-		queueIterators.pop();
+		if ((*it)->erase)
+		{
+			delete (*it)->collider;
+			delete (*it);
+			it = particleList.erase(it);
+		}
+		else
+			++it;
 	}
 
 	return UPDATE_CONTINUE;
@@ -58,14 +78,15 @@ update_status ModuleParticleSystem::PostUpdate()
 
 bool ModuleParticleSystem::CleanUp()
 {
+	particleList.clear();
 	return true;
 }
 
-bool ModuleParticleSystem::newParticle(iPoint pos, SDL_Rect rec, SDL_Texture* graphics, Animation particleAnimation, int speed)
+bool ModuleParticleSystem::newParticle(iPoint pos, SDL_Texture* graphics, ParticleAnimation particleAnimation, ParticleAnimation particleDestruction, int speed)
 {
-	LOG("NEW PARTICLE");
-	Collider* collider = new Collider( rec, COLLIDER_PARTICLES, this );
-	Particle* particle = new Particle { pos, collider, graphics, particleAnimation, speed, false };
+	SDL_Rect rec_collider = { pos.x + particleAnimation.GetCurrentCollider().x, pos.y + particleAnimation.GetCurrentCollider().y, particleAnimation.GetCurrentCollider().w, particleAnimation.GetCurrentCollider().h };
+	Collider* collider = new Collider( rec_collider, COLLIDER_PARTICLES, this );
+	Particle* particle = new Particle{ pos, collider, graphics, particleAnimation, particleDestruction, speed, false, 0 };
 	App->collisions->AddCollider(collider);
 	particleList.push_back(particle);
 	return true;
@@ -78,6 +99,6 @@ void ModuleParticleSystem::OnCollision(Collider* c1, Collider* c2)
 		if ((*it1)->collider == c1)
 		{
 				(*it1)->impact = true;
-		}		
+		}
 	}
 }

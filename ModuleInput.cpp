@@ -20,7 +20,6 @@ ModuleInput::ModuleInput() : Module(), mouse({0, 0}), mouse_motion({0,0})
 // Destructor
 ModuleInput::~ModuleInput()
 {
-	RELEASE_ARRAY(keyboard);
 }
 
 // Called before render is available
@@ -217,8 +216,7 @@ bool ModuleInput::CleanUp()
 {
 	LOG("Quitting SDL event subsystem");
 	SDL_QuitSubSystem(SDL_INIT_EVENTS);
-	//SDL_JoystickClose( joystick );
-    //joystick = NULL;
+	RELEASE_ARRAY(keyboard);
 	return true;
 }
 

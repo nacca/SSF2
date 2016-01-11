@@ -12,6 +12,8 @@
 #include "ModulePlayerTwo.h"
 #include <math.h>
 
+#include <iostream>
+
 // Reference at https://www.youtube.com/watch?v=OEhmUuehGOA
 
 ModuleSceneBison::ModuleSceneBison(bool start_enabled) : Module(start_enabled)
@@ -103,17 +105,8 @@ ModuleSceneBison::ModuleSceneBison(bool start_enabled) : Module(start_enabled)
 	life.w = 198;
 	life.h = 14;
 
-	zero.x = 0;		zero.y = 36;	zero.w = 8;		zero.h = 14;
-	one.x = 10;		one.y = 36;		one.w = 6;		one.h = 14;
-	two.x = 20;		two.y = 36;		two.w = 8;		two.h = 14;
-	three.x = 30;	three.y = 36;	three.w = 8;	three.h = 14;
-	four.x = 40;	four.y = 36;	four.w = 8;		four.h = 14;
-	five.x = 50;	five.y = 36;	five.w = 8;		five.h = 14;
-	six.x = 60;		six.y = 36;		six.w = 8;		six.h = 14;
-	seven.x = 70;	seven.y = 36;	seven.w = 8;	seven.h = 14;
-	eight.x = 80;	eight.y = 36;	eight.w = 8;	eight.h = 14;
-	nine.x = 90;	nine.y = 36;	nine.w = 8;		nine.h = 14;
-
+	restarting = false;
+	actualizeFirstTime = true;
 }
 
 ModuleSceneBison::~ModuleSceneBison()
@@ -145,6 +138,11 @@ bool ModuleSceneBison::CleanUp()
 {
 	LOG("Unloading bison scene");
 
+	two_mans_one_ground.~Animation();
+	praying_man_ground.~Animation();
+	praying_man_up.~Animation();
+	three_man.~Animation();
+	
 	App->textures->Unload(graphics);
 	App->textures->Unload(miscellaneous);
 	App->player_one->Disable();
@@ -177,14 +175,14 @@ update_status ModuleSceneBison::Update()
 	//Life rectangles
 	App->renderer->Blit(miscellaneous, 30, 34, &life, 0.0f); //
 	SDL_SetRenderDrawColor(App->renderer->renderer, 255, 255, 0, 255);
-	SDL_Rect rec_aux = { 32, 37, App->player_one->life, 8 };
+	SDL_Rect rec_aux = { 32, 37, (int)(App->player_one->life * 89 / 200), 8 };
 	App->renderer->DrawStaticRect(&rec_aux);
-	rec_aux = { 137, 37, App->player_two->life, 8 };
+	rec_aux = { 137, 37, (int)(App->player_two->life * 89 / 200), 8 };
 	App->renderer->DrawStaticRect(&rec_aux);
 	SDL_SetRenderDrawColor(App->renderer->renderer, 255, 0, 0, 255);
-	rec_aux = { 32+App->player_one->life, 37, 89-App->player_one->life, 8 };
+	rec_aux = { 32 + (int)(App->player_one->life * 89 / 200), 37, 89 - (int)(App->player_one->life * 89 / 200), 8 };
 	App->renderer->DrawStaticRect(&rec_aux);
-	rec_aux = { 137 + App->player_two->life, 37, 89-App->player_two->life, 8 };
+	rec_aux = { 137 + (int)(App->player_two->life * 89 / 200), 37, 89 - (int)(App->player_two->life * 89 / 200), 8 };
 	App->renderer->DrawStaticRect(&rec_aux);
 
 	//Time manager
@@ -192,8 +190,26 @@ update_status ModuleSceneBison::Update()
 	timeNow -= initialTime;
 	timeNow /= 1000;
 	timeNow = 99 - timeNow;
-	if (timeNow < 0)
+	if (timeNow <= 0) {
 		timeNow = 0;
+		if (App->player_one->life > App->player_two->life)
+		{
+			App->player_one->win = true;
+			App->player_two->time_0 = true;
+			RestartScene();
+		}
+		else if (App->player_one->life < App->player_two->life)
+		{
+			App->player_two->win = true;
+			App->player_one->time_0 = true;
+			RestartScene();
+		}
+		else {
+			App->player_one->time_0 = true;
+			App->player_two->time_0 = true;
+			RestartScene();
+		}
+	}
 
 	SDL_Rect numberRect;
 	numberRect.x = floor(timeNow / 10)*10 ;
@@ -209,4 +225,55 @@ update_status ModuleSceneBison::Update()
 	App->renderer->Blit(graphics, 0, 214 - (int)(App->renderer->camera.y / SCREEN_SIZE), &black_surface2, 0.0f); // Black Surface
 
 	return UPDATE_CONTINUE;
+}
+
+update_status ModuleSceneBison::PostUpdate()
+{
+
+	if (restarting)
+	{
+		if (SDL_GetTicks() - timeRestarting > 5000 && SDL_GetTicks() - timeRestarting < 7000)
+		{
+
+			SDL_SetRenderDrawColor(App->renderer->renderer, 0, 0, 0, (SDL_GetTicks() - timeRestarting - 5000) / 8);
+			SDL_Rect fade_black_rectangle = { 0, 0, 256 * SCREEN_SIZE, 224 * SCREEN_SIZE };
+			App->renderer->DrawRect(&fade_black_rectangle);
+		}
+		else if (SDL_GetTicks() - timeRestarting >= 7000 && SDL_GetTicks() - timeRestarting < 8000)
+		{
+			SDL_SetRenderDrawColor(App->renderer->renderer, 0, 0, 0, 255);
+			SDL_Rect fade_black_rectangle = { 0, 0, 256 * SCREEN_SIZE, 224 * SCREEN_SIZE };
+			App->renderer->DrawRect(&fade_black_rectangle);
+		}
+		else if (SDL_GetTicks() - timeRestarting >= 8000 && SDL_GetTicks() - timeRestarting < 10000 && actualizeFirstTime)
+		{
+			App->player_one->restartPlayer();
+			App->player_two->restartPlayer();
+			App->renderer->camera.x = -(100 * SCREEN_SIZE);
+			App->renderer->camera.y = 0;
+			App->audio->PlayMusic("bison.wav");
+			actualizeFirstTime = false;
+		}
+		else if (SDL_GetTicks() - timeRestarting >= 8000 && SDL_GetTicks() - timeRestarting < 10000)
+		{
+			SDL_SetRenderDrawColor(App->renderer->renderer, 0, 0, 0, 255 - (SDL_GetTicks() - timeRestarting - 8000) / 8);
+			SDL_Rect fade_black_rectangle = { 0, 0, 256 * SCREEN_SIZE, 224 * SCREEN_SIZE };
+			App->renderer->DrawRect(&fade_black_rectangle);
+		}
+		else if (SDL_GetTicks() - timeRestarting >= 10000)
+		{
+			restarting = false;
+			initialTime = SDL_GetTicks();
+			actualizeFirstTime = true;
+		}
+	}
+
+
+	return UPDATE_CONTINUE;
+}
+
+void ModuleSceneBison::RestartScene()
+{
+	restarting = true;
+	timeRestarting = SDL_GetTicks();
 }

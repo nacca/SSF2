@@ -18,6 +18,7 @@ class ModuleParticleSystem;
 class ModuleCollisions;
 class ModulePlayerOne;
 class ModulePlayerTwo;
+class ModuleComboDetection;
 
 class Application
 {
@@ -44,6 +45,7 @@ public:
 	ModuleCollisions* collisions;
 	ModulePlayerOne* player_one;
 	ModulePlayerTwo* player_two;
+	ModuleComboDetection* combo;
 
 private:
 	std::list<Module*> modules;

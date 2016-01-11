@@ -3,12 +3,12 @@
 
 #include "Module.h"
 #include "Animation.h"
+#include "ParticleAnimation.h"
 #include "Globals.h"
 #include "Application.h"
 #include "Point.h"
 #include <list>
 #include "ModuleCollisions.h"
-#include "Collider.h"
 
 struct SDL_Texture;
 
@@ -17,9 +17,12 @@ struct Particle
 	iPoint position;
 	Collider* collider;
 	SDL_Texture* graphics;
-	Animation particleAnimation;
+	ParticleAnimation particleAnimation;
+	ParticleAnimation particleDestruction;
 	int speed;
 	bool impact;
+	bool erase;
+	int counter;
 };
 
 class ModuleParticleSystem : public Module
@@ -35,7 +38,7 @@ public:
 
 	virtual void OnCollision(Collider* c1, Collider* c2);
 	
-	bool newParticle(iPoint pos, SDL_Rect rec, SDL_Texture* graphics, Animation particleAnimation, int speed);
+	bool newParticle(iPoint pos, SDL_Texture* graphics, ParticleAnimation particleAnimation, ParticleAnimation particleDestruction, int speed);
 
 public:
 	list<Particle*> particleList;

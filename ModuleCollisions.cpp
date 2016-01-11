@@ -8,18 +8,84 @@
 
 ModuleCollisions::ModuleCollisions(bool start_enabled) : Module(start_enabled)
 {
+	matrix[COLLIDER_PLAYER_ONE][COLLIDER_PLAYER_ONE] = false;
+	matrix[COLLIDER_PLAYER_ONE][COLLIDER_BODY_PLAYER_ONE] = false;
+	matrix[COLLIDER_PLAYER_ONE][COLLIDER_ATTACK_PLAYER_ONE] = false;
+	matrix[COLLIDER_PLAYER_ONE][COLLIDER_PLAYER_TWO] = false;
+	matrix[COLLIDER_PLAYER_ONE][COLLIDER_BODY_PLAYER_TWO] = false;
+	matrix[COLLIDER_PLAYER_ONE][COLLIDER_ATTACK_PLAYER_TWO] = true;
+	matrix[COLLIDER_PLAYER_ONE][COLLIDER_PARTICLES] = true;
+	matrix[COLLIDER_PLAYER_ONE][COLLIDER_OTHERS] = false;
 
+	matrix[COLLIDER_BODY_PLAYER_ONE][COLLIDER_PLAYER_ONE] = false;
+	matrix[COLLIDER_BODY_PLAYER_ONE][COLLIDER_BODY_PLAYER_ONE] = false;
+	matrix[COLLIDER_BODY_PLAYER_ONE][COLLIDER_ATTACK_PLAYER_ONE] = false;
+	matrix[COLLIDER_BODY_PLAYER_ONE][COLLIDER_PLAYER_TWO] = false;
+	matrix[COLLIDER_BODY_PLAYER_ONE][COLLIDER_BODY_PLAYER_TWO] = true;
+	matrix[COLLIDER_BODY_PLAYER_ONE][COLLIDER_ATTACK_PLAYER_TWO] = false;
+	matrix[COLLIDER_BODY_PLAYER_ONE][COLLIDER_PARTICLES] = false;
+	matrix[COLLIDER_BODY_PLAYER_ONE][COLLIDER_OTHERS] = false;
+
+	matrix[COLLIDER_ATTACK_PLAYER_ONE][COLLIDER_PLAYER_ONE] = false;
+	matrix[COLLIDER_ATTACK_PLAYER_ONE][COLLIDER_BODY_PLAYER_ONE] = false;
+	matrix[COLLIDER_ATTACK_PLAYER_ONE][COLLIDER_ATTACK_PLAYER_ONE] = false;
+	matrix[COLLIDER_ATTACK_PLAYER_ONE][COLLIDER_PLAYER_TWO] = true;
+	matrix[COLLIDER_ATTACK_PLAYER_ONE][COLLIDER_BODY_PLAYER_TWO] = false;
+	matrix[COLLIDER_ATTACK_PLAYER_ONE][COLLIDER_ATTACK_PLAYER_TWO] = false;
+	matrix[COLLIDER_ATTACK_PLAYER_ONE][COLLIDER_PARTICLES] = false;
+	matrix[COLLIDER_ATTACK_PLAYER_ONE][COLLIDER_OTHERS] = false;
+
+	matrix[COLLIDER_PLAYER_TWO][COLLIDER_PLAYER_ONE] = false;
+	matrix[COLLIDER_PLAYER_TWO][COLLIDER_BODY_PLAYER_ONE] = false;
+	matrix[COLLIDER_PLAYER_TWO][COLLIDER_ATTACK_PLAYER_ONE] = true;
+	matrix[COLLIDER_PLAYER_TWO][COLLIDER_PLAYER_TWO] = false;
+	matrix[COLLIDER_PLAYER_TWO][COLLIDER_BODY_PLAYER_TWO] = false;
+	matrix[COLLIDER_PLAYER_TWO][COLLIDER_ATTACK_PLAYER_TWO] = false;
+	matrix[COLLIDER_PLAYER_TWO][COLLIDER_PARTICLES] = true;
+	matrix[COLLIDER_PLAYER_TWO][COLLIDER_OTHERS] = false;
+
+	matrix[COLLIDER_BODY_PLAYER_TWO][COLLIDER_PLAYER_ONE] = false;
+	matrix[COLLIDER_BODY_PLAYER_TWO][COLLIDER_BODY_PLAYER_ONE] = true;
+	matrix[COLLIDER_BODY_PLAYER_TWO][COLLIDER_ATTACK_PLAYER_ONE] = false;
+	matrix[COLLIDER_BODY_PLAYER_TWO][COLLIDER_PLAYER_TWO] = false;
+	matrix[COLLIDER_BODY_PLAYER_TWO][COLLIDER_BODY_PLAYER_TWO] = false;
+	matrix[COLLIDER_BODY_PLAYER_TWO][COLLIDER_ATTACK_PLAYER_TWO] = false;
+	matrix[COLLIDER_BODY_PLAYER_TWO][COLLIDER_PARTICLES] = false;
+	matrix[COLLIDER_BODY_PLAYER_TWO][COLLIDER_OTHERS] = false;
+
+	matrix[COLLIDER_ATTACK_PLAYER_TWO][COLLIDER_PLAYER_ONE] = true;
+	matrix[COLLIDER_ATTACK_PLAYER_TWO][COLLIDER_BODY_PLAYER_ONE] = false;
+	matrix[COLLIDER_ATTACK_PLAYER_TWO][COLLIDER_ATTACK_PLAYER_ONE] = false;
+	matrix[COLLIDER_ATTACK_PLAYER_TWO][COLLIDER_PLAYER_TWO] = false;
+	matrix[COLLIDER_ATTACK_PLAYER_TWO][COLLIDER_BODY_PLAYER_TWO] = false;
+	matrix[COLLIDER_ATTACK_PLAYER_TWO][COLLIDER_ATTACK_PLAYER_TWO] = false;
+	matrix[COLLIDER_ATTACK_PLAYER_TWO][COLLIDER_PARTICLES] = false;
+	matrix[COLLIDER_ATTACK_PLAYER_TWO][COLLIDER_OTHERS] = false;
+
+	matrix[COLLIDER_PARTICLES][COLLIDER_PLAYER_ONE] = true;
+	matrix[COLLIDER_PARTICLES][COLLIDER_BODY_PLAYER_ONE] = false;
+	matrix[COLLIDER_PARTICLES][COLLIDER_ATTACK_PLAYER_ONE] = false;
+	matrix[COLLIDER_PARTICLES][COLLIDER_PLAYER_TWO] = true;
+	matrix[COLLIDER_PARTICLES][COLLIDER_BODY_PLAYER_TWO] = false;
+	matrix[COLLIDER_PARTICLES][COLLIDER_ATTACK_PLAYER_TWO] = false;
+	matrix[COLLIDER_PARTICLES][COLLIDER_PARTICLES] = true;
+	matrix[COLLIDER_PARTICLES][COLLIDER_OTHERS] = false;
+
+	matrix[COLLIDER_OTHERS][COLLIDER_PLAYER_ONE] = false;
+	matrix[COLLIDER_OTHERS][COLLIDER_BODY_PLAYER_ONE] = false;
+	matrix[COLLIDER_OTHERS][COLLIDER_ATTACK_PLAYER_ONE] = false;
+	matrix[COLLIDER_OTHERS][COLLIDER_PLAYER_TWO] = false;
+	matrix[COLLIDER_OTHERS][COLLIDER_BODY_PLAYER_TWO] = false;
+	matrix[COLLIDER_OTHERS][COLLIDER_ATTACK_PLAYER_TWO] = false;
+	matrix[COLLIDER_OTHERS][COLLIDER_PARTICLES] = false;
+	matrix[COLLIDER_OTHERS][COLLIDER_OTHERS] = false;
+
+	show_colliders = false;
 }
 
 
 ModuleCollisions::~ModuleCollisions()
 {
-}
-
-bool ModuleCollisions::Start()
-{
-	show_colliders = false;
-	return true;
 }
 
 update_status ModuleCollisions::PreUpdate()
@@ -67,9 +133,9 @@ update_status ModuleCollisions::PostUpdate()
 		{
 			if ((*it)->type == COLLIDER_PARTICLES || (*it)->type == COLLIDER_ATTACK_PLAYER_ONE || (*it)->type == COLLIDER_ATTACK_PLAYER_TWO)
 				SDL_SetRenderDrawColor(App->renderer->renderer, 255, 0, 0, 100);
-			else if ((*it)->type == COLLIDER_PLAYER_ONE)
+			else if ((*it)->type == COLLIDER_PLAYER_ONE || (*it)->type == COLLIDER_PLAYER_TWO)
 				SDL_SetRenderDrawColor(App->renderer->renderer, 0, 0, 255, 100);
-			else if ((*it)->type == COLLIDER_PLAYER_TWO)
+			else if ((*it)->type == COLLIDER_BODY_PLAYER_ONE || (*it)->type == COLLIDER_BODY_PLAYER_TWO)
 				SDL_SetRenderDrawColor(App->renderer->renderer, 0, 255, 0, 100);
 			if (!App->renderer->DrawRect(&(*it)->rect))
 				return UPDATE_ERROR;
@@ -89,12 +155,13 @@ update_status ModuleCollisions::PostUpdate()
 
 bool ModuleCollisions::CleanUp()
 {
+	colliders.clear();
 	return true;
 }
 
 void ModuleCollisions::AddCollider(SDL_Rect rec, collider_type type, Module* module)
 {
-	Collider collider(rec, type, module);
+	Collider collider = { rec, type, module };
 	colliders.push_back(&collider);
 }
 
@@ -116,9 +183,5 @@ bool ModuleCollisions::IsCollision(SDL_Rect rec1, SDL_Rect rec2)
 
 bool ModuleCollisions::CanCollide(collider_type type1, collider_type type2)
 {
-	return true;
-/*	if (type1 != type2)
-		return true;
-	else
-		return false;*/
+	return matrix[type1][type2];
 }

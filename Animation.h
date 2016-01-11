@@ -3,18 +3,12 @@
 #include <iostream>
 using namespace std;
 
-struct AnimatorRects {
-	SDL_Rect rect;
-	int pivot;
-
-};
-
 struct Collider_player_structure {
+	SDL_Rect Position_collider;
 	SDL_Rect Collider_head;
 	SDL_Rect Collider_body;
 	SDL_Rect Collider_legs;
 	SDL_Rect Collider_attack;
-	bool attacking;
 };
 
 class Animation
@@ -33,6 +27,13 @@ private:
 public:
 	Animation() : frames(), speed(1.0f), current_frame(0.0f), loop(true), endReached(false)
 	{}
+
+	~Animation()
+	{
+		frames.clear();
+		pivots.clear();
+		colliders.clear();
+	}
 
 	SDL_Rect& GetCurrentFrame()
 	{

@@ -15,7 +15,10 @@ public:
 
 	bool Start();
 	update_status Update();
+	update_status PostUpdate();
 	bool CleanUp();
+
+	void RestartScene();
 
 public:	
 	SDL_Texture* graphics = nullptr;
@@ -37,17 +40,11 @@ public:
 	Animation three_man;
 	SDL_Rect life;
 
-	SDL_Rect zero;
-	SDL_Rect one;
-	SDL_Rect two;
-	SDL_Rect three;
-	SDL_Rect four;
-	SDL_Rect five;
-	SDL_Rect six;
-	SDL_Rect seven;
-	SDL_Rect eight;
-	SDL_Rect nine;
 	Uint32 initialTime;
+
+	bool restarting;
+	bool actualizeFirstTime;
+	Uint32 timeRestarting;
 
 };
 

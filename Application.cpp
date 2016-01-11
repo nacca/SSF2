@@ -11,12 +11,12 @@
 #include "ModuleCollisions.h"
 #include "ModulePlayerOne.h"
 #include "ModulePlayerTwo.h"
+#include "ModuleComboDetection.h"
 
 using namespace std;
 
 Application::Application()
 {
-
 
 	// Order matters: they will init/start/pre/update/post in this order
 	modules.push_back(input = new ModuleInput());
@@ -24,12 +24,13 @@ Application::Application()
 
 	modules.push_back(textures = new ModuleTextures());
 	modules.push_back(audio = new ModuleAudio());
-	modules.push_back(particles = new ModuleParticleSystem());
 	modules.push_back(collisions = new ModuleCollisions());
 	modules.push_back(fade = new ModuleFadeToBlack());
 
 	// Game Modules
+	modules.push_back(combo = new ModuleComboDetection());
 	modules.push_back(scene_bison = new ModuleSceneBison(false));
+	modules.push_back(particles = new ModuleParticleSystem());
 	modules.push_back(player_one = new ModulePlayerOne(false));
 	modules.push_back(player_two = new ModulePlayerTwo(false));
 
@@ -40,7 +41,9 @@ Application::Application()
 Application::~Application()
 {
 	for (list<Module*>::iterator it = modules.begin(); it != modules.end(); ++it)
+	{
 		RELEASE(*it);
+	}
 }
 
 bool Application::Init()
@@ -85,9 +88,10 @@ bool Application::CleanUp()
 {
 	bool ret = true;
 
-	for (list<Module*>::reverse_iterator it = modules.rbegin(); it != modules.rend() && ret; ++it)
-	if ((*it)->IsEnabled() == true)
-		ret = (*it)->CleanUp();
+	for (list<Module*>::reverse_iterator it = modules.rbegin(); it != modules.rend() && ret; ++it){
+		if ((*it)->IsEnabled() == true)
+			ret = (*it)->CleanUp();
+	}
 
 	return ret;
 }

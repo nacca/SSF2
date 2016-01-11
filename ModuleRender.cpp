@@ -137,14 +137,11 @@ bool ModuleRender::Blit(SDL_Texture* texture, int x, int y, SDL_Rect* section, f
 
 bool ModuleRender::DrawRect(SDL_Rect* rec)
 {
-	cout << "REC" << endl;
-	cout << rec->x << " , " << rec->y << " , " << rec->w << " , " << rec->h << endl;
 	SDL_Rect rec_aux;
 	rec_aux.x = rec->x * SCREEN_SIZE + App->renderer->camera.x;
 	rec_aux.y = rec->y * SCREEN_SIZE + App->renderer->camera.y;
 	rec_aux.w = rec->w * SCREEN_SIZE;
 	rec_aux.h = rec->h * SCREEN_SIZE;
-	cout << rec_aux.x << " , " << rec_aux.y << " , " << rec_aux.w << " , " << rec_aux.h << endl;
 
 	if(SDL_RenderFillRect(renderer, &rec_aux) != 0)
 		return false;

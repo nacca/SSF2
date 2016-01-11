@@ -58,8 +58,10 @@ bool ModuleAudio::CleanUp()
 		Mix_FreeMusic(music);
 	}
 
-	for(vector<Mix_Chunk*>::iterator it = fx.begin(); it != fx.end(); ++it)
+	for (vector<Mix_Chunk*>::iterator it = fx.begin(); it != fx.end(); ++it){
 		Mix_FreeChunk(*it);
+	}
+
 
 	fx.clear();
 	Mix_CloseAudio();
@@ -72,7 +74,7 @@ bool ModuleAudio::CleanUp()
 bool ModuleAudio::PlayMusic(const char* path, float fade_time)
 {
 	bool ret = true;
-
+	Mix_VolumeMusic(64);
 	if(music != nullptr)
 	{
 		if(fade_time > 0.0f)
@@ -131,6 +133,7 @@ unsigned int ModuleAudio::LoadFx(const char* path)
 	}
 	else
 	{
+		Mix_VolumeChunk(chunk, 128);
 		fx.push_back(chunk);
 		ret = fx.size() - 1;
 	}

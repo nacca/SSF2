@@ -2,10 +2,41 @@
 #define __MODULECOLLISIONS_H__
 
 #include "Module.h"
-#include "Collider.h"
 #include <list>
 
 using namespace std;
+
+struct Collider{
+
+	SDL_Rect rect;
+	collider_type type;
+	Module* module;
+	bool needDelete;
+	int damage;
+	damage_type damageType;
+
+	Collider()
+	{
+		rect = { 0, 0, 0, 0 };
+		type = COLLIDER_OTHERS;
+		module = NULL;
+		needDelete = false;
+		damage = 0;
+		damageType = NONE_DAMAGE;
+	}
+
+	Collider(SDL_Rect rect, collider_type type, Module* module)
+	{
+		this->rect = rect;
+		this->type = type;
+		this->module = module;
+		needDelete = false;
+		damage = 0;
+		damageType = NONE_DAMAGE;
+	}
+
+};
+
 
 class ModuleCollisions :
 	public Module
@@ -14,7 +45,6 @@ public:
 	ModuleCollisions(bool start_enabled = true);
 	virtual ~ModuleCollisions();
 
-	virtual bool Start();
 	virtual update_status PreUpdate();
 	virtual update_status Update();
 	virtual update_status PostUpdate();
@@ -29,6 +59,8 @@ public:
 public:
 	list<Collider*> colliders;
 	bool show_colliders;
+	bool matrix[8][8];
+
 };
 
 #endif
