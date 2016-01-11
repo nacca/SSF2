@@ -38,14 +38,14 @@ bool ModuleInput::Init()
 	if (SDL_InitSubSystem(SDL_INIT_JOYSTICK) < 0)
 	{
 		LOG("SDL_JOYSTICK could not initialize! SDL_Error: %s\n", SDL_GetError());
-		ret = false;
+//		ret = false;
 	}
 
 	//Check for joysticks
 	if (SDL_NumJoysticks() < 1)
 	{
 		LOG("Warning: No joysticks connected!\n");
-		ret = false;
+//		ret = false;
 	}
 	else
 	{
@@ -55,7 +55,7 @@ bool ModuleInput::Init()
 		if (joystick == NULL)
 		{
 			LOG("Warning: Unable to open game controller! SDL Error: %s\n", SDL_GetError());
-			ret = false;
+//			ret = false;
 		}
 	}
 

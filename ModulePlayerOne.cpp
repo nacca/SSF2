@@ -84,8 +84,8 @@ update_status ModulePlayerOne::PreUpdate()
 	else
 		looking_right = false;
 
-	if ((otherPlayer->getPosition().x - position.x) < 40 &&
-		(otherPlayer->getPosition().x - position.x) > -40)
+	if ((otherPlayer->getPosition().x - position.x) < 60 &&
+		(otherPlayer->getPosition().x - position.x) > -60)
 		near = true;
 
 	if (dead)

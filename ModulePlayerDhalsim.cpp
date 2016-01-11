@@ -401,11 +401,6 @@ bool ModulePlayerDhalsim::CleanUp()
 	particula.~ParticleAnimation();
 	destroy_particula.~ParticleAnimation();
 
-/*	collider_head->~Collider();
-	collider_body->~Collider();
-	collider_legs->~Collider();
-	player_collider->~Collider();
-	*/
 	App->textures->Unload(graphics);
 
 	return true;
