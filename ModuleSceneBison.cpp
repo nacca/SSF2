@@ -77,35 +77,47 @@ ModuleSceneBison::ModuleSceneBison(bool start_enabled) : Module(start_enabled)
 	couple_with_child.y = 337;
 	couple_with_child.w = 40;
 	couple_with_child.h = 55;
-	
+
 	// Two boys
 	two_boys.x = 296;
 	two_boys.y = 334;
 	two_boys.w = 20;
 	two_boys.h = 58;
 
-	two_mans_one_ground.frames.push_back({ 144, 336, 24, 56 }); two_mans_one_ground.pivots.push_back(28);
-	two_mans_one_ground.frames.push_back({ 481, 432, 24, 56 }); two_mans_one_ground.pivots.push_back(28);
-	two_mans_one_ground.speed = 0.1f;
+	two_mans_one_ground.frames.push_back({ { 144, 336, 24, 56 }, 28, { { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 } }, 10});
+	two_mans_one_ground.frames.push_back({ { 481, 432, 24, 56 }, 28, { { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 } }, 10 });
 
-	praying_man_ground.frames.push_back({ 177, 333, 30, 63 }); praying_man_ground.pivots.push_back(32);
-	praying_man_ground.frames.push_back({ 374, 432, 30, 63 }); praying_man_ground.pivots.push_back(32);
-	praying_man_ground.speed = 0.1f;
+	praying_man_ground.frames.push_back({ { 177, 333, 30, 63 }, 32, { { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 } }, 10 });
+	praying_man_ground.frames.push_back({ { 374, 432, 30, 63 }, 32, { { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 } }, 10 });
 
-	praying_man_up.frames.push_back({ 368, 329, 32, 62 }); praying_man_up.pivots.push_back(31);
-	praying_man_up.frames.push_back({ 229, 432, 32, 62 }); praying_man_up.pivots.push_back(31);
-	praying_man_up.speed = 0.1f;
+	praying_man_up.frames.push_back({ { 368, 329, 32, 62 }, 31, { { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 } }, 10 });
+	praying_man_up.frames.push_back({ { 229, 432, 32, 62 }, 31, { { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 } }, 10 });
 
-	three_man.frames.push_back({ 320, 336, 39, 56 }); three_man.pivots.push_back(28);
-	three_man.frames.push_back({ 275, 432, 39, 56 }); three_man.pivots.push_back(28);
-	three_man.speed = 0.1f;
+	three_man.frames.push_back({ { 320, 336, 39, 56 }, 28, { { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 } }, 10 });
+	three_man.frames.push_back({ { 275, 432, 39, 56 }, 28, { { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 } }, 10 });
 
 	life.x = 2;
 	life.y = 2;
 	life.w = 198;
 	life.h = 14;
 
+	restartFont.x = 0;
+	restartFont.y = 0;
+	restartFont.w = 130;
+	restartFont.h = 25;
+
+	name.x = 2;
+	name.y = 20;
+	name.w = 41;
+	name.h = 10;
+
+	victory.x = 205;
+	victory.y = 4;
+	victory.w = 11;
+	victory.h = 14;
+
 	restarting = false;
+	end = false;
 	actualizeFirstTime = true;
 }
 
@@ -119,6 +131,8 @@ bool ModuleSceneBison::Start()
 	
 	graphics = App->textures->Load("bison_stage_v2.png");
 	miscellaneous = App->textures->Load("miscellaneous_v2.png");
+	restartTexture = App->textures->Load("restartFont.png");
+
 
 	if (!App->player_one->Enable())
 		return false;
@@ -128,7 +142,7 @@ bool ModuleSceneBison::Start()
 
 	initialTime = SDL_GetTicks();
 
-	//App->audio->PlayMusic("bison.wav");
+	App->audio->PlayMusic("bison.wav");
 	
 	return true;
 }
@@ -168,11 +182,17 @@ update_status ModuleSceneBison::Update()
 	App->renderer->Blit(graphics, 104 - 28, 31 + 89, &couple_with_child, 1.0f); // Couple with boy
 
 	App->renderer->Blit(graphics, 144 - 28, 31 + 88, &(two_mans_one_ground.GetCurrentFrame()), 1.0f); //
+	two_mans_one_ground.NextFrame();
 	App->renderer->Blit(graphics, 177 - 28, 31 + 85, &(praying_man_ground.GetCurrentFrame()), 1.0f); //
+	praying_man_ground.NextFrame();
 	App->renderer->Blit(graphics, 369 - 28, 31 + 81, &(praying_man_up.GetCurrentFrame()), 1.0f); //
+	praying_man_up.NextFrame();
 	App->renderer->Blit(graphics, 320 - 28, 31 + 88, &(three_man.GetCurrentFrame()), 1.0f); //
+	three_man.NextFrame();
 
 	//Life rectangles
+	App->renderer->Blit(miscellaneous, 30, 47, &name, 0.0f); //
+	App->renderer->Blit(miscellaneous, 185, 47, &name, 0.0f); //
 	App->renderer->Blit(miscellaneous, 30, 34, &life, 0.0f); //
 	SDL_SetRenderDrawColor(App->renderer->renderer, 255, 255, 0, 255);
 	SDL_Rect rec_aux = { 32, 37, (int)(App->player_one->life * 89 / 200), 8 };
@@ -190,35 +210,52 @@ update_status ModuleSceneBison::Update()
 	timeNow -= initialTime;
 	timeNow /= 1000;
 	timeNow = 99 - timeNow;
-	if (timeNow <= 0) {
+	if (timeNow <= 0 && !restarting) {
 		timeNow = 0;
 		if (App->player_one->life > App->player_two->life)
 		{
 			App->player_one->win = true;
 			App->player_two->time_0 = true;
-			RestartScene();
+			RestartScene(App->player_one->wins + 1);
 		}
 		else if (App->player_one->life < App->player_two->life)
 		{
 			App->player_two->win = true;
 			App->player_one->time_0 = true;
-			RestartScene();
+			RestartScene(App->player_two->wins + 1);
 		}
 		else {
 			App->player_one->time_0 = true;
 			App->player_two->time_0 = true;
-			RestartScene();
+			RestartScene(0);
 		}
 	}
 
 	SDL_Rect numberRect;
-	numberRect.x = floor(timeNow / 10)*10 ;
+	numberRect.x = (int) floor(timeNow / 10)*10 ;
 	numberRect.y = 36;
 	numberRect.w = 8;
 	numberRect.h = 14;
 	App->renderer->Blit(miscellaneous, 121, 50, &numberRect, 0.0f); //
-	numberRect.x = floor(timeNow % 10)*10;
+	numberRect.x = (int) floor(timeNow % 10) * 10;
 	App->renderer->Blit(miscellaneous, 129, 50, &numberRect, 0.0f); //
+
+	if (App->player_one->wins >= 1)
+	{
+		App->renderer->Blit(miscellaneous, 3, 34, &victory, 0.0f);
+	}
+	if (App->player_one->wins >= 2)
+	{
+		App->renderer->Blit(miscellaneous, 17, 34, &victory, 0.0f);
+	}
+	if (App->player_two->wins >= 1)
+	{
+		App->renderer->Blit(miscellaneous, 229, 34, &victory, 0.0f);
+	}
+	if (App->player_two->wins >= 2)
+	{
+		App->renderer->Blit(miscellaneous, 243, 34, &victory, 0.0f);
+	}
 
 
 	App->renderer->Blit(graphics, 0, -(int)(App->renderer->camera.y / SCREEN_SIZE), &black_surface, 0.0f); // Black Surface
@@ -232,23 +269,20 @@ update_status ModuleSceneBison::PostUpdate()
 
 	if (restarting)
 	{
+		SDL_SetRenderDrawColor(App->renderer->renderer, 0, 0, 0, 0);
 		if (SDL_GetTicks() - timeRestarting > 5000 && SDL_GetTicks() - timeRestarting < 7000)
 		{
-
 			SDL_SetRenderDrawColor(App->renderer->renderer, 0, 0, 0, (SDL_GetTicks() - timeRestarting - 5000) / 8);
-			SDL_Rect fade_black_rectangle = { 0, 0, 256 * SCREEN_SIZE, 224 * SCREEN_SIZE };
-			App->renderer->DrawRect(&fade_black_rectangle);
 		}
 		else if (SDL_GetTicks() - timeRestarting >= 7000 && SDL_GetTicks() - timeRestarting < 8000)
 		{
 			SDL_SetRenderDrawColor(App->renderer->renderer, 0, 0, 0, 255);
-			SDL_Rect fade_black_rectangle = { 0, 0, 256 * SCREEN_SIZE, 224 * SCREEN_SIZE };
-			App->renderer->DrawRect(&fade_black_rectangle);
 		}
 		else if (SDL_GetTicks() - timeRestarting >= 8000 && SDL_GetTicks() - timeRestarting < 10000 && actualizeFirstTime)
 		{
-			App->player_one->restartPlayer();
-			App->player_two->restartPlayer();
+			SDL_SetRenderDrawColor(App->renderer->renderer, 0, 0, 0, 255);
+			App->player_one->restartPlayer(false);
+			App->player_two->restartPlayer(false);
 			App->renderer->camera.x = -(100 * SCREEN_SIZE);
 			App->renderer->camera.y = 0;
 			App->audio->PlayMusic("bison.wav");
@@ -257,23 +291,62 @@ update_status ModuleSceneBison::PostUpdate()
 		else if (SDL_GetTicks() - timeRestarting >= 8000 && SDL_GetTicks() - timeRestarting < 10000)
 		{
 			SDL_SetRenderDrawColor(App->renderer->renderer, 0, 0, 0, 255 - (SDL_GetTicks() - timeRestarting - 8000) / 8);
-			SDL_Rect fade_black_rectangle = { 0, 0, 256 * SCREEN_SIZE, 224 * SCREEN_SIZE };
-			App->renderer->DrawRect(&fade_black_rectangle);
 		}
 		else if (SDL_GetTicks() - timeRestarting >= 10000)
 		{
+			SDL_SetRenderDrawColor(App->renderer->renderer, 0, 0, 0, 0);
 			restarting = false;
 			initialTime = SDL_GetTicks();
 			actualizeFirstTime = true;
 		}
+		SDL_Rect fade_black_rectangle = { 0, 0, 256 * SCREEN_SIZE, 224 * SCREEN_SIZE };
+		App->renderer->DrawRect(&fade_black_rectangle);
+	}
+	else if (end)
+	{
+		if (SDL_GetTicks() - timeRestarting > 5000 && SDL_GetTicks() - timeRestarting < 7000)
+		{
+
+			SDL_SetRenderDrawColor(App->renderer->renderer, 0, 0, 0, (SDL_GetTicks() - timeRestarting - 5000) / 8);
+
+		}
+		else if (SDL_GetTicks() - timeRestarting >= 7000)
+		{
+			SDL_SetRenderDrawColor(App->renderer->renderer, 0, 0, 0, 255);
+			SDL_Rect fade_black_rectangle = { 0, 0, 256 * SCREEN_SIZE, 224 * SCREEN_SIZE };
+			App->renderer->DrawRect(&fade_black_rectangle);
+			App->renderer->Blit(restartTexture, 50, 100, &restartFont, 0.0f);
+
+			if (App->input->GetKey(SDL_SCANCODE_SPACE))
+			{
+				App->renderer->camera.x = -(100 * SCREEN_SIZE);
+				App->renderer->camera.y = 0;
+				App->audio->PlayMusic("bison.wav");
+				end = false;
+				initialTime = SDL_GetTicks();
+				actualizeFirstTime = true;
+				App->player_one->restartPlayer(true);
+				App->player_two->restartPlayer(true);
+			}
+
+
+		}
+
 	}
 
 
 	return UPDATE_CONTINUE;
 }
 
-void ModuleSceneBison::RestartScene()
+void ModuleSceneBison::RestartScene(int wins)
 {
-	restarting = true;
 	timeRestarting = SDL_GetTicks();
+	if (wins >= 2)
+	{
+		end = true;
+	}
+	else
+	{
+		restarting = true;
+	}
 }

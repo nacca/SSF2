@@ -3,7 +3,6 @@
 
 #include "Module.h"
 #include "Animation.h"
-#include "Animation2.h"
 #include "ParticleAnimation.h"
 #include "Globals.h"
 #include "Point.h"
@@ -28,7 +27,7 @@ public:
 	virtual iPoint getPosition();
 	virtual void OnCollision(Collider* c1, Collider* c2);
 
-	virtual void restartPlayer();
+	virtual void restartPlayer(bool everything);
 	void MovePlayer(int distance);
 	virtual bool playerInCameraLimit() const;
 
@@ -62,41 +61,41 @@ protected:
 	bool colliding_players;
 	Uint32 lastShotTimer;
 
-	Animation2 idle;
-	Animation2 forward;
-	Animation2 backward;
-	Animation2 crouching;
-	Animation2 block;
-	Animation2 crouch_block;
-	Animation2 jump;
-	Animation2 L_punch;
-	Animation2 L_kick;
-	Animation2 M_punch;
-	Animation2 M_kick;
-	Animation2 H_punch;
-	Animation2 H_kick;
-	Animation2 F_L_punch;
-	Animation2 F_M_punch;
-	Animation2 F_H_punch;
-	Animation2 F_L_kick;
-	Animation2 F_M_kick;
-	Animation2 F_H_kick;
-	Animation2 crouch_punch;
-	Animation2 crouch_kick;
-	Animation2 jump_punch;
-	Animation2 jump_kick;
-	Animation2 hit;
-	Animation2 face_hit;
-	Animation2 crouch_hit;
-	Animation2 air_hit;
-	Animation2 ko;
-	Animation2 victory1;
-	Animation2 victory2;
-	Animation2 time_out;
-	Animation2 yoga_fire;
-	Animation2 yoga_flame;
-	Animation2 yoga_mummy;
-	Animation2 yoga_spear;
+	Animation idle;
+	Animation forward;
+	Animation backward;
+	Animation crouching;
+	Animation block;
+	Animation crouch_block;
+	Animation jump;
+	Animation L_punch;
+	Animation L_kick;
+	Animation M_punch;
+	Animation M_kick;
+	Animation H_punch;
+	Animation H_kick;
+	Animation F_L_punch;
+	Animation F_M_punch;
+	Animation F_H_punch;
+	Animation F_L_kick;
+	Animation F_M_kick;
+	Animation F_H_kick;
+	Animation crouch_punch;
+	Animation crouch_kick;
+	Animation jump_punch;
+	Animation jump_kick;
+	Animation hit;
+	Animation face_hit;
+	Animation crouch_hit;
+	Animation air_hit;
+	Animation ko;
+	Animation victory1;
+	Animation victory2;
+	Animation time_out;
+	Animation yoga_fire;
+	Animation yoga_flame;
+	Animation yoga_mummy;
+	Animation yoga_spear;
 
 	bool hitted;
 	bool head_hitted;

@@ -2,7 +2,6 @@
 #define __MODULEPARTICLESYSTEM_H__
 
 #include "Module.h"
-#include "Animation.h"
 #include "ParticleAnimation.h"
 #include "Globals.h"
 #include "Application.h"

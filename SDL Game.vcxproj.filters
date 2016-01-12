@@ -40,9 +40,6 @@
     <ClInclude Include="ModuleFadeToBlack.h">
       <Filter>Core Modules</Filter>
     </ClInclude>
-    <ClInclude Include="Animation.h">
-      <Filter>Utils</Filter>
-    </ClInclude>
     <ClInclude Include="Point.h">
       <Filter>Utils</Filter>
     </ClInclude>
@@ -67,13 +64,13 @@
     <ClInclude Include="ModulePlayerTwo.h">
       <Filter>Game Modules</Filter>
     </ClInclude>
-    <ClInclude Include="Animation2.h">
-      <Filter>Utils</Filter>
-    </ClInclude>
     <ClInclude Include="ModuleComboDetection.h">
       <Filter>Game Modules</Filter>
     </ClInclude>
     <ClInclude Include="ParticleAnimation.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Animation.h">
       <Filter>Utils</Filter>
     </ClInclude>
   </ItemGroup>

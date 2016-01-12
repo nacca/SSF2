@@ -40,6 +40,10 @@ Application::Application()
 
 Application::~Application()
 {
+	audio->~ModuleAudio();
+	particles->~ModuleParticleSystem();
+	collisions->~ModuleCollisions();
+	textures->~ModuleTextures();
 	for (list<Module*>::iterator it = modules.begin(); it != modules.end(); ++it)
 	{
 		RELEASE(*it);

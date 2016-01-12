@@ -86,8 +86,8 @@ update_status ModulePlayerTwo::PreUpdate()
 	else
 		looking_right = false;
 
-	if ((otherPlayer->getPosition().x - position.x) < 40 &&
-		(otherPlayer->getPosition().x - position.x) > -40)
+	if ((otherPlayer->getPosition().x - position.x) < 50 &&
+		(otherPlayer->getPosition().x - position.x) > -50)
 		near = true;
 
 	if (dead)
@@ -119,6 +119,7 @@ update_status ModulePlayerTwo::PreUpdate()
 			}
 			else
 			{
+				++wins;
 				playerState = PLAYER_WIN_2;
 			}
 		}
@@ -843,7 +844,13 @@ update_status ModulePlayerTwo::PreUpdate()
 
 	case PLAYER_YOGA_MUMMY:
 
-		if (yoga_mummy.IsEnded() && distance_jumped > 0)
+		if (distance_jumped == 0)
+		{
+			yoga_mummy.RestartFrames();
+			playerState = PLAYER_IDLE;
+			jump_attacked = false;
+		}
+		else if (yoga_mummy.IsEnded() && distance_jumped > 0)
 		{
 			yoga_mummy.RestartFrames();
 			playerState = PLAYER_JUMPING;
@@ -859,7 +866,13 @@ update_status ModulePlayerTwo::PreUpdate()
 
 	case PLAYER_YOGA_SPEAR:
 
-		if (yoga_spear.IsEnded() && distance_jumped > 0)
+		if (distance_jumped == 0)
+		{
+			yoga_spear.RestartFrames();
+			playerState = PLAYER_IDLE;
+			jump_attacked = false;
+		}
+		else if (yoga_spear.IsEnded() && distance_jumped > 0)
 		{
 			yoga_spear.RestartFrames();
 			playerState = PLAYER_JUMPING;
@@ -872,7 +885,6 @@ update_status ModulePlayerTwo::PreUpdate()
 			jump_attacked = false;
 		}
 		break;
-
 	case PLAYER_BLOCKING:
 		if (!otherPlayer->IsAttacking())
 		{
@@ -931,8 +943,11 @@ update_status ModulePlayerTwo::PreUpdate()
 }
 
 
-void ModulePlayerTwo::restartPlayer()
+void ModulePlayerTwo::restartPlayer(bool everything)
 {
+	if (everything)
+		wins = 0;
+
 	position.x = 300;
 	position.y = 200;
 

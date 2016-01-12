@@ -2,7 +2,6 @@
 #define __MODULEPLAYERTWO_H__
 
 #include "ModulePlayerDhalsim.h"
-#include "Animation.h"
 #include "Globals.h"
 #include "Point.h"
 #include "ModuleCollisions.h"
@@ -16,7 +15,7 @@ public:
 
 	virtual bool Start();
 	virtual update_status PreUpdate();
-	virtual void restartPlayer();
+	virtual void restartPlayer(bool everything);
 };
 
 #endif

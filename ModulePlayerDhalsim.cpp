@@ -15,12 +15,6 @@
 ModulePlayerDhalsim::ModulePlayerDhalsim(bool start_enabled) : Module(start_enabled)
 {
 
-//	player_collider = new Collider();
-//	collider_head = new Collider();
-//	collider_body = new Collider();
-//	collider_legs = new Collider();
-//	collider_attack = new Collider();
-
 	// idle animation
 	idle.frames.push_back({ { 3, 23, 52, 87 }, 25, { { -12, -73, 26, 70 }, { 2, -81, 14, 15 }, { -10, -68, 28, 32 }, { -10, -51, 28, 49 }, { 0, 0, 0, 0 } }, 10 });
 	idle.frames.push_back({ { 59, 24, 49, 86 }, 25, { { -12, -73, 26, 70 }, { 2, -81, 14, 15 }, { -10, -68, 28, 32 }, { -10, -51, 28, 49 }, { 0, 0, 0, 0 } }, 10 });
@@ -362,41 +356,41 @@ bool ModulePlayerDhalsim::CleanUp()
 {
 	LOG("Unloading player");
 
-	idle.~Animation2();
-	forward.~Animation2();
-	backward.~Animation2();
-	crouching.~Animation2();
-	block.~Animation2();
-	crouch_block.~Animation2();
-	jump.~Animation2();
-	L_punch.~Animation2();
-	L_kick.~Animation2();
-	M_punch.~Animation2();
-	M_kick.~Animation2();
-	H_punch.~Animation2();
-	H_kick.~Animation2();
-	F_L_punch.~Animation2();
-	F_M_punch.~Animation2();
-	F_H_punch.~Animation2();
-	F_L_kick.~Animation2();
-	F_M_kick.~Animation2();
-	F_H_kick.~Animation2();
-	crouch_punch.~Animation2();
-	crouch_kick.~Animation2();
-	jump_punch.~Animation2();
-	jump_kick.~Animation2();
-	hit.~Animation2();
-	face_hit.~Animation2();
-	crouch_hit.~Animation2();
-	air_hit.~Animation2();
-	ko.~Animation2();
-	victory1.~Animation2();
-	victory2.~Animation2();
-	time_out.~Animation2();
-	yoga_fire.~Animation2();
-	yoga_flame.~Animation2();
-	yoga_mummy.~Animation2();
-	yoga_spear.~Animation2();
+	idle.~Animation();
+	forward.~Animation();
+	backward.~Animation();
+	crouching.~Animation();
+	block.~Animation();
+	crouch_block.~Animation();
+	jump.~Animation();
+	L_punch.~Animation();
+	L_kick.~Animation();
+	M_punch.~Animation();
+	M_kick.~Animation();
+	H_punch.~Animation();
+	H_kick.~Animation();
+	F_L_punch.~Animation();
+	F_M_punch.~Animation();
+	F_H_punch.~Animation();
+	F_L_kick.~Animation();
+	F_M_kick.~Animation();
+	F_H_kick.~Animation();
+	crouch_punch.~Animation();
+	crouch_kick.~Animation();
+	jump_punch.~Animation();
+	jump_kick.~Animation();
+	hit.~Animation();
+	face_hit.~Animation();
+	crouch_hit.~Animation();
+	air_hit.~Animation();
+	ko.~Animation();
+	victory1.~Animation();
+	victory2.~Animation();
+	time_out.~Animation();
+	yoga_fire.~Animation();
+	yoga_flame.~Animation();
+	yoga_mummy.~Animation();
+	yoga_spear.~Animation();
 
 	particula.~ParticleAnimation();
 	destroy_particula.~ParticleAnimation();
@@ -418,7 +412,7 @@ update_status ModulePlayerDhalsim::Update()
 	SDL_Rect aux;
 	int pivot;
 	Collider_player_structure cps;
-	AnimationStructure animationStructure();
+	AnimationStructure animationStructure;
 
 	switch (playerState)
 	{
@@ -788,16 +782,8 @@ update_status ModulePlayerDhalsim::Update()
 		break;
 
 	case PLAYER_YOGA_MUMMY:
-		if (distance_jumped == 0)
-			playerState = PLAYER_IDLE;
 
-		else if (going_up)
-			going_up = false;
-		else
-		{
-			distance_jumped -= 3;
-		}
-
+		distance_jumped -= 3;
 		if (directionMummy == JUMP_RIGHT)
 		{
 			MovePlayer(2);
@@ -816,16 +802,8 @@ update_status ModulePlayerDhalsim::Update()
 		break;
 
 	case PLAYER_YOGA_SPEAR:
-		if (distance_jumped == 0)
-			playerState = PLAYER_IDLE;
 
-		else if (going_up)
-			going_up = false;
-		else
-		{
-			distance_jumped -= 3;
-		}
-
+		distance_jumped -= 3;
 		if (directionMummy == JUMP_RIGHT)
 		{
 			MovePlayer(2);
@@ -970,7 +948,7 @@ void ModulePlayerDhalsim::OnCollision(Collider* c1, Collider* c2)
 
 		if (life < 0)
 		{
-			App->scene_bison->RestartScene();
+			App->scene_bison->RestartScene(otherPlayer->wins + 1);
 			App->audio->PlayFx(audio_id_dead);
 			dead = true;
 			life = 0;
@@ -996,7 +974,7 @@ void ModulePlayerDhalsim::OnCollision(Collider* c1, Collider* c2)
 
 		if (life < 0)
 		{
-			App->scene_bison->RestartScene();
+			App->scene_bison->RestartScene(otherPlayer->wins + 1);
 			App->audio->PlayFx(audio_id_dead);
 			dead = true;
 			life = 0;
@@ -1023,7 +1001,7 @@ void ModulePlayerDhalsim::OnCollision(Collider* c1, Collider* c2)
 
 		if (life < 0)
 		{
-			App->scene_bison->RestartScene();
+			App->scene_bison->RestartScene(otherPlayer->wins + 1);
 			App->audio->PlayFx(audio_id_dead);
 			dead = true;
 			life = 0;
@@ -1040,7 +1018,7 @@ void ModulePlayerDhalsim::OnCollision(Collider* c1, Collider* c2)
 
 		if (life < 0)
 		{
-			App->scene_bison->RestartScene();
+			App->scene_bison->RestartScene(otherPlayer->wins + 1);
 			App->audio->PlayFx(audio_id_dead);
 			dead = true;
 			life = 0;
@@ -1110,7 +1088,7 @@ void ModulePlayerDhalsim::MovePlayer(int distance)
 }
 
 
-void ModulePlayerDhalsim::restartPlayer()
+void ModulePlayerDhalsim::restartPlayer(bool everything)
 {
 }
 
