@@ -1,5 +1,5 @@
 #include "ModulePlayerOne.h"
-#include "Globals.h"hitted 
+#include "Globals.h" 
 #include "Application.h"
 #include "ModuleInput.h"
 #include "ModuleTextures.h"
