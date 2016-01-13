@@ -20,7 +20,7 @@ public:
 
 	void RestartScene(int wins);
 
-public:	
+private:	
 	SDL_Texture* graphics = nullptr;
 	SDL_Texture* miscellaneous = nullptr;
 	SDL_Texture* restartTexture = nullptr;

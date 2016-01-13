@@ -2,18 +2,13 @@
 #include "Globals.h"
 #include "Application.h"
 #include "ModuleInput.h"
-#include "ModuleRender.h"
 #include "ModuleTextures.h"
 #include "SDL/include/SDL.h"
 #include "ModuleCollisions.h"
 #include "ModuleParticleSystem.h"
-#include "Module.h"
-#include "ModulePlayerOne.h"
-#include <iostream>
 #include "ModuleRender.h"
 #include "ModuleAudio.h"
-
-using namespace std;
+#include "ModulePlayerOne.h"
 
 ModulePlayerTwo::ModulePlayerTwo(bool start_enabled) : ModulePlayerDhalsim(start_enabled)
 {
@@ -48,7 +43,7 @@ bool ModulePlayerTwo::Start()
 {
 	LOG("Loading Dhalsim");
 
-	graphics = App->textures->Load("dhalsim.png"); // arcade version
+	graphics = App->textures->Load("dhalsim_recolor.png"); // arcade version
 
 	App->collisions->AddCollider(&player_collider);
 	App->collisions->AddCollider(&collider_head);
@@ -79,6 +74,7 @@ bool ModulePlayerTwo::Start()
 
 update_status ModulePlayerTwo::PreUpdate()
 {
+
 	bool near = false;
 
 	if (otherPlayer->getPosition().x > position.x)
@@ -95,7 +91,7 @@ update_status ModulePlayerTwo::PreUpdate()
 		if (playerState != PLAYER_KO)
 		{
 			playerState = PLAYER_KO;
-			otherPlayer->win = true;
+			otherPlayer->SetWin(true);
 
 		}
 		return UPDATE_CONTINUE;
@@ -126,6 +122,10 @@ update_status ModulePlayerTwo::PreUpdate()
 		return UPDATE_CONTINUE;
 	}
 	else if (playerState == PLAYER_BLOCKING_HITTED || playerState == PLAYER_CROUCH_BLOCKING_HITTED);
+	else if (leg_hitted && playerState == PLAYER_BLOCKING)
+	{
+		playerState = PLAYER_HIT;
+	}
 	else if (hitted && playerState == PLAYER_BLOCKING)
 	{
 		playerState = PLAYER_BLOCKING_HITTED;
@@ -168,55 +168,55 @@ update_status ModulePlayerTwo::PreUpdate()
 			App->audio->PlayFx(audio_id_yoga_flame);
 			playerState = PLAYER_YOGA_FLAME;
 		}
-		else if (App->input->GetButton(SDL_CONTROLLER_AXIS_RIGHTY) == KEY_REPEAT &&
-			App->input->GetButton(SDL_CONTROLLER_AXIS_LEFTY) == KEY_REPEAT)
+		else if ((App->input->GetButton(SDL_CONTROLLER_AXIS_RIGHTY) == KEY_REPEAT || App->input->xDir == 1) &&
+			(App->input->GetButton(SDL_CONTROLLER_AXIS_LEFTY) == KEY_REPEAT || App->input->yDir == 1))
 		{
 			distance_jumped = 0;
 			going_up = true;
 			playerState = PLAYER_JUMPING;
 			directionJump = JUMP_RIGHT;
 		}
-		else if (App->input->GetButton(SDL_CONTROLLER_AXIS_RIGHTX) == KEY_REPEAT &&
-			App->input->GetButton(SDL_CONTROLLER_AXIS_LEFTX) == KEY_REPEAT)
+		else if ((App->input->GetButton(SDL_CONTROLLER_AXIS_RIGHTX) == KEY_REPEAT || App->input->xDir == -1) &&
+			(App->input->GetButton(SDL_CONTROLLER_AXIS_LEFTX) == KEY_REPEAT || App->input->yDir == -1))
 		{
 			distance_jumped = 0;
 			going_up = true;
 			playerState = PLAYER_JUMPING;
 			directionJump = JUMP_LEFT;
 		}
-		else if (App->input->GetButton(SDL_CONTROLLER_AXIS_RIGHTY) == KEY_REPEAT &&
+		else if ((App->input->GetButton(SDL_CONTROLLER_AXIS_RIGHTY) == KEY_REPEAT || App->input->xDir == 1) &&
 			looking_right)
 		{
 			playerState = PLAYER_WALKING_FORWARD;
 		}
-		else if (App->input->GetButton(SDL_CONTROLLER_AXIS_RIGHTY) == KEY_REPEAT &&
+		else if ((App->input->GetButton(SDL_CONTROLLER_AXIS_RIGHTY) == KEY_REPEAT || App->input->xDir == 1) &&
 			otherPlayer->IsAttacking())
 		{
 			playerState = PLAYER_BLOCKING;
 		}
-		else if (App->input->GetButton(SDL_CONTROLLER_AXIS_RIGHTY) == KEY_REPEAT)
+		else if ((App->input->GetButton(SDL_CONTROLLER_AXIS_RIGHTY) == KEY_REPEAT || App->input->xDir == 1))
 		{
 			playerState = PLAYER_WALKING_BACKWARD;
 		}
-		else if (App->input->GetButton(SDL_CONTROLLER_AXIS_RIGHTY) == KEY_REPEAT &&
+		else if ((App->input->GetButton(SDL_CONTROLLER_AXIS_RIGHTY) == KEY_REPEAT || App->input->xDir == 1) &&
 			looking_right && otherPlayer->IsAttacking())
 		{
 			playerState = PLAYER_BLOCKING;
 		}
-		else if (App->input->GetButton(SDL_CONTROLLER_AXIS_RIGHTX) == KEY_REPEAT &&
+		else if ((App->input->GetButton(SDL_CONTROLLER_AXIS_RIGHTX) == KEY_REPEAT || App->input->xDir == -1) &&
 			looking_right)
 		{
 			playerState = PLAYER_WALKING_BACKWARD;
 		}
-		else if (App->input->GetButton(SDL_CONTROLLER_AXIS_RIGHTX) == KEY_REPEAT)
+		else if ((App->input->GetButton(SDL_CONTROLLER_AXIS_RIGHTX) == KEY_REPEAT || App->input->xDir == -1))
 		{
 			playerState = PLAYER_WALKING_FORWARD;
 		}
-		else if (App->input->GetButton(SDL_CONTROLLER_AXIS_LEFTY) == KEY_REPEAT)
+		else if ((App->input->GetButton(SDL_CONTROLLER_AXIS_LEFTY) == KEY_REPEAT || App->input->yDir == 1))
 		{
 			playerState = PLAYER_CROUCHING;
 		}
-		else if (App->input->GetButton(SDL_CONTROLLER_AXIS_LEFTX) == KEY_REPEAT)
+		else if ((App->input->GetButton(SDL_CONTROLLER_AXIS_LEFTX) == KEY_REPEAT || App->input->yDir == -1))
 		{
 			distance_jumped = 0;
 			going_up = true;
@@ -307,23 +307,23 @@ update_status ModulePlayerTwo::PreUpdate()
 		{
 			playerState = PLAYER_YOGA_MUMMY;
 		}
-		else if (App->input->GetButton(SDL_CONTROLLER_AXIS_RIGHTY) == KEY_REPEAT &&
-			App->input->GetButton(SDL_CONTROLLER_AXIS_LEFTX) == KEY_REPEAT)
+		else if ((App->input->GetButton(SDL_CONTROLLER_AXIS_RIGHTY) == KEY_REPEAT || App->input->xDir == 1) &&
+			(App->input->GetButton(SDL_CONTROLLER_AXIS_LEFTX) == KEY_REPEAT || App->input->yDir == -1))
 		{
 			distance_jumped = 0;
 			going_up = true;
 			playerState = PLAYER_JUMPING;
 			directionJump = JUMP_RIGHT;
 		}
-		else if (App->input->GetButton(SDL_CONTROLLER_AXIS_RIGHTX) == KEY_REPEAT &&
-			App->input->GetButton(SDL_CONTROLLER_AXIS_LEFTX) == KEY_REPEAT)
+		else if ((App->input->GetButton(SDL_CONTROLLER_AXIS_RIGHTX) == KEY_REPEAT || App->input->xDir == -1) &&
+			(App->input->GetButton(SDL_CONTROLLER_AXIS_LEFTX) == KEY_REPEAT || App->input->yDir == -1))
 		{
 			distance_jumped = 0;
 			going_up = true;
 			playerState = PLAYER_JUMPING;
 			directionJump = JUMP_LEFT;
 		}
-		else if (App->input->GetButton(SDL_CONTROLLER_AXIS_RIGHTY) == KEY_REPEAT)
+		else if ((App->input->GetButton(SDL_CONTROLLER_AXIS_RIGHTY) == KEY_REPEAT || App->input->xDir == 1))
 		{
 			if (looking_right)
 				playerState = PLAYER_WALKING_FORWARD;
@@ -332,7 +332,7 @@ update_status ModulePlayerTwo::PreUpdate()
 			else
 				playerState = PLAYER_WALKING_BACKWARD;
 		}
-		else if (App->input->GetButton(SDL_CONTROLLER_AXIS_RIGHTX) == KEY_REPEAT)
+		else if ((App->input->GetButton(SDL_CONTROLLER_AXIS_RIGHTX) == KEY_REPEAT || App->input->xDir == -1))
 		{
 			if (!looking_right)
 				playerState = PLAYER_WALKING_FORWARD;
@@ -341,7 +341,7 @@ update_status ModulePlayerTwo::PreUpdate()
 			else
 				playerState = PLAYER_WALKING_BACKWARD;
 		}
-		else if (App->input->GetButton(SDL_CONTROLLER_AXIS_LEFTY) == KEY_REPEAT)
+		else if ((App->input->GetButton(SDL_CONTROLLER_AXIS_LEFTY) == KEY_REPEAT || App->input->yDir == 1))
 		{
 			playerState = PLAYER_CROUCHING;
 		}
@@ -433,37 +433,37 @@ update_status ModulePlayerTwo::PreUpdate()
 			playerState = PLAYER_BLOCKING;
 			break;
 		}
-		else if (App->input->GetButton(SDL_CONTROLLER_AXIS_RIGHTY) == KEY_REPEAT &&
-			App->input->GetButton(SDL_CONTROLLER_AXIS_LEFTX) == KEY_REPEAT)
+		else if ((App->input->GetButton(SDL_CONTROLLER_AXIS_RIGHTY) == KEY_REPEAT || App->input->xDir == 1) &&
+			(App->input->GetButton(SDL_CONTROLLER_AXIS_LEFTX) == KEY_REPEAT || App->input->yDir == -1))
 		{
 			distance_jumped = 0;
 			going_up = true;
 			playerState = PLAYER_JUMPING;
 			directionJump = JUMP_RIGHT;
 		}
-		else if (App->input->GetButton(SDL_CONTROLLER_AXIS_RIGHTX) == KEY_REPEAT &&
-			App->input->GetButton(SDL_CONTROLLER_AXIS_LEFTX) == KEY_REPEAT)
+		else if ((App->input->GetButton(SDL_CONTROLLER_AXIS_RIGHTX) == KEY_REPEAT || App->input->xDir == -1) &&
+			(App->input->GetButton(SDL_CONTROLLER_AXIS_LEFTX) == KEY_REPEAT || App->input->yDir == -1))
 		{
 			distance_jumped = 0;
 			going_up = true;
 			playerState = PLAYER_JUMPING;
 			directionJump = JUMP_LEFT;
 		}
-		else if (App->input->GetButton(SDL_CONTROLLER_AXIS_RIGHTY) == KEY_REPEAT)
+		else if ((App->input->GetButton(SDL_CONTROLLER_AXIS_RIGHTY) == KEY_REPEAT || App->input->xDir == 1))
 		{
 			if (looking_right)
 				playerState = PLAYER_WALKING_FORWARD;
 			else
 				playerState = PLAYER_WALKING_BACKWARD;
 		}
-		else if (App->input->GetButton(SDL_CONTROLLER_AXIS_RIGHTX) == KEY_REPEAT)
+		else if ((App->input->GetButton(SDL_CONTROLLER_AXIS_RIGHTX) == KEY_REPEAT || App->input->xDir == -1))
 		{
 			if (looking_right)
 				playerState = PLAYER_WALKING_BACKWARD;
 			else
 				playerState = PLAYER_WALKING_FORWARD;
 		}
-		else if (App->input->GetButton(SDL_CONTROLLER_AXIS_LEFTY) == KEY_REPEAT)
+		else if ((App->input->GetButton(SDL_CONTROLLER_AXIS_LEFTY) == KEY_REPEAT || App->input->yDir == 1))
 		{
 			playerState = PLAYER_CROUCHING;
 		}
@@ -622,10 +622,10 @@ update_status ModulePlayerTwo::PreUpdate()
 
 	case PLAYER_CROUCHING:
 
-		if ((App->input->GetButton(SDL_CONTROLLER_AXIS_RIGHTY) == KEY_REPEAT)
+		if (((App->input->GetButton(SDL_CONTROLLER_AXIS_RIGHTY) == KEY_REPEAT || App->input->xDir == 1))
 			&& otherPlayer->IsAttacking() && !looking_right)
 			playerState = PLAYER_CROUCH_BLOCKING;
-		else if ((App->input->GetButton(SDL_CONTROLLER_AXIS_RIGHTX) == KEY_REPEAT)
+		else if (((App->input->GetButton(SDL_CONTROLLER_AXIS_RIGHTX) == KEY_REPEAT || App->input->xDir == -1))
 			&& otherPlayer->IsAttacking() && looking_right)
 			playerState = PLAYER_CROUCH_BLOCKING;
 		else if ((App->input->GetButton(12) == KEY_DOWN) ||
@@ -637,7 +637,7 @@ update_status ModulePlayerTwo::PreUpdate()
 			(App->input->GetButton(13) == KEY_DOWN))
 			playerState = PLAYER_CROUCH_KICK;
 
-		else if (!(App->input->GetButton(SDL_CONTROLLER_AXIS_LEFTY) == KEY_REPEAT))
+		else if (!((App->input->GetButton(SDL_CONTROLLER_AXIS_LEFTY) == KEY_REPEAT || App->input->yDir == 1)))
 		{
 			playerState = PLAYER_IDLE;
 			crouching.RestartFrames();
@@ -783,6 +783,8 @@ update_status ModulePlayerTwo::PreUpdate()
 				playerState = PLAYER_IDLE;
 			hitted = false;
 			head_hitted = false;
+			leg_hitted = false;
+			already_hitted = false;
 		}
 		break;
 
@@ -794,7 +796,8 @@ update_status ModulePlayerTwo::PreUpdate()
 			playerState = PLAYER_CROUCHING;
 			hitted = false;
 			head_hitted = false;
-
+			leg_hitted = false;
+			already_hitted = false;
 		}
 		break;
 
@@ -806,11 +809,13 @@ update_status ModulePlayerTwo::PreUpdate()
 			playerState = PLAYER_IDLE;
 			hitted = false;
 			head_hitted = false;
+			leg_hitted = false;
+			already_hitted = false;
 		}
 		break;
 
 	case PLAYER_YOGA_FIRE:
-		if (yoga_fire.GetCurrentFrameNumber() == 3 && SDL_GetTicks() - lastShotTimer > 1000)
+		if (yoga_fire.GetCurrentFrameNumber() == 3 && SDL_GetTicks() - lastShotTimer > 500)
 		{
 			if (looking_right)
 			{
@@ -885,23 +890,49 @@ update_status ModulePlayerTwo::PreUpdate()
 			jump_attacked = false;
 		}
 		break;
+
 	case PLAYER_BLOCKING:
-		if (!otherPlayer->IsAttacking())
+		if (!otherPlayer->IsAttacking() ||
+			(looking_right && !((App->input->GetButton(SDL_CONTROLLER_AXIS_RIGHTX) == KEY_REPEAT) || App->input->xDir == -1) ||
+			(!looking_right && !((App->input->GetButton(SDL_CONTROLLER_AXIS_RIGHTY) == KEY_REPEAT) || App->input->xDir == 1))))
 		{
 			block.RestartFrames();
 			playerState = PLAYER_IDLE;
 		}
-		if (block.IsEnded())
+		else if (otherPlayer->IsAttacking() &&
+			((App->input->GetButton(SDL_CONTROLLER_AXIS_LEFTY) == KEY_REPEAT) || App->input->yDir == 1))
+		{
+			block.RestartFrames();
+			playerState = PLAYER_CROUCH_BLOCKING;
+		}
+		else if (block.IsEnded())
 			block.RestartFrames();
 		break;
 
 	case PLAYER_CROUCH_BLOCKING:
-		if (!otherPlayer->IsAttacking())
+		if ((!otherPlayer->IsAttacking() ||
+			(looking_right && !((App->input->GetButton(SDL_CONTROLLER_AXIS_RIGHTX) == KEY_REPEAT) || App->input->xDir == -1)) ||
+			(!looking_right && !((App->input->GetButton(SDL_CONTROLLER_AXIS_RIGHTY) == KEY_REPEAT) || App->input->xDir == 1)))
+			&& ((App->input->GetButton(SDL_CONTROLLER_AXIS_LEFTY) == KEY_REPEAT) || App->input->yDir == 1))
 		{
 			crouch_block.RestartFrames();
 			playerState = PLAYER_CROUCHING;
 		}
-		if (crouch_block.IsEnded())
+		else if (!((App->input->GetButton(SDL_CONTROLLER_AXIS_LEFTY) == KEY_REPEAT) || App->input->yDir == 1) && (!otherPlayer->IsAttacking() ||
+			(looking_right && !((App->input->GetButton(SDL_CONTROLLER_AXIS_RIGHTX) == KEY_REPEAT) || App->input->xDir == -1)) ||
+			(!looking_right && !((App->input->GetButton(SDL_CONTROLLER_AXIS_RIGHTY) == KEY_REPEAT) || App->input->xDir == 1))))
+		{
+			crouch_block.RestartFrames();
+			playerState = PLAYER_IDLE;
+		}
+		else if (otherPlayer->IsAttacking() && !((App->input->GetButton(SDL_CONTROLLER_AXIS_LEFTY) == KEY_REPEAT) || App->input->yDir == 1) &&
+			((looking_right && ((App->input->GetButton(SDL_CONTROLLER_AXIS_RIGHTX) == KEY_REPEAT) || App->input->xDir == -1)) ||
+			(!looking_right && ((App->input->GetButton(SDL_CONTROLLER_AXIS_RIGHTY) == KEY_REPEAT) || App->input->xDir == 1))))
+		{
+			crouch_block.RestartFrames();
+			playerState = PLAYER_BLOCKING;
+		}
+		else if (crouch_block.IsEnded())
 			crouch_block.RestartFrames();
 		break;
 
@@ -910,6 +941,8 @@ update_status ModulePlayerTwo::PreUpdate()
 		{
 			hitted = false;
 			head_hitted = false;
+			leg_hitted = false;
+			already_hitted = false;
 			block.RestartFrames();
 			playerState = PLAYER_BLOCKING;
 		}
@@ -920,6 +953,8 @@ update_status ModulePlayerTwo::PreUpdate()
 		{
 			hitted = false;
 			head_hitted = false;
+			leg_hitted = false;
+			already_hitted = false;
 			crouch_block.RestartFrames();
 			playerState = PLAYER_CROUCH_BLOCKING;
 		}
@@ -930,6 +965,8 @@ update_status ModulePlayerTwo::PreUpdate()
 		{
 			hitted = false;
 			head_hitted = false;
+			leg_hitted = false;
+			already_hitted = false;
 			air_hit.RestartFrames();
 			going_up = false;
 			playerState = PLAYER_JUMPING;
@@ -968,5 +1005,6 @@ void ModulePlayerTwo::restartPlayer(bool everything)
 
 	distance_jumped = 0;
 	jump_attacked = false;
-
+	leg_hitted = false;
+	already_hitted = false;
 }

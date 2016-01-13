@@ -6,19 +6,15 @@
 #include "ModuleAudio.h"
 #include "ModuleFadeToBlack.h"
 #include "ModuleSceneBison.h"
-#include "ModulePlayerDhalsim.h"
 #include "ModuleParticleSystem.h"
 #include "ModuleCollisions.h"
 #include "ModulePlayerOne.h"
 #include "ModulePlayerTwo.h"
 #include "ModuleComboDetection.h"
 
-using namespace std;
-
 Application::Application()
 {
 
-	// Order matters: they will init/start/pre/update/post in this order
 	modules.push_back(input = new ModuleInput());
 	modules.push_back(window = new ModuleWindow());
 
@@ -27,7 +23,6 @@ Application::Application()
 	modules.push_back(collisions = new ModuleCollisions());
 	modules.push_back(fade = new ModuleFadeToBlack());
 
-	// Game Modules
 	modules.push_back(combo = new ModuleComboDetection());
 	modules.push_back(scene_bison = new ModuleSceneBison(false));
 	modules.push_back(particles = new ModuleParticleSystem());
@@ -40,10 +35,6 @@ Application::Application()
 
 Application::~Application()
 {
-	audio->~ModuleAudio();
-	particles->~ModuleParticleSystem();
-	collisions->~ModuleCollisions();
-	textures->~ModuleTextures();
 	for (list<Module*>::iterator it = modules.begin(); it != modules.end(); ++it)
 	{
 		RELEASE(*it);

@@ -1,6 +1,5 @@
 #pragma once
 #include <vector>
-#include <iostream>
 using namespace std;
 
 struct Collider_player_structure {
@@ -47,7 +46,6 @@ public:
 
 	~Animation()
 	{
-		frames.clear();
 	}
 
 	int GetCurrentFrameNumber()

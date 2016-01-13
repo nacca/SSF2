@@ -72,8 +72,7 @@ public:
 	const iPoint& GetMouseMotion() const;
 	const iPoint& GetMousePosition() const;
 
-	int getXdir() const;
-	int getYdir() const;
+	int xDir, yDir;
 
 private:
 	bool		windowEvents[WE_COUNT];
@@ -83,7 +82,7 @@ private:
 	iPoint mouse_motion;
 	iPoint mouse;
 	SDL_Joystick* joystick;
-	int xDir, yDir;
+
 };
 
 #endif // __MODULEINPUT_H__

@@ -12,7 +12,6 @@ ModuleInput::ModuleInput() : Module(), mouse({0, 0}), mouse_motion({0,0})
 {
 	keyboard = new KeyState[MAX_KEYS];
 	joystick = SDL_JoystickOpen(0);
-	xDir = yDir = 0;
 	memset(keyboard, KEY_IDLE, sizeof(KeyState) * MAX_KEYS);
 	memset(mouse_buttons, KEY_IDLE, sizeof(KeyState) * NUM_MOUSE_BUTTONS);
 }
@@ -20,6 +19,7 @@ ModuleInput::ModuleInput() : Module(), mouse({0, 0}), mouse_motion({0,0})
 // Destructor
 ModuleInput::~ModuleInput()
 {
+	RELEASE_ARRAY(keyboard);
 }
 
 // Called before render is available
@@ -159,7 +159,7 @@ update_status ModuleInput::PreUpdate()
 			break;
 
 			case SDL_JOYAXISMOTION:
-/*				if (event.jaxis.which == 0)
+				if (event.jaxis.which == 0)
 				{
 					if (event.jaxis.axis == 0)
 					{
@@ -191,7 +191,7 @@ update_status ModuleInput::PreUpdate()
 							yDir = 0;
 						}
 					}
-				}*/
+				}
 			break;
 
 			case SDL_JOYBUTTONDOWN:
@@ -216,7 +216,6 @@ bool ModuleInput::CleanUp()
 {
 	LOG("Quitting SDL event subsystem");
 	SDL_QuitSubSystem(SDL_INIT_EVENTS);
-	RELEASE_ARRAY(keyboard);
 	return true;
 }
 
@@ -234,14 +233,4 @@ const iPoint& ModuleInput::GetMousePosition() const
 const iPoint& ModuleInput::GetMouseMotion() const
 {
 	return mouse_motion;
-}
-
-int ModuleInput::getXdir() const
-{
-	return xDir;
-}
-
-int ModuleInput::getYdir() const
-{
-	return yDir;
 }

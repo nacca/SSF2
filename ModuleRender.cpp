@@ -4,16 +4,17 @@
 #include "ModuleWindow.h"
 #include "ModuleInput.h"
 #include "SDL/include/SDL.h"
-#include <iostream>
+#include "ModulePlayerOne.h"
+#include "ModulePlayerTwo.h"
 
-using namespace std;
-
+// Constructor
 ModuleRender::ModuleRender()
 {
 	camera.x = - (100 * SCREEN_SIZE);
 	camera.y = 0;
 	camera.w = SCREEN_WIDTH * SCREEN_SIZE;
 	camera.h = SCREEN_HEIGHT* SCREEN_SIZE;
+	offsetCameraY = 0.0f;
 }
 
 // Destructor
@@ -43,48 +44,25 @@ bool ModuleRender::Init()
 	return ret;
 }
 
+// PreUpdate
 update_status ModuleRender::PreUpdate()
 {
 	SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
 	SDL_RenderClear(renderer);
+
+	int player_one_y_pos = App->player_one->GetDistanceJumped();
+	int player_two_y_pos = App->player_two->GetDistanceJumped();
+
+	int max_y_distance = player_one_y_pos;
+	if (player_two_y_pos > player_one_y_pos)
+		max_y_distance = player_two_y_pos;
+
+	camera.y = (int)((double)max_y_distance * (double)SCREEN_SIZE / 7.5f);
+
 	return UPDATE_CONTINUE;
 }
 
-// Called every draw update
-update_status ModuleRender::Update()
-{
-	// debug camera
-/*	int speed = 5;
-
-	if (App->input->GetKey(SDL_SCANCODE_UP) == KEY_REPEAT)
-	{
-		if (App->renderer->camera.y < 10*SCREEN_SIZE)
-			App->renderer->camera.y += speed;	
-	}
-
-	if (App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_REPEAT)
-	{
-		if (App->renderer->camera.y > 0)
-			App->renderer->camera.y -= speed;
-	}
-
-	if (App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_REPEAT)
-	{
-		if (App->renderer->camera.x < 0)
-			App->renderer->camera.x += speed;
-	}
-
-	if (App->input->GetKey(SDL_SCANCODE_RIGHT) == KEY_REPEAT)
-	{
-		if (App->renderer->camera.x > - (200 * SCREEN_SIZE))
-			App->renderer->camera.x -= speed;
-	}
-
-	//std::cout << camera.x << " : " << camera.w << std::endl;
-*/
-	return UPDATE_CONTINUE;
-}
-
+// PostUpdate
 update_status ModuleRender::PostUpdate()
 {
 	SDL_RenderPresent(renderer);
@@ -106,12 +84,15 @@ bool ModuleRender::CleanUp()
 }
 
 // Blit to screen
-bool ModuleRender::Blit(SDL_Texture* texture, int x, int y, SDL_Rect* section, float speed, SDL_RendererFlip flip_texture)
+bool ModuleRender::Blit(SDL_Texture* texture, int x, int y, SDL_Rect* section, float speed, SDL_RendererFlip flip_texture) const
 {
 	bool ret = true;
 	SDL_Rect rect;
 	rect.x = (int)(camera.x * speed) + x * SCREEN_SIZE;
-	rect.y = (int)(camera.y) + y * SCREEN_SIZE;
+	if (speed == 0)
+		rect.y = y * SCREEN_SIZE;
+	else
+		rect.y = (int)(camera.y) + y * SCREEN_SIZE;
 
 	if(section != NULL)
 	{
@@ -135,7 +116,8 @@ bool ModuleRender::Blit(SDL_Texture* texture, int x, int y, SDL_Rect* section, f
 	return ret;
 }
 
-bool ModuleRender::DrawRect(SDL_Rect* rec)
+// Draw a Rectangle
+bool ModuleRender::DrawRect(SDL_Rect* rec) const
 {
 	SDL_Rect rec_aux;
 	rec_aux.x = rec->x * SCREEN_SIZE + App->renderer->camera.x;
@@ -148,7 +130,8 @@ bool ModuleRender::DrawRect(SDL_Rect* rec)
 	return true;
 }
 
-bool ModuleRender::DrawStaticRect(SDL_Rect* rec)
+// Draw a Rectangle always in the same position of the screen
+bool ModuleRender::DrawStaticRect(SDL_Rect* rec) const
 {
 	SDL_Rect rec_aux;
 	rec_aux.x = rec->x * SCREEN_SIZE;
@@ -161,6 +144,7 @@ bool ModuleRender::DrawStaticRect(SDL_Rect* rec)
 	return true;
 }
 
+// Tells if the screen is iin the left limit
 bool ModuleRender::ScreenLeftLimit() const
 {
 	if (camera.x == 0)
@@ -168,6 +152,7 @@ bool ModuleRender::ScreenLeftLimit() const
 	return false;
 }
 
+// Tells if the screen is in the right limit
 bool ModuleRender::ScreenRightLimit() const
 {
 	if (camera.x == -(200 * SCREEN_SIZE))

@@ -22,27 +22,44 @@ public:
 	virtual update_status PostUpdate();
 	virtual bool CleanUp();
 
-	virtual bool IsAttacking();
+	bool IsAttacking() const;
 
-	virtual iPoint getPosition();
-	virtual void OnCollision(Collider* c1, Collider* c2);
+	iPoint getPosition() const;
+	void OnCollision(Collider* c1, Collider* c2);
 
 	virtual void restartPlayer(bool everything);
 	void MovePlayer(int distance);
-	virtual bool playerInCameraLimit() const;
+	bool playerInCameraLimit() const;
 
-public:
-	int wins;
-	int life;
-	bool win;
-	bool dead;
-	bool time_0;
-	ModulePlayerDhalsim* otherPlayer;
-	bool jumping;
-	bool looking_right;
-	player_state playerState;
-	combo_types starting_combo;
+	int GetWins() const;
+	void SetWins(int wins);
 
+	int GetLife() const;
+	void SetLife(int life);
+	void DecreseLife(int life);
+
+	bool GetWin() const;
+	void SetWin(bool win);
+
+	bool GetDead() const;
+	void SetDead(bool dead);
+
+	bool GetTime_0() const;
+	void SetTime_0(bool timer_0);
+
+	bool GetJumping() const;
+	void SetJumping(bool jumping);
+
+	bool GetLooking_right() const;
+	void SetLooking_right(bool looking_right);
+
+	int GetDistanceJumped() const;
+
+	player_state GetPlayerState() const;
+	void SetPlayerState(player_state playerState);
+
+	combo_types GetStartingCombo() const;
+	void SetStartingCombo(combo_types starting_combo);
 
 protected:
 	SDL_Texture* graphics = nullptr;
@@ -99,6 +116,8 @@ protected:
 
 	bool hitted;
 	bool head_hitted;
+	bool leg_hitted;
+	bool already_hitted;
 
 	int distance_jumped;
 	bool going_up;
@@ -118,6 +137,19 @@ protected:
 
 	direction_jumping directionJump;
 	direction_jumping directionMummy;
+
+	ModulePlayerDhalsim* otherPlayer;
+
+	int wins;
+	int life;
+	bool win;
+	bool dead;
+	bool time_0;
+	bool jumping;
+	bool looking_right;
+
+	player_state playerState;
+	combo_types starting_combo;
 
 };
 

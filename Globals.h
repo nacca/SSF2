@@ -113,9 +113,9 @@ enum damage_type{
 // Configuration -----------
 #define SCREEN_WIDTH 256
 #define SCREEN_HEIGHT 224
-#define SCREEN_SIZE 3
+#define SCREEN_SIZE 2
 #define FULLSCREEN false
 #define VSYNC true
-#define TITLE "Street Fighter 2 - Tribute"
+#define TITLE "Super Street Fighter 2 - Tribute"
 
 #endif //__GLOBALS_H__

@@ -33,13 +33,16 @@ public:
 	virtual bool Start();
 	virtual update_status Update();
 	virtual update_status PostUpdate();
-	virtual bool CleanUp();
 
 	virtual void OnCollision(Collider* c1, Collider* c2);
 	
 	bool newParticle(iPoint pos, SDL_Texture* graphics, ParticleAnimation particleAnimation, ParticleAnimation particleDestruction, int speed);
 
-public:
+	int GetNumberParticles() const;
+	iPoint GetParticlePosition(int id);
+	int GetParticleSpeed(int id);
+
+private:
 	list<Particle*> particleList;
 
 };

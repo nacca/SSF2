@@ -18,20 +18,20 @@ public:
 
 	bool Init();
 	update_status PreUpdate();
-	update_status Update();
 	update_status PostUpdate();
 	bool CleanUp();
 
 	bool ScreenLeftLimit() const;
 	bool ScreenRightLimit() const;
 
-	bool Blit(SDL_Texture* texture, int x, int y, SDL_Rect* section, float speed = 1.0f, SDL_RendererFlip flip_texture = SDL_FLIP_NONE);
-	bool DrawRect(SDL_Rect* rec);
-	bool DrawStaticRect(SDL_Rect* rec);
+	bool Blit(SDL_Texture* texture, int x, int y, SDL_Rect* section, float speed = 1.0f, SDL_RendererFlip flip_texture = SDL_FLIP_NONE) const;
+	bool DrawRect(SDL_Rect* rec) const;
+	bool DrawStaticRect(SDL_Rect* rec) const;
 
 public:
 	SDL_Renderer* renderer = nullptr;
 	SDL_Rect camera;
+	double offsetCameraY;
 };
 
 #endif // __MODULERENDER_H__

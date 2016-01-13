@@ -1,18 +1,14 @@
 #include "ModulePlayerOne.h"
-#include "Globals.h"
+#include "Globals.h"hitted 
 #include "Application.h"
 #include "ModuleInput.h"
-#include "ModuleRender.h"
 #include "ModuleTextures.h"
 #include "SDL/include/SDL.h"
 #include "ModuleCollisions.h"
 #include "ModuleParticleSystem.h"
-#include "Module.h"
-#include "ModulePlayerTwo.h"
 #include "ModuleRender.h"
-#include "ModuleSceneBison.h"
 #include "ModuleAudio.h"
-
+#include "ModulePlayerTwo.h"
 #include <iostream>
 
 ModulePlayerOne::ModulePlayerOne(bool start_enabled) : ModulePlayerDhalsim(start_enabled)
@@ -93,7 +89,7 @@ update_status ModulePlayerOne::PreUpdate()
 		if (playerState != PLAYER_KO)
 		{
 			playerState = PLAYER_KO;
-			otherPlayer->win = true;
+			otherPlayer->SetWin(true);
 
 		}
 		return UPDATE_CONTINUE;
@@ -108,7 +104,7 @@ update_status ModulePlayerOne::PreUpdate()
 		playerState == PLAYER_WALKING_FORWARD ||
 		playerState == PLAYER_WALKING_BACKWARD))
 	{
-		if (playerState != PLAYER_WIN_1 && playerState != PLAYER_WIN_2)
+	if (playerState != PLAYER_WIN_1 && playerState != PLAYER_WIN_2)
 		{
 			if (wins == 0)
 			{
@@ -124,6 +120,10 @@ update_status ModulePlayerOne::PreUpdate()
 		return UPDATE_CONTINUE;
 	}
 	else if (playerState == PLAYER_BLOCKING_HITTED || playerState == PLAYER_CROUCH_BLOCKING_HITTED);
+	else if (leg_hitted && playerState == PLAYER_BLOCKING)
+	{
+		playerState = PLAYER_HIT;
+	}
 	else if (hitted && playerState == PLAYER_BLOCKING)
 	{
 		playerState = PLAYER_BLOCKING_HITTED;
@@ -601,7 +601,6 @@ update_status ModulePlayerOne::PreUpdate()
 			jump_punch.RestartFrames();
 			playerState = PLAYER_JUMPING;
 		}
-		cout << endl;
 		break;
 
 	case PLAYER_JUMP_KICK:
@@ -784,6 +783,8 @@ update_status ModulePlayerOne::PreUpdate()
 				playerState = PLAYER_IDLE;
 			hitted = false;
 			head_hitted = false;
+			leg_hitted = false;
+			already_hitted = false;
 		}
 		break;
 
@@ -795,7 +796,8 @@ update_status ModulePlayerOne::PreUpdate()
 			playerState = PLAYER_CROUCHING;
 			hitted = false;
 			head_hitted = false;
-
+			leg_hitted = false;
+			already_hitted = false;
 		}
 		break;
 
@@ -807,11 +809,13 @@ update_status ModulePlayerOne::PreUpdate()
 			playerState = PLAYER_IDLE;
 			hitted = false;
 			head_hitted = false;
+			leg_hitted = false;
+			already_hitted = false;
 		}
 		break;
 
 	case PLAYER_YOGA_FIRE:
-		if (yoga_fire.GetCurrentFrameNumber() == 3 && SDL_GetTicks() - lastShotTimer > 1000)
+		if (yoga_fire.GetCurrentFrameNumber() == 3 && SDL_GetTicks() - lastShotTimer > 500)
 		{
 			if (looking_right)
 			{
@@ -890,22 +894,47 @@ update_status ModulePlayerOne::PreUpdate()
 		break;
 
 	case PLAYER_BLOCKING:
-		if (!otherPlayer->IsAttacking())
+		if (!otherPlayer->IsAttacking() || 
+			(looking_right && !(App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_REPEAT)) ||
+			(!looking_right && !(App->input->GetKey(SDL_SCANCODE_RIGHT) == KEY_REPEAT)))
 		{
 			block.RestartFrames();
 			playerState = PLAYER_IDLE;
 		}
-		if (block.IsEnded())
+		else if (otherPlayer->IsAttacking() &&
+			(App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_REPEAT))
+		{
+			block.RestartFrames();
+			playerState = PLAYER_CROUCH_BLOCKING;
+		}
+		else if (block.IsEnded())
 			block.RestartFrames();
 		break;
 
 	case PLAYER_CROUCH_BLOCKING:
-		if (!otherPlayer->IsAttacking())
+		if ((!otherPlayer->IsAttacking() ||
+			(looking_right && !(App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_REPEAT)) ||
+			(!looking_right && !(App->input->GetKey(SDL_SCANCODE_RIGHT) == KEY_REPEAT)))
+			&& (App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_REPEAT))
 		{
 			crouch_block.RestartFrames();
 			playerState = PLAYER_CROUCHING;
 		}
-		if (crouch_block.IsEnded())
+		else if (!(App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_REPEAT) && (!otherPlayer->IsAttacking() ||
+			(looking_right && !(App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_REPEAT)) ||
+			(!looking_right && !(App->input->GetKey(SDL_SCANCODE_RIGHT) == KEY_REPEAT))))
+		{
+			crouch_block.RestartFrames();
+			playerState = PLAYER_IDLE;
+		}
+		else if (otherPlayer->IsAttacking() && !(App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_REPEAT) &&
+				((looking_right && (App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_REPEAT)) ||
+				(!looking_right && (App->input->GetKey(SDL_SCANCODE_RIGHT) == KEY_REPEAT))))
+		{
+			crouch_block.RestartFrames();
+			playerState = PLAYER_BLOCKING;
+		}
+		else if (crouch_block.IsEnded())
 			crouch_block.RestartFrames();
 		break;
 
@@ -914,6 +943,8 @@ update_status ModulePlayerOne::PreUpdate()
 		{
 			hitted = false;
 			head_hitted = false;
+			leg_hitted = false;
+			already_hitted = false;
 			block.RestartFrames();
 			playerState = PLAYER_BLOCKING;
 		}
@@ -924,6 +955,8 @@ update_status ModulePlayerOne::PreUpdate()
 		{
 			hitted = false;
 			head_hitted = false;
+			leg_hitted = false;
+			already_hitted = false;
 			crouch_block.RestartFrames();
 			playerState = PLAYER_CROUCH_BLOCKING;
 		}
@@ -934,6 +967,8 @@ update_status ModulePlayerOne::PreUpdate()
 		{
 			hitted = false;
 			head_hitted = false;
+			leg_hitted = false;
+			already_hitted = false;
 			air_hit.RestartFrames();
 			going_up = false;
 			playerState = PLAYER_JUMPING;
@@ -971,4 +1006,6 @@ void ModulePlayerOne::restartPlayer(bool everything)
 
 	distance_jumped = 0;
 	jump_attacked = false;
+	leg_hitted = false;
+	already_hitted = false;
 }

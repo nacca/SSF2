@@ -10,11 +10,13 @@
 #include "ModuleSceneBison.h"
 #include "ModuleAudio.h"
 
-#include <iostream>
 
+#include <iostream>
+// Basic Module Operations
+
+// Constructors
 ModulePlayerDhalsim::ModulePlayerDhalsim(bool start_enabled) : Module(start_enabled)
 {
-
 	// idle animation
 	idle.frames.push_back({ { 3, 23, 52, 87 }, 25, { { -12, -73, 26, 70 }, { 2, -81, 14, 15 }, { -10, -68, 28, 32 }, { -10, -51, 28, 49 }, { 0, 0, 0, 0 } }, 10 });
 	idle.frames.push_back({ { 59, 24, 49, 86 }, 25, { { -12, -73, 26, 70 }, { 2, -81, 14, 15 }, { -10, -68, 28, 32 }, { -10, -51, 28, 49 }, { 0, 0, 0, 0 } }, 10 });
@@ -199,6 +201,7 @@ ModulePlayerDhalsim::ModulePlayerDhalsim(bool start_enabled) : Module(start_enab
 	crouch_hit.frames.push_back({ { 350, 749, 45, 63 }, 22, { { -8, -62, 26, 60 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 } }, 30 });
 	crouch_hit.loop = false;
 
+	// air_hit animation
 	air_hit.frames.push_back({ { 932, 755, 74, 57 }, 58, { { -59, -29, 76, 29 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 } }, 15 });
 	air_hit.loop = false;
 
@@ -238,6 +241,7 @@ ModulePlayerDhalsim::ModulePlayerDhalsim(bool start_enabled) : Module(start_enab
 	time_out.frames.push_back({ { 785, 854, 59, 85 }, 25, { { -12, -73, 26, 70 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 } }, 10 });
 	time_out.loop = true;
 
+	// yoga fire animation
 	yoga_fire.frames.push_back({ { 301, 492, 49, 84 }, 25, { { -12, -73, 26, 70 }, { -3, -82, 14, 15 }, { -12, -79, 29, 35 }, { -12, -35, 29, 33 }, { 0, 0, 0, 0 } }, 4 });
 	yoga_fire.frames.push_back({ { 353, 489, 61, 87 }, 37, { { -12, -73, 26, 70 }, { -34, -91, 14, 15 }, { -28, -76, 29, 39 }, { -12, -35, 29, 33 }, { 0, 0, 0, 0 } }, 7 });
 	yoga_fire.frames.push_back({ { 418, 495, 62, 81 }, 25, { { -12, -73, 26, 70 }, { 25, -70, 14, 15 }, { -3, -78, 28, 38 }, { -10, -34, 28, 32 }, { 0, 0, 0, 0 } }, 3 });
@@ -245,6 +249,7 @@ ModulePlayerDhalsim::ModulePlayerDhalsim(bool start_enabled) : Module(start_enab
 	yoga_fire.frames.push_back({ { 557, 495, 62, 81 }, 25, { { -12, -73, 26, 70 }, { 25, -70, 14, 15 }, { -3, -78, 28, 38 }, { -10, -34, 28, 32 }, { 0, 0, 0, 0 } }, 9 });
 	yoga_fire.loop = false;
 
+	// yoga flame animation
 	yoga_flame.frames.push_back({ { 739, 492, 49, 84 }, 25, { { -12, -73, 26, 70 }, { -3, -82, 14, 15 }, { -12, -79, 29, 35 }, { -12, -35, 29, 33 }, { 0, 0, 0, 0 } }, 4 });
 	yoga_flame.frames.push_back({ { 791, 489, 61, 87 }, 37, { { -12, -73, 26, 70 }, { -34, -91, 14, 15 }, { -28, -76, 29, 39 }, { -12, -35, 29, 33 }, { 0, 0, 0, 0 } }, 7 });
 	yoga_flame.frames.push_back({ { 855, 495, 81, 81 }, 25, { { -12, -73, 26, 70 }, { 25, -70, 14, 15 }, { -3, -78, 28, 38 }, { -10, -34, 28, 32 }, { 0, 0, 0, 0 } }, 7 });
@@ -269,7 +274,7 @@ ModulePlayerDhalsim::ModulePlayerDhalsim(bool start_enabled) : Module(start_enab
 	yoga_flame.frames.push_back({ { 1465, 493, 68, 83 }, 25, { { -12, -73, 26, 70 }, { 31, -60, 14, 15 }, { -3, -78, 28, 38 }, { -10, -34, 28, 32 }, { 0, 0, 0, 0 } }, 5 });
 	yoga_flame.loop = false;
 
-
+	// yoga mummy animation
 	yoga_mummy.frames.push_back({ { 1183, 425, 89, 38 }, 45, { { -12, -46, 26, 27 }, { 30, -27, 14, 15 }, { -1, -38, 36, 38 }, { -33, -38, 32, 38 }, { 13, -38, 31, 38 } }, 5 });
 	yoga_mummy.frames.push_back({ { 1279, 425, 89, 38 }, 45, { { -12, -46, 26, 27 }, { 30, -27, 14, 15 }, { -1, -38, 36, 38 }, { -33, -38, 32, 38 }, { 13, -38, 31, 38 } }, 5 });
 	yoga_mummy.frames.push_back({ { 1376, 425, 89, 38 }, 45, { { -12, -46, 26, 27 }, { 30, -27, 14, 15 }, { -1, -38, 36, 38 }, { -33, -38, 32, 38 }, { 13, -38, 31, 38 } }, 5 });
@@ -284,7 +289,7 @@ ModulePlayerDhalsim::ModulePlayerDhalsim(bool start_enabled) : Module(start_enab
 	yoga_mummy.frames.push_back({ { 1468, 425, 89, 38 }, 45, { { -12, -46, 26, 27 }, { 30, -27, 14, 15 }, { -1, -38, 36, 38 }, { -33, -38, 32, 38 }, { 13, -38, 31, 38 } }, 5 });
 	yoga_mummy.loop = false;
 
-
+	// yoga spear animation
 	yoga_spear.frames.push_back({ { 5, 501, 70, 75 }, 35, { { -12, -46, 26, 27 }, { -35, -75, 14, 15 }, { -30, -65, 29, 25 }, { -2, -41, 25, 22 }, { 7, -37, 33, 35 } }, 5 });
 	yoga_spear.frames.push_back({ { 79, 501, 60, 75 }, 35, { { -12, -46, 26, 27 }, { -35, -75, 14, 15 }, { -30, -65, 29, 25 }, { -2, -41, 25, 22 }, { 7, -37, 33, 35 } }, 5 });
 	yoga_spear.frames.push_back({ { 143, 501, 73, 75 }, 35, { { -12, -46, 26, 27 }, { -35, -75, 14, 15 }, { -30, -65, 29, 25 }, { -2, -41, 25, 22 }, { 7, -37, 33, 35 } }, 5 });
@@ -299,8 +304,8 @@ ModulePlayerDhalsim::ModulePlayerDhalsim(bool start_enabled) : Module(start_enab
 	yoga_spear.frames.push_back({ { 220, 501, 73, 75 }, 35, { { -12, -46, 26, 27 }, { -35, -75, 14, 15 }, { -30, -65, 29, 25 }, { -2, -41, 25, 22 }, { 7, -37, 33, 35 } }, 5 });
 	yoga_spear.loop = false;
 
-
-	particula.frames.push_back({ { 627, 519, 27, 17 }, 13, {-4, -10, 8, 10}, 6 });
+	// particula animation
+	particula.frames.push_back({ { 627, 519, 27, 17 }, 13, { -4, -10, 8, 10 }, 6 });
 	particula.frames.push_back({ { 627, 519, 0, 0 }, 13, { -4, -10, 8, 10 }, 1 });
 	particula.frames.push_back({ { 663, 519, 26, 17 }, 13, { -4, -10, 8, 10 }, 6 });
 	particula.frames.push_back({ { 663, 519, 0, 0 }, 13, { -4, -10, 8, 10 }, 1 });
@@ -308,19 +313,19 @@ ModulePlayerDhalsim::ModulePlayerDhalsim(bool start_enabled) : Module(start_enab
 	particula.frames.push_back({ { 698, 520, 0, 0 }, 13, { -4, -10, 8, 10 }, 1 });
 	particula.loop = true;
 
-
+	// destroy particula animation
 	destroy_particula.frames.push_back({ { 636, 552, 16, 16 }, 8, { 0, 0, 0, 0 }, 4 });
 	destroy_particula.frames.push_back({ { 660, 549, 8, 22 }, 4, { 0, 0, 0, 0 }, 4 });
 	destroy_particula.frames.push_back({ { 674, 547, 16, 26 }, 8, { 0, 0, 0, 0 }, 4 });
 	destroy_particula.frames.push_back({ { 696, 546, 22, 28 }, 11, { 0, 0, 0, 0 }, 4 });
 	destroy_particula.loop = false;
 
-
 	playerState = PLAYER_IDLE;
 	colliding_players = false;
 	jumping = false;
 	hitted = false;
 	head_hitted = false;
+	leg_hitted = false;
 	life = 200;
 	wins = 0;
 	win = false;
@@ -328,25 +333,23 @@ ModulePlayerDhalsim::ModulePlayerDhalsim(bool start_enabled) : Module(start_enab
 	time_0 = false;
 	starting_combo = COMBO_NOTHING;
 	damageType = NONE_DAMAGE;
-
 	distance_jumped = 0;
 	jump_attacked = false;
+	already_hitted = false;
 	lastShotTimer = SDL_GetTicks();
-
 }
 
+// Destructor
 ModulePlayerDhalsim::~ModulePlayerDhalsim()
 {
-	// Homework : check for memory leaks
 }
 
 // Load assets
 bool ModulePlayerDhalsim::Start()
 {
-	LOG("Loading Dhalsim");
+	LOG("Loading Base Dhalsim");
 
 	graphics = App->textures->Load("dhalsim.png"); // arcade version
-//	App->collisions->AddCollider(&collider);
 
 	return true;
 }
@@ -354,52 +357,14 @@ bool ModulePlayerDhalsim::Start()
 // Unload assets
 bool ModulePlayerDhalsim::CleanUp()
 {
-	LOG("Unloading player");
-
-	idle.~Animation();
-	forward.~Animation();
-	backward.~Animation();
-	crouching.~Animation();
-	block.~Animation();
-	crouch_block.~Animation();
-	jump.~Animation();
-	L_punch.~Animation();
-	L_kick.~Animation();
-	M_punch.~Animation();
-	M_kick.~Animation();
-	H_punch.~Animation();
-	H_kick.~Animation();
-	F_L_punch.~Animation();
-	F_M_punch.~Animation();
-	F_H_punch.~Animation();
-	F_L_kick.~Animation();
-	F_M_kick.~Animation();
-	F_H_kick.~Animation();
-	crouch_punch.~Animation();
-	crouch_kick.~Animation();
-	jump_punch.~Animation();
-	jump_kick.~Animation();
-	hit.~Animation();
-	face_hit.~Animation();
-	crouch_hit.~Animation();
-	air_hit.~Animation();
-	ko.~Animation();
-	victory1.~Animation();
-	victory2.~Animation();
-	time_out.~Animation();
-	yoga_fire.~Animation();
-	yoga_flame.~Animation();
-	yoga_mummy.~Animation();
-	yoga_spear.~Animation();
-
-	particula.~ParticleAnimation();
-	destroy_particula.~ParticleAnimation();
+	LOG("Unloading Base player");
 
 	App->textures->Unload(graphics);
 
 	return true;
 }
 
+// Pre Update
 update_status ModulePlayerDhalsim::PreUpdate()
 {
 	return UPDATE_CONTINUE;
@@ -408,11 +373,9 @@ update_status ModulePlayerDhalsim::PreUpdate()
 // Update
 update_status ModulePlayerDhalsim::Update()
 {
-
 	SDL_Rect aux;
 	int pivot;
 	Collider_player_structure cps;
-	AnimationStructure animationStructure;
 
 	switch (playerState)
 	{
@@ -731,6 +694,10 @@ update_status ModulePlayerDhalsim::Update()
 		break;
 
 	case PLAYER_KO:
+		if (distance_jumped > 0)
+		{
+			distance_jumped -= 3;
+		}
 		if (!ko.IsEnded()) {
 			if (looking_right)
 				MovePlayer(-1);
@@ -920,21 +887,18 @@ update_status ModulePlayerDhalsim::Update()
 		collider_attack.rect.y += position.y - distance_jumped;
 		App->renderer->Blit(graphics, position.x - aux.w + pivot, position.y - aux.h - distance_jumped, &(aux), 1.0f, SDL_FLIP_HORIZONTAL);
 	}
-
+	
 	return UPDATE_CONTINUE;
 }
 
+// Post Update
 update_status ModulePlayerDhalsim::PostUpdate()
 {
 	colliding_players = false;
 	return UPDATE_CONTINUE;
 }
 
-iPoint ModulePlayerDhalsim::getPosition()
-{
-	return position;
-}
-
+// On Collision
 void ModulePlayerDhalsim::OnCollision(Collider* c1, Collider* c2)
 {
 	if (c1->type == COLLIDER_BODY_PLAYER_ONE && c2->type == COLLIDER_BODY_PLAYER_TWO)
@@ -944,7 +908,16 @@ void ModulePlayerDhalsim::OnCollision(Collider* c1, Collider* c2)
 	else if (c1->type == COLLIDER_PLAYER_ONE && c2->type == COLLIDER_ATTACK_PLAYER_TWO && c2->rect.w * c2->rect.h != 0)
 	{
 		if (!hitted && playerState != PLAYER_BLOCKING && playerState != PLAYER_CROUCH_BLOCKING && playerState != PLAYER_BLOCKING_HITTED && playerState != PLAYER_CROUCH_BLOCKING_HITTED)
+		{
 			life -= c2->damage;
+			already_hitted = true;
+		}
+		else if (!already_hitted && (otherPlayer->GetPlayerState() == PLAYER_CROUCH_PUNCH || otherPlayer->GetPlayerState() == PLAYER_CROUCH_KICK) && playerState != PLAYER_CROUCH_BLOCKING && playerState != PLAYER_CROUCH_BLOCKING_HITTED)
+		{
+			life -= c2->damage;
+			already_hitted = true;
+			leg_hitted = true;
+		}
 
 		if (life < 0)
 		{
@@ -970,7 +943,17 @@ void ModulePlayerDhalsim::OnCollision(Collider* c1, Collider* c2)
 	else if (c1->type == COLLIDER_PLAYER_TWO && c2->type == COLLIDER_ATTACK_PLAYER_ONE  && c2->rect.w * c2->rect.h != 0)
 	{
 		if (!hitted && playerState != PLAYER_BLOCKING && playerState != PLAYER_CROUCH_BLOCKING && playerState != PLAYER_BLOCKING_HITTED && playerState != PLAYER_CROUCH_BLOCKING_HITTED)
+		{
 			life -= c2->damage;
+			already_hitted = true;
+		}
+		else if (!already_hitted && (otherPlayer->GetPlayerState() == PLAYER_CROUCH_PUNCH || otherPlayer->GetPlayerState() == PLAYER_CROUCH_KICK) && playerState != PLAYER_CROUCH_BLOCKING && playerState != PLAYER_CROUCH_BLOCKING_HITTED)
+		{
+			life -= c2->damage;
+			already_hitted = true;
+			leg_hitted = true;
+		}
+
 
 		if (life < 0)
 		{
@@ -994,10 +977,13 @@ void ModulePlayerDhalsim::OnCollision(Collider* c1, Collider* c2)
 		if (c1 == &collider_head)
 			head_hitted = true;
 	}
-	else if (c1->type == COLLIDER_PLAYER_ONE && c2->type == COLLIDER_PARTICLES && c2->rect.w * c2->rect.h != 0)
+	else if ((c1->type == COLLIDER_PLAYER_ONE || c1->type == COLLIDER_ATTACK_PLAYER_ONE) && c2->type == COLLIDER_PARTICLES && c2->rect.w * c2->rect.h != 0)
 	{
 		if (!hitted && playerState != PLAYER_BLOCKING && playerState != PLAYER_CROUCH_BLOCKING && playerState != PLAYER_BLOCKING_HITTED && playerState != PLAYER_CROUCH_BLOCKING_HITTED)
+		{
 			life -= 18;
+			App->audio->PlayFx(audio_id_L_impact);
+		}
 
 		if (life < 0)
 		{
@@ -1011,10 +997,13 @@ void ModulePlayerDhalsim::OnCollision(Collider* c1, Collider* c2)
 		if (c1 == &collider_head)
 			head_hitted = true;
 	}
-	else if (c1->type == COLLIDER_PLAYER_TWO && c2->type == COLLIDER_PARTICLES && c2->rect.w * c2->rect.h != 0)
+	else if ((c1->type == COLLIDER_PLAYER_TWO || c1->type == COLLIDER_ATTACK_PLAYER_TWO)  && c2->type == COLLIDER_PARTICLES && c2->rect.w * c2->rect.h != 0)
 	{
 		if (!hitted && playerState != PLAYER_BLOCKING && playerState != PLAYER_CROUCH_BLOCKING && playerState != PLAYER_BLOCKING_HITTED && playerState != PLAYER_CROUCH_BLOCKING_HITTED)
+		{
 			life -= 18;
+			App->audio->PlayFx(audio_id_L_impact);
+		}
 
 		if (life < 0)
 		{
@@ -1030,6 +1019,7 @@ void ModulePlayerDhalsim::OnCollision(Collider* c1, Collider* c2)
 	}
 }
 
+// Returns true if the player is the limit of the camera
 bool ModulePlayerDhalsim::playerInCameraLimit() const
 {
 	if (App->renderer->camera.x <= -(collider_body.rect.x*SCREEN_SIZE))
@@ -1039,6 +1029,7 @@ bool ModulePlayerDhalsim::playerInCameraLimit() const
 	return false;
 }
 
+// Moves horizontaly the player, it can move the camera
 void ModulePlayerDhalsim::MovePlayer(int distance)
 {
 	if (distance > 0)
@@ -1087,12 +1078,19 @@ void ModulePlayerDhalsim::MovePlayer(int distance)
 	}
 }
 
-
+// Resets the player states
 void ModulePlayerDhalsim::restartPlayer(bool everything)
 {
 }
 
-bool ModulePlayerDhalsim::IsAttacking()
+// Get and Set variables
+
+iPoint ModulePlayerDhalsim::getPosition() const
+{
+	return position;
+}
+
+bool ModulePlayerDhalsim::IsAttacking() const
 {
 	if (playerState == PLAYER_LOW_PUNCH ||
 		playerState == PLAYER_LOW_KICK ||
@@ -1117,24 +1115,124 @@ bool ModulePlayerDhalsim::IsAttacking()
 	{
 		return true;
 	}
-	else if (App->particles->particleList.size() > 0)
+	else if (App->particles->GetNumberParticles() > 0)
 	{
 		if (otherPlayer->looking_right)
 		{
-			for (list<Particle*>::iterator it = App->particles->particleList.begin(); it != App->particles->particleList.end(); ++it)
+			for (int i = 0; i < App->particles->GetNumberParticles(); ++i)
 			{
-				if ((*it)->position.x > otherPlayer->position.x && (*it)->speed < 0)
+				if (App->particles->GetParticlePosition(i).x > otherPlayer->position.x && App->particles->GetParticleSpeed(i) < 0)
 					return true;
 			}
 		}
 		else
 		{
-			for (list<Particle*>::iterator it = App->particles->particleList.begin(); it != App->particles->particleList.end(); ++it)
+			for (int i = 0; i < App->particles->GetNumberParticles(); ++i)
 			{
-				if ((*it)->position.x < otherPlayer->position.x && (*it)->speed > 0)
+				if (App->particles->GetParticlePosition(i).x < otherPlayer->position.x && App->particles->GetParticleSpeed(i) > 0)
 					return true;
 			}
 		}
 	}
 	return false;
+}
+
+int ModulePlayerDhalsim::GetWins() const
+{
+	return wins;
+}
+
+void ModulePlayerDhalsim::SetWins(int wins)
+{
+	this->wins = wins;
+}
+
+int ModulePlayerDhalsim::GetLife() const
+{
+	return life;
+}
+
+void ModulePlayerDhalsim::SetLife(int life)
+{
+	this->life = life;
+}
+
+void ModulePlayerDhalsim::DecreseLife(int life)
+{
+	this->life -= life;
+}
+
+bool ModulePlayerDhalsim::GetWin() const
+{
+	return win;
+}
+
+void ModulePlayerDhalsim::SetWin(bool win)
+{
+	this->win = win;
+}
+
+bool ModulePlayerDhalsim::GetDead() const
+{
+	return dead;
+}
+
+void ModulePlayerDhalsim::SetDead(bool dead)
+{
+	this->dead = dead;
+}
+
+bool ModulePlayerDhalsim::GetTime_0() const
+{
+	return time_0;
+}
+
+void ModulePlayerDhalsim::SetTime_0(bool timer_0)
+{
+	this->time_0 = time_0;
+}
+
+bool ModulePlayerDhalsim::GetJumping() const
+{
+	return jumping;
+}
+
+void ModulePlayerDhalsim::SetJumping(bool jumping)
+{
+	this->jumping = jumping;
+}
+
+bool ModulePlayerDhalsim::GetLooking_right() const
+{
+	return looking_right;
+}
+
+void ModulePlayerDhalsim::SetLooking_right(bool looking_right)
+{
+	this->looking_right = looking_right;
+}
+
+player_state ModulePlayerDhalsim::GetPlayerState() const
+{
+	return playerState;
+}
+
+void ModulePlayerDhalsim::SetPlayerState(player_state playerState)
+{
+	this->playerState = playerState;
+}
+
+combo_types ModulePlayerDhalsim::GetStartingCombo() const
+{
+	return starting_combo;
+}
+
+void ModulePlayerDhalsim::SetStartingCombo(combo_types starting_combo)
+{
+	this->starting_combo = starting_combo;
+}
+
+int ModulePlayerDhalsim::GetDistanceJumped() const
+{
+	return distance_jumped;
 }

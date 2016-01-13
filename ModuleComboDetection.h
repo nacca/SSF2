@@ -18,13 +18,11 @@ class ModuleComboDetection :
 {
 public:
 	ModuleComboDetection(bool start_enabled = true);
-	virtual ~ModuleComboDetection();
+	~ModuleComboDetection();
 
-	virtual bool Start();
-	virtual update_status PreUpdate();
-	virtual bool CleanUp();
+	update_status PreUpdate();
 
-public:
+private:
 	previous_states previous_state_player_one;
 	int countdown_previous_state_player_one;
 	int countdown_first_state_player_one;

@@ -5,17 +5,12 @@
 #include "ModuleTextures.h"
 #include "ModuleInput.h"
 #include "ModuleAudio.h"
-#include "ModuleFadeToBlack.h"
 #include "SDL/include/SDL.h"
 #include "ModulePlayerDhalsim.h"
 #include "ModulePlayerOne.h"
 #include "ModulePlayerTwo.h"
-#include <math.h>
 
-#include <iostream>
-
-// Reference at https://www.youtube.com/watch?v=OEhmUuehGOA
-
+// Creator
 ModuleSceneBison::ModuleSceneBison(bool start_enabled) : Module(start_enabled)
 {
 	// Ground
@@ -84,33 +79,41 @@ ModuleSceneBison::ModuleSceneBison(bool start_enabled) : Module(start_enabled)
 	two_boys.w = 20;
 	two_boys.h = 58;
 
+	// Animation two mans
 	two_mans_one_ground.frames.push_back({ { 144, 336, 24, 56 }, 28, { { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 } }, 10});
 	two_mans_one_ground.frames.push_back({ { 481, 432, 24, 56 }, 28, { { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 } }, 10 });
 
+	// Animation praying man ground
 	praying_man_ground.frames.push_back({ { 177, 333, 30, 63 }, 32, { { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 } }, 10 });
 	praying_man_ground.frames.push_back({ { 374, 432, 30, 63 }, 32, { { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 } }, 10 });
 
+	// Animation praying man up
 	praying_man_up.frames.push_back({ { 368, 329, 32, 62 }, 31, { { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 } }, 10 });
 	praying_man_up.frames.push_back({ { 229, 432, 32, 62 }, 31, { { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 } }, 10 });
 
+	// Animation three man
 	three_man.frames.push_back({ { 320, 336, 39, 56 }, 28, { { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 } }, 10 });
 	three_man.frames.push_back({ { 275, 432, 39, 56 }, 28, { { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 } }, 10 });
 
+	// Life Bar Rect
 	life.x = 2;
 	life.y = 2;
 	life.w = 198;
 	life.h = 14;
 
+	// Restart Letters Rect
 	restartFont.x = 0;
 	restartFont.y = 0;
 	restartFont.w = 130;
 	restartFont.h = 25;
 
+	// Dhalsim Name Rect
 	name.x = 2;
 	name.y = 20;
 	name.w = 41;
 	name.h = 10;
 
+	// Victory Mark Rect
 	victory.x = 205;
 	victory.y = 4;
 	victory.w = 11;
@@ -121,6 +124,7 @@ ModuleSceneBison::ModuleSceneBison(bool start_enabled) : Module(start_enabled)
 	actualizeFirstTime = true;
 }
 
+// Destructor
 ModuleSceneBison::~ModuleSceneBison()
 {}
 
@@ -132,7 +136,6 @@ bool ModuleSceneBison::Start()
 	graphics = App->textures->Load("bison_stage_v2.png");
 	miscellaneous = App->textures->Load("miscellaneous_v2.png");
 	restartTexture = App->textures->Load("restartFont.png");
-
 
 	if (!App->player_one->Enable())
 		return false;
@@ -159,8 +162,6 @@ bool ModuleSceneBison::CleanUp()
 	
 	App->textures->Unload(graphics);
 	App->textures->Unload(miscellaneous);
-	App->player_one->Disable();
-	App->player_two->Disable();
 
 	return true;
 }
@@ -168,7 +169,7 @@ bool ModuleSceneBison::CleanUp()
 // Update: draw background
 update_status ModuleSceneBison::Update()
 {
-	// Draw everything --------------------------------------
+	// Draw
 	App->renderer->Blit(graphics, -28, 159, &ground, 1.0f); // Ground
 	App->renderer->Blit(graphics, 0, 31, &air, 0.0f); // Air
 	App->renderer->Blit(graphics, -28, 43, &background, 0.55f); // Background
@@ -190,19 +191,21 @@ update_status ModuleSceneBison::Update()
 	App->renderer->Blit(graphics, 320 - 28, 31 + 88, &(three_man.GetCurrentFrame()), 1.0f); //
 	three_man.NextFrame();
 
-	//Life rectangles
+	// Draw names
 	App->renderer->Blit(miscellaneous, 30, 47, &name, 0.0f); //
 	App->renderer->Blit(miscellaneous, 185, 47, &name, 0.0f); //
+
+	// Draw bar life and life rectangles
 	App->renderer->Blit(miscellaneous, 30, 34, &life, 0.0f); //
 	SDL_SetRenderDrawColor(App->renderer->renderer, 255, 255, 0, 255);
-	SDL_Rect rec_aux = { 32, 37, (int)(App->player_one->life * 89 / 200), 8 };
+	SDL_Rect rec_aux = { 32, 37, (int)(App->player_one->GetLife() * 89 / 200), 8 };
 	App->renderer->DrawStaticRect(&rec_aux);
-	rec_aux = { 137, 37, (int)(App->player_two->life * 89 / 200), 8 };
+	rec_aux = { 137, 37, (int)(App->player_two->GetLife() * 89 / 200), 8 };
 	App->renderer->DrawStaticRect(&rec_aux);
 	SDL_SetRenderDrawColor(App->renderer->renderer, 255, 0, 0, 255);
-	rec_aux = { 32 + (int)(App->player_one->life * 89 / 200), 37, 89 - (int)(App->player_one->life * 89 / 200), 8 };
+	rec_aux = { 32 + (int)(App->player_one->GetLife() * 89 / 200), 37, 89 - (int)(App->player_one->GetLife() * 89 / 200), 8 };
 	App->renderer->DrawStaticRect(&rec_aux);
-	rec_aux = { 137 + (int)(App->player_two->life * 89 / 200), 37, 89 - (int)(App->player_two->life * 89 / 200), 8 };
+	rec_aux = { 137 + (int)(App->player_two->GetLife() * 89 / 200), 37, 89 - (int)(App->player_two->GetLife() * 89 / 200), 8 };
 	App->renderer->DrawStaticRect(&rec_aux);
 
 	//Time manager
@@ -212,25 +215,24 @@ update_status ModuleSceneBison::Update()
 	timeNow = 99 - timeNow;
 	if (timeNow <= 0 && !restarting) {
 		timeNow = 0;
-		if (App->player_one->life > App->player_two->life)
+		if (App->player_one->GetLife() > App->player_two->GetLife())
 		{
-			App->player_one->win = true;
-			App->player_two->time_0 = true;
-			RestartScene(App->player_one->wins + 1);
+			App->player_one->SetWin(true);
+			App->player_two->SetTime_0(true);
+			RestartScene(App->player_one->GetWins() + 1);
 		}
-		else if (App->player_one->life < App->player_two->life)
+		else if (App->player_one->GetLife() < App->player_two->GetLife())
 		{
-			App->player_two->win = true;
-			App->player_one->time_0 = true;
-			RestartScene(App->player_two->wins + 1);
+			App->player_two->SetWin(true);
+			App->player_one->SetTime_0(true);
+			RestartScene(App->player_two->GetWins() + 1);
 		}
 		else {
-			App->player_one->time_0 = true;
-			App->player_two->time_0 = true;
+			App->player_one->SetTime_0(true);
+			App->player_two->SetTime_0(true);
 			RestartScene(0);
 		}
 	}
-
 	SDL_Rect numberRect;
 	numberRect.x = (int) floor(timeNow / 10)*10 ;
 	numberRect.y = 36;
@@ -240,33 +242,37 @@ update_status ModuleSceneBison::Update()
 	numberRect.x = (int) floor(timeNow % 10) * 10;
 	App->renderer->Blit(miscellaneous, 129, 50, &numberRect, 0.0f); //
 
-	if (App->player_one->wins >= 1)
+	// Draw wins rectangles
+	if (App->player_one->GetWins() >= 1)
 	{
 		App->renderer->Blit(miscellaneous, 3, 34, &victory, 0.0f);
 	}
-	if (App->player_one->wins >= 2)
+	if (App->player_one->GetWins() >= 2)
 	{
 		App->renderer->Blit(miscellaneous, 17, 34, &victory, 0.0f);
 	}
-	if (App->player_two->wins >= 1)
+	if (App->player_two->GetWins() >= 1)
 	{
 		App->renderer->Blit(miscellaneous, 229, 34, &victory, 0.0f);
 	}
-	if (App->player_two->wins >= 2)
+	if (App->player_two->GetWins() >= 2)
 	{
 		App->renderer->Blit(miscellaneous, 243, 34, &victory, 0.0f);
 	}
 
-
-	App->renderer->Blit(graphics, 0, -(int)(App->renderer->camera.y / SCREEN_SIZE), &black_surface, 0.0f); // Black Surface
-	App->renderer->Blit(graphics, 0, 214 - (int)(App->renderer->camera.y / SCREEN_SIZE), &black_surface2, 0.0f); // Black Surface
+	// Draw black rectangles at the top and at the bottom of the screen
+	SDL_SetRenderDrawColor(App->renderer->renderer, 0, 0, 0, 255);
+	SDL_Rect black_rectangles = { 0, 0, 256  , 22   };
+	App->renderer->DrawStaticRect(&black_rectangles);
+	black_rectangles = { 0, 214, 256  , 10 };
+	App->renderer->DrawStaticRect(&black_rectangles);
 
 	return UPDATE_CONTINUE;
 }
 
+// Manages the black fades to restart screens
 update_status ModuleSceneBison::PostUpdate()
 {
-
 	if (restarting)
 	{
 		SDL_SetRenderDrawColor(App->renderer->renderer, 0, 0, 0, 0);
@@ -333,11 +339,10 @@ update_status ModuleSceneBison::PostUpdate()
 		}
 
 	}
-
-
 	return UPDATE_CONTINUE;
 }
 
+// Used to indicates the necessity of restarting the scene
 void ModuleSceneBison::RestartScene(int wins)
 {
 	timeRestarting = SDL_GetTicks();

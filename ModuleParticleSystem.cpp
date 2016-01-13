@@ -76,12 +76,6 @@ update_status ModuleParticleSystem::PostUpdate()
 	return UPDATE_CONTINUE;
 }
 
-bool ModuleParticleSystem::CleanUp()
-{
-	particleList.clear();
-	return true;
-}
-
 bool ModuleParticleSystem::newParticle(iPoint pos, SDL_Texture* graphics, ParticleAnimation particleAnimation, ParticleAnimation particleDestruction, int speed)
 {
 	SDL_Rect rec_collider = { pos.x + particleAnimation.GetCurrentCollider().x, pos.y + particleAnimation.GetCurrentCollider().y, particleAnimation.GetCurrentCollider().w, particleAnimation.GetCurrentCollider().h };
@@ -101,4 +95,25 @@ void ModuleParticleSystem::OnCollision(Collider* c1, Collider* c2)
 				(*it1)->impact = true;
 		}
 	}
+}
+
+int ModuleParticleSystem::GetNumberParticles() const
+{
+	return particleList.size();
+}
+
+iPoint ModuleParticleSystem::GetParticlePosition(int id)
+{
+	list<Particle*>::iterator it1 = particleList.begin();
+	for (unsigned int i = 1; i < particleList.size(); ++i)
+		++it1;
+	return (*it1)->position;
+}
+
+int ModuleParticleSystem::GetParticleSpeed(int id)
+{
+	list<Particle*>::iterator it1 = particleList.begin();
+	for (unsigned int i = 1; i < particleList.size(); ++i)
+		++it1;
+	return (*it1)->speed;
 }
