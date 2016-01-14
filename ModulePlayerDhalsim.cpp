@@ -364,8 +364,7 @@ bool ModulePlayerDhalsim::CleanUp()
 	return true;
 }
 
-// Pre Update
-
+// PreUpdate
 update_status ModulePlayerDhalsim::PreUpdate()
 {
 	bool near = false;
@@ -1618,6 +1617,10 @@ update_status ModulePlayerDhalsim::Update()
 		break;
 
 	case PLAYER_WIN_1:
+		if (distance_jumped > 0)
+		{
+			distance_jumped -= 3;
+		}
 		aux = victory1.GetCurrentFrame();
 		pivot = victory1.GetCurrentPivot();
 		cps = victory1.GetCurrentCollider();
@@ -1625,6 +1628,10 @@ update_status ModulePlayerDhalsim::Update()
 		break;
 
 	case PLAYER_WIN_2:
+		if (distance_jumped > 0)
+		{
+			distance_jumped -= 3;
+		}
 		aux = victory2.GetCurrentFrame();
 		pivot = victory2.GetCurrentPivot();
 		cps = victory2.GetCurrentCollider();
@@ -1632,6 +1639,10 @@ update_status ModulePlayerDhalsim::Update()
 		break;
 
 	case PLAYER_TIME_OUT:
+		if (distance_jumped > 0)
+		{
+			distance_jumped -= 3;
+		}
 		aux = time_out.GetCurrentFrame();
 		pivot = time_out.GetCurrentPivot();
 		cps = time_out.GetCurrentCollider();
@@ -1797,7 +1808,7 @@ update_status ModulePlayerDhalsim::Update()
 	return UPDATE_CONTINUE;
 }
 
-// Post Update
+// PostUpdate
 update_status ModulePlayerDhalsim::PostUpdate()
 {
 	colliding_players = false;
@@ -1833,7 +1844,7 @@ void ModulePlayerDhalsim::OnCollision(Collider* c1, Collider* c2)
 				dead = true;
 				life = 0;
 			}
-			else
+			else if (!hitted)
 			{
 				if (c2->damageType == L_ATTACK)
 					App->audio->PlayFx(audio_id_L_impact);

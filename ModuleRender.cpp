@@ -57,7 +57,7 @@ update_status ModuleRender::PreUpdate()
 	if (player_two_y_pos > player_one_y_pos)
 		max_y_distance = player_two_y_pos;
 
-	camera.y = (int)((double)max_y_distance * (double)SCREEN_SIZE / 7.5f);
+	camera.y = (int)((double)max_y_distance * (double)SCREEN_SIZE / 8.0f);
 
 	return UPDATE_CONTINUE;
 }
