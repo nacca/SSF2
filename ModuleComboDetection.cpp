@@ -124,6 +124,7 @@ update_status ModuleComboDetection::PreUpdate()
 				previous_state_player_one = NOTHING;
 			}
 			else if (combo_air_start_player_one && (App->player_one->GetPlayerState() == PLAYER_JUMPING) &&
+				(App->player_one->GetDistanceJumped() > 20) && 
 				(App->player_one->GetPlayerInput(INPUT_L_PUNCH)) ||
 				(App->player_one->GetPlayerInput(INPUT_M_PUNCH)) ||
 				(App->player_one->GetPlayerInput(INPUT_H_PUNCH)))
@@ -135,6 +136,7 @@ update_status ModuleComboDetection::PreUpdate()
 				countdown_first_state_player_one = 0;
 			}
 			else if (combo_air_start_player_one && (App->player_one->GetPlayerState() == PLAYER_JUMPING) &&
+				(App->player_one->GetDistanceJumped() > 20) &&
 				(App->player_one->GetPlayerInput(INPUT_L_KICK)) ||
 				(App->player_one->GetPlayerInput(INPUT_M_KICK)) ||
 				(App->player_one->GetPlayerInput(INPUT_H_KICK)))
@@ -169,7 +171,7 @@ update_status ModuleComboDetection::PreUpdate()
 				(App->player_one->GetPlayerInput(INPUT_M_PUNCH)) ||
 				(App->player_one->GetPlayerInput(INPUT_H_PUNCH)))
 			{
-				if (combo_air_start_player_one && App->player_one->GetPlayerState() == PLAYER_JUMPING)
+				if ((App->player_one->GetDistanceJumped() > 20) && combo_air_start_player_one && App->player_one->GetPlayerState() == PLAYER_JUMPING)
 				{
 					App->player_one->SetStartingCombo(AERIAL_COMBO_PUNCH);
 				}
@@ -190,7 +192,7 @@ update_status ModuleComboDetection::PreUpdate()
 				(App->player_one->GetPlayerInput(INPUT_M_KICK)) ||
 				(App->player_one->GetPlayerInput(INPUT_H_KICK)))
 			{
-				if (combo_air_start_player_one && App->player_one->GetPlayerState() == PLAYER_JUMPING)
+				if ((App->player_one->GetDistanceJumped() > 20) && combo_air_start_player_one && App->player_one->GetPlayerState() == PLAYER_JUMPING)
 				{
 					App->player_one->SetStartingCombo(AERIAL_COMBO_KICK);
 				}
@@ -306,6 +308,7 @@ update_status ModuleComboDetection::PreUpdate()
 			previous_state_player_two = NOTHING;
 		}
 		else if (combo_air_start_player_two && (App->player_two->GetPlayerState() == PLAYER_JUMPING) &&
+			(App->player_two->GetDistanceJumped() > 20) &&
 			(App->player_two->GetPlayerInput(INPUT_L_PUNCH)) ||
 			(App->player_two->GetPlayerInput(INPUT_M_PUNCH)) ||
 			(App->player_two->GetPlayerInput(INPUT_H_PUNCH)))
@@ -317,6 +320,7 @@ update_status ModuleComboDetection::PreUpdate()
 			countdown_first_state_player_two = 0;
 		}
 		else if (combo_air_start_player_two && (App->player_two->GetPlayerState() == PLAYER_JUMPING) &&
+			(App->player_two->GetDistanceJumped() > 20) &&
 			(App->player_two->GetPlayerInput(INPUT_L_KICK)) ||
 			(App->player_two->GetPlayerInput(INPUT_M_KICK)) ||
 			(App->player_two->GetPlayerInput(INPUT_H_KICK)))
@@ -351,7 +355,7 @@ update_status ModuleComboDetection::PreUpdate()
 			(App->player_two->GetPlayerInput(INPUT_M_PUNCH)) ||
 			(App->player_two->GetPlayerInput(INPUT_H_PUNCH)))
 		{
-			if (combo_air_start_player_two && App->player_two->GetPlayerState() == PLAYER_JUMPING)
+			if ((App->player_two->GetDistanceJumped() > 20) && combo_air_start_player_two && App->player_two->GetPlayerState() == PLAYER_JUMPING)
 			{
 				App->player_two->SetStartingCombo(AERIAL_COMBO_PUNCH);
 			}
@@ -372,7 +376,7 @@ update_status ModuleComboDetection::PreUpdate()
 			(App->player_two->GetPlayerInput(INPUT_M_KICK)) ||
 			(App->player_two->GetPlayerInput(INPUT_H_KICK)))
 		{
-			if (App->player_two->GetPlayerState() == PLAYER_JUMPING)
+			if ((App->player_two->GetDistanceJumped() > 20) && combo_air_start_player_two && App->player_two->GetPlayerState() == PLAYER_JUMPING)
 			{
 				App->player_two->SetStartingCombo(AERIAL_COMBO_KICK);
 			}

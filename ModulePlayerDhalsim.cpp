@@ -10,8 +10,6 @@
 #include "ModuleSceneBison.h"
 #include "ModuleAudio.h"
 
-
-#include <iostream>
 // Basic Module Operations
 
 // Constructors
@@ -836,12 +834,14 @@ update_status ModulePlayerDhalsim::PreUpdate()
 
 		if (distance_jumped == 0 && !going_up)
 		{
+			already_hitted = false;
 			playerState = PLAYER_IDLE;
 			jump_attacked = false;
 			jump.RestartFrames();
 		}
 		else if (starting_combo == AERIAL_COMBO_PUNCH && !jump_attacked)
 		{
+			already_hitted = false;
 			jump_attacked = true;
 			playerState = PLAYER_YOGA_MUMMY;
 			if (looking_right)
@@ -851,6 +851,7 @@ update_status ModulePlayerDhalsim::PreUpdate()
 		}
 		else if (starting_combo == AERIAL_COMBO_KICK && !jump_attacked)
 		{
+			already_hitted = false;
 			jump_attacked = true;
 			playerState = PLAYER_YOGA_SPEAR;
 			if (looking_right)
@@ -885,6 +886,7 @@ update_status ModulePlayerDhalsim::PreUpdate()
 
 		if (distance_jumped == 0)
 		{
+			already_hitted = false;
 			jump_attacked = false;
 			playerState = PLAYER_IDLE;
 			jump.RestartFrames();
@@ -900,6 +902,7 @@ update_status ModulePlayerDhalsim::PreUpdate()
 	case PLAYER_JUMP_KICK:
 		if (distance_jumped == 0)
 		{
+			already_hitted = false;
 			jump_attacked = false;
 			playerState = PLAYER_IDLE;
 			jump.RestartFrames();
@@ -1146,6 +1149,7 @@ update_status ModulePlayerDhalsim::PreUpdate()
 		going_up = false;
 		if (distance_jumped == 0)
 		{
+			already_hitted = false;
 			yoga_mummy.RestartFrames();
 			playerState = PLAYER_IDLE;
 			jump_attacked = false;
@@ -1169,6 +1173,7 @@ update_status ModulePlayerDhalsim::PreUpdate()
 		going_up = false;
 		if (distance_jumped == 0)
 		{
+			already_hitted = false;
 			yoga_spear.RestartFrames();
 			playerState = PLAYER_IDLE;
 			jump_attacked = false;
@@ -1262,7 +1267,6 @@ update_status ModulePlayerDhalsim::PreUpdate()
 			hitted = false;
 			head_hitted = false;
 			leg_hitted = false;
-			already_hitted = false;
 			air_hit.RestartFrames();
 			going_up = false;
 			playerState = PLAYER_JUMPING;
@@ -1281,6 +1285,28 @@ update_status ModulePlayerDhalsim::Update()
 	SDL_Rect aux;
 	int pivot;
 	Collider_player_structure cps;
+
+	if (otherPlayer->playerInCameraLimit() &&
+		((App->renderer->ScreenLeftLimit() && otherPlayer->GetLooking_right()) ||
+		(App->renderer->ScreenRightLimit() && !otherPlayer->GetLooking_right())) &&
+		((otherPlayer->GetPlayerState() == PLAYER_AIR_HITTED) ||
+		(otherPlayer->GetPlayerState() == PLAYER_CROUCH_HIT) ||
+		(otherPlayer->GetPlayerState() == PLAYER_HIT) ||
+		(otherPlayer->GetPlayerState() == PLAYER_FACE_HIT) ||
+		(otherPlayer->GetPlayerState() == PLAYER_BLOCKING_HITTED) ||
+		(otherPlayer->GetPlayerState() == PLAYER_CROUCH_BLOCKING_HITTED)) &&
+		(playerState != PLAYER_JUMP_KICK) && (playerState != PLAYER_JUMP_PUNCH) && 
+		(playerState != PLAYER_JUMPING) && (playerState != PLAYER_AIR_HITTED))
+	{
+		if (looking_right && (otherPlayer->GetPlayerState() == PLAYER_AIR_HITTED))
+			MovePlayer(-3);
+		else if (looking_right)
+			MovePlayer(-1);
+		else if (otherPlayer->GetPlayerState() == PLAYER_AIR_HITTED)
+			MovePlayer(3);
+		else
+			MovePlayer(1);
+	}
 
 	switch (playerState)
 	{
@@ -1752,12 +1778,12 @@ update_status ModulePlayerDhalsim::Update()
 	case PLAYER_AIR_HITTED:
 		if (!looking_right)
 		{
-			MovePlayer(1);
+			MovePlayer(2);
 			directionJump = JUMP_RIGHT;
 		}
 		else
 		{
-			MovePlayer(-1);
+			MovePlayer(-2);
 			directionJump = JUMP_LEFT;
 		}
 		distance_jumped += 3;
@@ -1823,14 +1849,14 @@ void ModulePlayerDhalsim::OnCollision(Collider* c1, Collider* c2)
 			colliding_players = true;
 		else if (c1->type == COLLIDER_BODY_PLAYER_TWO && c2->type == COLLIDER_BODY_PLAYER_ONE)
 			colliding_players = true;
-		else if (c1->type == COLLIDER_PLAYER_ONE && c2->type == COLLIDER_ATTACK_PLAYER_TWO && c2->rect.w * c2->rect.h != 0)
+		else if (c1->type == COLLIDER_PLAYER_ONE && c2->type == COLLIDER_ATTACK_PLAYER_TWO && c2->rect.w * c2->rect.h != 0 && !already_hitted)
 		{
 			if (!hitted && playerState != PLAYER_BLOCKING && playerState != PLAYER_CROUCH_BLOCKING && playerState != PLAYER_BLOCKING_HITTED && playerState != PLAYER_CROUCH_BLOCKING_HITTED)
 			{
 				life -= c2->damage;
 				already_hitted = true;
 			}
-			else if (!already_hitted && (otherPlayer->GetPlayerState() == PLAYER_CROUCH_PUNCH || otherPlayer->GetPlayerState() == PLAYER_CROUCH_KICK) && playerState != PLAYER_CROUCH_BLOCKING && playerState != PLAYER_CROUCH_BLOCKING_HITTED)
+			else if ((otherPlayer->GetPlayerState() == PLAYER_CROUCH_PUNCH || otherPlayer->GetPlayerState() == PLAYER_CROUCH_KICK) && playerState != PLAYER_CROUCH_BLOCKING && playerState != PLAYER_CROUCH_BLOCKING_HITTED)
 			{
 				life -= c2->damage;
 				already_hitted = true;
@@ -1858,14 +1884,14 @@ void ModulePlayerDhalsim::OnCollision(Collider* c1, Collider* c2)
 			if (c1 == &collider_head)
 				head_hitted = true;
 		}
-		else if (c1->type == COLLIDER_PLAYER_TWO && c2->type == COLLIDER_ATTACK_PLAYER_ONE  && c2->rect.w * c2->rect.h != 0)
+		else if (c1->type == COLLIDER_PLAYER_TWO && c2->type == COLLIDER_ATTACK_PLAYER_ONE  && c2->rect.w * c2->rect.h != 0 && !already_hitted)
 		{
 			if (!hitted && playerState != PLAYER_BLOCKING && playerState != PLAYER_CROUCH_BLOCKING && playerState != PLAYER_BLOCKING_HITTED && playerState != PLAYER_CROUCH_BLOCKING_HITTED)
 			{
 				life -= c2->damage;
 				already_hitted = true;
 			}
-			else if (!already_hitted && (otherPlayer->GetPlayerState() == PLAYER_CROUCH_PUNCH || otherPlayer->GetPlayerState() == PLAYER_CROUCH_KICK) && playerState != PLAYER_CROUCH_BLOCKING && playerState != PLAYER_CROUCH_BLOCKING_HITTED)
+			else if ((otherPlayer->GetPlayerState() == PLAYER_CROUCH_PUNCH || otherPlayer->GetPlayerState() == PLAYER_CROUCH_KICK) && playerState != PLAYER_CROUCH_BLOCKING && playerState != PLAYER_CROUCH_BLOCKING_HITTED)
 			{
 				life -= c2->damage;
 				already_hitted = true;
@@ -1880,7 +1906,7 @@ void ModulePlayerDhalsim::OnCollision(Collider* c1, Collider* c2)
 				dead = true;
 				life = 0;
 			}
-			else
+			else if (!hitted)
 			{
 				if (c2->damageType == L_ATTACK)
 					App->audio->PlayFx(audio_id_L_impact);
@@ -1941,9 +1967,9 @@ void ModulePlayerDhalsim::OnCollision(Collider* c1, Collider* c2)
 // Returns true if the player is the limit of the camera
 bool ModulePlayerDhalsim::playerInCameraLimit() const
 {
-	if (App->renderer->camera.x <= -((collider_body.rect.x - collider_body.rect.w)*SCREEN_SIZE))
+	if (App->renderer->camera.x <= -((player_collider.rect.x - player_collider.rect.w)*SCREEN_SIZE))
 		return true;
-	if (App->renderer->camera.x - App->renderer->camera.w >= -((collider_body.rect.x + collider_body.rect.w*2)*SCREEN_SIZE))
+	if (App->renderer->camera.x - App->renderer->camera.w >= -((player_collider.rect.x + player_collider.rect.w * 2)*SCREEN_SIZE))
 		return true;
 	return false;
 }
