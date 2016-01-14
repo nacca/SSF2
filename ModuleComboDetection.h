@@ -31,6 +31,8 @@ private:
 	int countdown_previous_state_player_two;
 	int countdown_first_state_player_two;
 	combo_types type_of_combo_player_two;
+	bool combo_air_start_player_one;
+	bool combo_air_start_player_two;
 };
 
 #endif

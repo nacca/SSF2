@@ -10,6 +10,8 @@
 #include "ModulePlayerOne.h"
 #include "ModulePlayerTwo.h"
 
+#include <iostream>
+
 // Creator
 ModuleSceneBison::ModuleSceneBison(bool start_enabled) : Module(start_enabled)
 {
@@ -209,11 +211,13 @@ update_status ModuleSceneBison::Update()
 	App->renderer->DrawStaticRect(&rec_aux);
 
 	//Time manager
-	Uint32 timeNow = SDL_GetTicks();
+	SDL_Rect numberRect;
+	int timeNow = (int)SDL_GetTicks();
 	timeNow -= initialTime;
 	timeNow /= 1000;
-	timeNow = 99 - timeNow;
-	if (timeNow <= 0 && !restarting) {
+	timeNow = 90 - timeNow;
+	if (timeNow <= 0 && !restarting)
+	{
 		timeNow = 0;
 		if (App->player_one->GetLife() > App->player_two->GetLife())
 		{
@@ -233,13 +237,16 @@ update_status ModuleSceneBison::Update()
 			RestartScene(0);
 		}
 	}
-	SDL_Rect numberRect;
-	numberRect.x = (int) floor(timeNow / 10)*10 ;
+	else if (timeNow <= 0)
+	{
+		timeNow = 0;
+	}
+	numberRect.x = (int)floor(timeNow / 10) * 10;
 	numberRect.y = 36;
 	numberRect.w = 8;
 	numberRect.h = 14;
 	App->renderer->Blit(miscellaneous, 121, 50, &numberRect, 0.0f); //
-	numberRect.x = (int) floor(timeNow % 10) * 10;
+	numberRect.x = (int)floor(timeNow % 10) * 10;
 	App->renderer->Blit(miscellaneous, 129, 50, &numberRect, 0.0f); //
 
 	// Draw wins rectangles

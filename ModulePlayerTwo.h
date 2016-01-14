@@ -11,8 +11,9 @@ public:
 	~ModulePlayerTwo();
 
 	bool Start();
-	update_status PreUpdate();
 	void restartPlayer(bool everything);
+
+	bool GetPlayerInput(input_type actionKey);
 };
 
 #endif

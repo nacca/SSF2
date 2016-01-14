@@ -365,8 +365,914 @@ bool ModulePlayerDhalsim::CleanUp()
 }
 
 // Pre Update
+
 update_status ModulePlayerDhalsim::PreUpdate()
 {
+	bool near = false;
+
+	if (otherPlayer->getPosition().x > position.x)
+		looking_right = true;
+	else
+		looking_right = false;
+
+	if ((otherPlayer->getPosition().x - position.x) < 50 &&
+		(otherPlayer->getPosition().x - position.x) > -50)
+		near = true;
+
+	if (dead)
+	{
+		if (playerState != PLAYER_KO)
+		{
+			playerState = PLAYER_KO;
+			otherPlayer->SetWin(true);
+
+		}
+		return UPDATE_CONTINUE;
+	}
+	else if (time_0)
+	{
+		playerState = PLAYER_TIME_OUT;
+	}
+	else if (win &&
+		(playerState == PLAYER_IDLE ||
+		playerState == PLAYER_CROUCHING ||
+		playerState == PLAYER_WALKING_FORWARD ||
+		playerState == PLAYER_WALKING_BACKWARD))
+	{
+		if (playerState != PLAYER_WIN_1 && playerState != PLAYER_WIN_2)
+		{
+			if (wins == 0)
+			{
+				++wins;
+				playerState = PLAYER_WIN_1;
+			}
+			else
+			{
+				++wins;
+				playerState = PLAYER_WIN_2;
+			}
+		}
+		return UPDATE_CONTINUE;
+	}
+	else if (playerState == PLAYER_BLOCKING_HITTED || playerState == PLAYER_CROUCH_BLOCKING_HITTED);
+	else if (leg_hitted && playerState == PLAYER_BLOCKING)
+	{
+		playerState = PLAYER_HIT;
+	}
+	else if (hitted && playerState == PLAYER_BLOCKING)
+	{
+		playerState = PLAYER_BLOCKING_HITTED;
+		block.RestartFrames();
+	}
+	else if (hitted && playerState == PLAYER_CROUCH_BLOCKING)
+	{
+		playerState = PLAYER_CROUCH_BLOCKING_HITTED;
+		crouch_block.RestartFrames();
+	}
+	else if ((hitted || head_hitted) && (playerState == PLAYER_JUMPING || playerState == PLAYER_JUMP_PUNCH || playerState == PLAYER_JUMP_KICK || playerState == PLAYER_AIR_HITTED))
+	{
+		playerState = PLAYER_AIR_HITTED;
+	}
+	else if ((hitted || head_hitted) && (playerState == PLAYER_CROUCHING || playerState == PLAYER_CROUCH_PUNCH || playerState == PLAYER_CROUCH_KICK))
+	{
+		playerState = PLAYER_CROUCH_HIT;
+	}
+	else if (head_hitted)
+	{
+		playerState = PLAYER_FACE_HIT;
+	}
+	else if (hitted)
+	{
+		playerState = PLAYER_HIT;
+	}
+
+	switch (playerState)
+	{
+
+	case PLAYER_IDLE:
+
+		if (starting_combo == COMBO_YOGA_FIRE)
+		{
+			App->audio->PlayFx(audio_id_yoga_fire);
+			playerState = PLAYER_YOGA_FIRE;
+		}
+		else if (starting_combo == COMBO_YOGA_FLAME)
+		{
+			App->audio->PlayFx(audio_id_yoga_flame);
+			playerState = PLAYER_YOGA_FLAME;
+		}
+		else if (GetPlayerInput(INPUT_RIGHT) &&
+			GetPlayerInput(INPUT_UP))
+		{
+			distance_jumped = 0;
+			going_up = true;
+			playerState = PLAYER_JUMPING;
+			directionJump = JUMP_RIGHT;
+		}
+		else if (GetPlayerInput(INPUT_LEFT) &&
+			GetPlayerInput(INPUT_UP))
+		{
+			distance_jumped = 0;
+			going_up = true;
+			playerState = PLAYER_JUMPING;
+			directionJump = JUMP_LEFT;
+		}
+		else if (GetPlayerInput(INPUT_RIGHT) &&
+			looking_right)
+		{
+			playerState = PLAYER_WALKING_FORWARD;
+		}
+		else if (GetPlayerInput(INPUT_RIGHT) &&
+			otherPlayer->IsAttacking())
+		{
+			playerState = PLAYER_BLOCKING;
+		}
+		else if (GetPlayerInput(INPUT_RIGHT))
+		{
+			playerState = PLAYER_WALKING_BACKWARD;
+		}
+		else if (GetPlayerInput(INPUT_RIGHT) &&
+			looking_right && otherPlayer->IsAttacking())
+		{
+			playerState = PLAYER_BLOCKING;
+		}
+		else if (GetPlayerInput(INPUT_LEFT) &&
+			looking_right)
+		{
+			playerState = PLAYER_WALKING_BACKWARD;
+		}
+		else if (GetPlayerInput(INPUT_LEFT))
+		{
+			playerState = PLAYER_WALKING_FORWARD;
+		}
+		else if (GetPlayerInput(INPUT_DOWN))
+		{
+			playerState = PLAYER_CROUCHING;
+		}
+		else if (GetPlayerInput(INPUT_UP))
+		{
+			distance_jumped = 0;
+			going_up = true;
+			playerState = PLAYER_JUMPING;
+			directionJump = JUMP_STATIC;
+		}
+		if (near && starting_combo == COMBO_NOTHING)
+		{
+			if (GetPlayerInput(INPUT_L_PUNCH))
+			{
+				playerState = PLAYER_FORWARD_LOW_PUNCH;
+				App->audio->PlayFx(audio_id_L_attack);
+			}
+			else if (GetPlayerInput(INPUT_L_KICK))
+			{
+				playerState = PLAYER_FORWARD_LOW_KICK;
+				App->audio->PlayFx(audio_id_L_attack);
+			}
+			else if (GetPlayerInput(INPUT_M_PUNCH))
+			{
+				playerState = PLAYER_FORWARD_MEDIUM_PUNCH;
+				App->audio->PlayFx(audio_id_M_attack);
+			}
+			else if (GetPlayerInput(INPUT_M_KICK))
+			{
+				playerState = PLAYER_FORWARD_MEDIUM_KICK;
+				App->audio->PlayFx(audio_id_M_attack);
+			}
+			else if (GetPlayerInput(INPUT_H_PUNCH))
+			{
+				playerState = PLAYER_FORWARD_HIGH_PUNCH;
+				App->audio->PlayFx(audio_id_H_attack);
+			}
+			else if (GetPlayerInput(INPUT_H_KICK))
+			{
+				playerState = PLAYER_FORWARD_HIGH_KICK;
+				App->audio->PlayFx(audio_id_H_attack);
+			}
+		}
+		else if (starting_combo == COMBO_NOTHING)
+		{
+			if (GetPlayerInput(INPUT_L_PUNCH))
+			{
+				playerState = PLAYER_LOW_PUNCH;
+				App->audio->PlayFx(audio_id_L_attack);
+			}
+			else if (GetPlayerInput(INPUT_L_KICK))
+			{
+				playerState = PLAYER_LOW_KICK;
+				App->audio->PlayFx(audio_id_L_attack);
+			}
+			else if (GetPlayerInput(INPUT_M_PUNCH))
+			{
+				playerState = PLAYER_MEDIUM_PUNCH;
+				App->audio->PlayFx(audio_id_M_attack);
+			}
+			else if (GetPlayerInput(INPUT_M_KICK))
+			{
+				playerState = PLAYER_MEDIUM_KICK;
+				App->audio->PlayFx(audio_id_M_attack);
+			}
+			else if (GetPlayerInput(INPUT_H_PUNCH))
+			{
+				playerState = PLAYER_HIGH_PUNCH;
+				App->audio->PlayFx(audio_id_H_attack);
+			}
+			else if (GetPlayerInput(INPUT_H_KICK))
+			{
+				playerState = PLAYER_HIGH_KICK;
+				App->audio->PlayFx(audio_id_H_attack);
+			}
+		}
+		break;
+
+	case PLAYER_WALKING_FORWARD:
+
+		if (starting_combo == COMBO_YOGA_FIRE)
+		{
+			App->audio->PlayFx(audio_id_yoga_fire);
+			playerState = PLAYER_YOGA_FIRE;
+		}
+		else if (starting_combo == COMBO_YOGA_FLAME)
+		{
+			App->audio->PlayFx(audio_id_yoga_flame);
+			playerState = PLAYER_YOGA_FLAME;
+		}
+		else if (starting_combo == AERIAL_COMBO_PUNCH)
+		{
+			playerState = PLAYER_YOGA_MUMMY;
+		}
+		else if (GetPlayerInput(INPUT_RIGHT) &&
+			GetPlayerInput(INPUT_UP))
+		{
+			distance_jumped = 0;
+			going_up = true;
+			playerState = PLAYER_JUMPING;
+			directionJump = JUMP_RIGHT;
+		}
+		else if (GetPlayerInput(INPUT_LEFT) &&
+			GetPlayerInput(INPUT_UP))
+		{
+			distance_jumped = 0;
+			going_up = true;
+			playerState = PLAYER_JUMPING;
+			directionJump = JUMP_LEFT;
+		}
+		else if (GetPlayerInput(INPUT_RIGHT))
+		{
+			if (looking_right)
+				playerState = PLAYER_WALKING_FORWARD;
+			else if (otherPlayer->IsAttacking())
+				playerState = PLAYER_BLOCKING;
+			else
+				playerState = PLAYER_WALKING_BACKWARD;
+		}
+		else if (GetPlayerInput(INPUT_LEFT))
+		{
+			if (!looking_right)
+				playerState = PLAYER_WALKING_FORWARD;
+			else if (otherPlayer->IsAttacking())
+				playerState = PLAYER_BLOCKING;
+			else
+				playerState = PLAYER_WALKING_BACKWARD;
+		}
+		else if (GetPlayerInput(INPUT_DOWN))
+		{
+			playerState = PLAYER_CROUCHING;
+		}
+		else
+			playerState = PLAYER_IDLE;
+
+		if (near && starting_combo == COMBO_NOTHING)
+		{
+			if (GetPlayerInput(INPUT_L_PUNCH))
+			{
+				playerState = PLAYER_FORWARD_LOW_PUNCH;
+				App->audio->PlayFx(audio_id_L_attack);
+			}
+			else if (GetPlayerInput(INPUT_L_KICK))
+			{
+				playerState = PLAYER_FORWARD_LOW_KICK;
+				App->audio->PlayFx(audio_id_L_attack);
+			}
+			else if (GetPlayerInput(INPUT_M_PUNCH))
+			{
+				playerState = PLAYER_FORWARD_MEDIUM_PUNCH;
+				App->audio->PlayFx(audio_id_M_attack);
+			}
+			else if (GetPlayerInput(INPUT_M_KICK))
+			{
+				playerState = PLAYER_FORWARD_MEDIUM_KICK;
+				App->audio->PlayFx(audio_id_M_attack);
+			}
+			else if (GetPlayerInput(INPUT_H_PUNCH))
+			{
+				playerState = PLAYER_FORWARD_HIGH_PUNCH;
+				App->audio->PlayFx(audio_id_H_attack);
+			}
+			else if (GetPlayerInput(INPUT_H_KICK))
+			{
+				playerState = PLAYER_FORWARD_HIGH_KICK;
+				App->audio->PlayFx(audio_id_H_attack);
+			}
+		}
+		else if (starting_combo == COMBO_NOTHING)
+		{
+			if (GetPlayerInput(INPUT_L_PUNCH))
+			{
+				playerState = PLAYER_LOW_PUNCH;
+				App->audio->PlayFx(audio_id_L_attack);
+			}
+			else if (GetPlayerInput(INPUT_L_KICK))
+			{
+				playerState = PLAYER_LOW_KICK;
+				App->audio->PlayFx(audio_id_L_attack);
+			}
+			else if (GetPlayerInput(INPUT_M_PUNCH))
+			{
+				playerState = PLAYER_MEDIUM_PUNCH;
+				App->audio->PlayFx(audio_id_M_attack);
+			}
+			else if (GetPlayerInput(INPUT_M_KICK))
+			{
+				playerState = PLAYER_MEDIUM_KICK;
+				App->audio->PlayFx(audio_id_M_attack);
+			}
+			else if (GetPlayerInput(INPUT_H_PUNCH))
+			{
+				playerState = PLAYER_HIGH_PUNCH;
+				App->audio->PlayFx(audio_id_H_attack);
+			}
+			else if (GetPlayerInput(INPUT_H_KICK))
+			{
+				playerState = PLAYER_HIGH_KICK;
+				App->audio->PlayFx(audio_id_H_attack);
+			}
+		}
+		break;
+
+	case PLAYER_WALKING_BACKWARD:
+
+		if (starting_combo == COMBO_YOGA_FIRE)
+		{
+			App->audio->PlayFx(audio_id_yoga_fire);
+			playerState = PLAYER_YOGA_FIRE;
+		}
+		else if (starting_combo == COMBO_YOGA_FLAME)
+		{
+			App->audio->PlayFx(audio_id_yoga_flame);
+			playerState = PLAYER_YOGA_FLAME;
+		}
+		else if (otherPlayer->IsAttacking())
+		{
+			playerState = PLAYER_BLOCKING;
+			break;
+		}
+		else if (GetPlayerInput(INPUT_RIGHT) &&
+			GetPlayerInput(INPUT_UP))
+		{
+			distance_jumped = 0;
+			going_up = true;
+			playerState = PLAYER_JUMPING;
+			directionJump = JUMP_RIGHT;
+		}
+		else if (GetPlayerInput(INPUT_LEFT) &&
+			GetPlayerInput(INPUT_UP))
+		{
+			distance_jumped = 0;
+			going_up = true;
+			playerState = PLAYER_JUMPING;
+			directionJump = JUMP_LEFT;
+		}
+		else if (GetPlayerInput(INPUT_RIGHT))
+		{
+			if (looking_right)
+				playerState = PLAYER_WALKING_FORWARD;
+			else
+				playerState = PLAYER_WALKING_BACKWARD;
+		}
+		else if (GetPlayerInput(INPUT_LEFT))
+		{
+			if (looking_right)
+				playerState = PLAYER_WALKING_BACKWARD;
+			else
+				playerState = PLAYER_WALKING_FORWARD;
+		}
+		else if (GetPlayerInput(INPUT_DOWN))
+		{
+			playerState = PLAYER_CROUCHING;
+		}
+		else
+		{
+			playerState = PLAYER_IDLE;
+		}
+		if (near && starting_combo == COMBO_NOTHING)
+		{
+			if (GetPlayerInput(INPUT_L_PUNCH))
+			{
+				playerState = PLAYER_FORWARD_LOW_PUNCH;
+				App->audio->PlayFx(audio_id_L_attack);
+			}
+			else if (GetPlayerInput(INPUT_L_KICK))
+			{
+				playerState = PLAYER_FORWARD_LOW_KICK;
+				App->audio->PlayFx(audio_id_L_attack);
+			}
+			else if (GetPlayerInput(INPUT_M_PUNCH))
+			{
+				playerState = PLAYER_FORWARD_MEDIUM_PUNCH;
+				App->audio->PlayFx(audio_id_M_attack);
+			}
+			else if (GetPlayerInput(INPUT_M_KICK))
+			{
+				playerState = PLAYER_FORWARD_MEDIUM_KICK;
+				App->audio->PlayFx(audio_id_M_attack);
+			}
+			else if (GetPlayerInput(INPUT_H_PUNCH))
+			{
+				playerState = PLAYER_FORWARD_HIGH_PUNCH;
+				App->audio->PlayFx(audio_id_H_attack);
+			}
+			else if (GetPlayerInput(INPUT_H_KICK))
+			{
+				playerState = PLAYER_FORWARD_HIGH_KICK;
+				App->audio->PlayFx(audio_id_H_attack);
+			}
+		}
+		else if (starting_combo == COMBO_NOTHING)
+		{
+			if (GetPlayerInput(INPUT_L_PUNCH))
+			{
+				playerState = PLAYER_LOW_PUNCH;
+				App->audio->PlayFx(audio_id_L_attack);
+			}
+			else if (GetPlayerInput(INPUT_L_KICK))
+			{
+				playerState = PLAYER_LOW_KICK;
+				App->audio->PlayFx(audio_id_L_attack);
+			}
+			else if (GetPlayerInput(INPUT_M_PUNCH))
+			{
+				playerState = PLAYER_MEDIUM_PUNCH;
+				App->audio->PlayFx(audio_id_M_attack);
+			}
+			else if (GetPlayerInput(INPUT_M_KICK))
+			{
+				playerState = PLAYER_MEDIUM_KICK;
+				App->audio->PlayFx(audio_id_M_attack);
+			}
+			else if (GetPlayerInput(INPUT_H_PUNCH))
+			{
+				playerState = PLAYER_HIGH_PUNCH;
+				App->audio->PlayFx(audio_id_H_attack);
+			}
+			else if (GetPlayerInput(INPUT_H_KICK))
+			{
+				playerState = PLAYER_HIGH_KICK;
+				App->audio->PlayFx(audio_id_H_attack);
+			}
+		}
+
+		break;
+
+	case PLAYER_JUMPING:
+
+		if (distance_jumped == 0 && !going_up)
+		{
+			playerState = PLAYER_IDLE;
+			jump_attacked = false;
+			jump.RestartFrames();
+		}
+		else if (starting_combo == AERIAL_COMBO_PUNCH && !jump_attacked)
+		{
+			jump_attacked = true;
+			playerState = PLAYER_YOGA_MUMMY;
+			if (looking_right)
+				directionMummy = JUMP_RIGHT;
+			else
+				directionMummy = JUMP_LEFT;
+		}
+		else if (starting_combo == AERIAL_COMBO_KICK && !jump_attacked)
+		{
+			jump_attacked = true;
+			playerState = PLAYER_YOGA_SPEAR;
+			if (looking_right)
+				directionMummy = JUMP_RIGHT;
+			else
+				directionMummy = JUMP_LEFT;
+		}
+		else
+		{
+			if (((GetPlayerInput(INPUT_L_PUNCH)) ||
+				(GetPlayerInput(INPUT_M_PUNCH)) ||
+				(GetPlayerInput(INPUT_H_PUNCH))) &&
+				!jump_attacked)
+			{
+				jump_attacked = true;
+				playerState = PLAYER_JUMP_PUNCH;
+			}
+
+			else if (((GetPlayerInput(INPUT_L_KICK)) ||
+				(GetPlayerInput(INPUT_M_KICK)) ||
+				(GetPlayerInput(INPUT_H_KICK))) &&
+				!jump_attacked)
+			{
+				jump_attacked = true;
+				playerState = PLAYER_JUMP_KICK;
+			}
+		}
+		break;
+
+
+	case PLAYER_JUMP_PUNCH:
+
+		if (distance_jumped == 0)
+		{
+			jump_attacked = false;
+			playerState = PLAYER_IDLE;
+			jump.RestartFrames();
+			jump_punch.RestartFrames();
+		}
+		else if (jump_punch.IsEnded())
+		{
+			jump_punch.RestartFrames();
+			playerState = PLAYER_JUMPING;
+		}
+		break;
+
+	case PLAYER_JUMP_KICK:
+		if (distance_jumped == 0)
+		{
+			jump_attacked = false;
+			playerState = PLAYER_IDLE;
+			jump.RestartFrames();
+			jump_kick.RestartFrames();
+		}
+		else if (jump_kick.IsEnded())
+		{
+			jump_kick.RestartFrames();
+			playerState = PLAYER_JUMPING;
+		}
+		break;
+
+
+	case PLAYER_CROUCHING:
+
+		if ((GetPlayerInput(INPUT_RIGHT))
+			&& otherPlayer->IsAttacking() && !looking_right)
+			playerState = PLAYER_CROUCH_BLOCKING;
+		else if ((GetPlayerInput(INPUT_LEFT))
+			&& otherPlayer->IsAttacking() && looking_right)
+			playerState = PLAYER_CROUCH_BLOCKING;
+		else if ((GetPlayerInput(INPUT_L_PUNCH)) ||
+			(GetPlayerInput(INPUT_M_PUNCH)) ||
+			(GetPlayerInput(INPUT_H_PUNCH)))
+			playerState = PLAYER_CROUCH_PUNCH;
+
+		else if ((GetPlayerInput(INPUT_L_KICK)) ||
+			(GetPlayerInput(INPUT_M_KICK)) ||
+			(GetPlayerInput(INPUT_H_KICK)))
+			playerState = PLAYER_CROUCH_KICK;
+
+		else if (!(GetPlayerInput(INPUT_DOWN)))
+		{
+			playerState = PLAYER_IDLE;
+			crouching.RestartFrames();
+		}
+		break;
+
+	case PLAYER_LOW_PUNCH:
+
+		if (L_punch.IsEnded())
+		{
+			L_punch.RestartFrames();
+			playerState = PLAYER_IDLE;
+		}
+		break;
+
+	case PLAYER_LOW_KICK:
+
+		if (L_kick.IsEnded())
+		{
+			L_kick.RestartFrames();
+			playerState = PLAYER_IDLE;
+		}
+		break;
+
+	case PLAYER_MEDIUM_PUNCH:
+
+		if (M_punch.IsEnded())
+		{
+			M_punch.RestartFrames();
+			playerState = PLAYER_IDLE;
+		}
+		break;
+
+	case PLAYER_MEDIUM_KICK:
+
+		if (M_kick.IsEnded())
+		{
+			M_kick.RestartFrames();
+			playerState = PLAYER_IDLE;
+		}
+		break;
+
+	case PLAYER_HIGH_PUNCH:
+
+		if (H_punch.IsEnded())
+		{
+			H_punch.RestartFrames();
+			playerState = PLAYER_IDLE;
+		}
+		break;
+
+	case PLAYER_HIGH_KICK:
+
+		if (H_kick.IsEnded())
+		{
+			H_kick.RestartFrames();
+			playerState = PLAYER_IDLE;
+		}
+		break;
+
+	case PLAYER_CROUCH_PUNCH:
+
+		if (crouch_punch.IsEnded())
+		{
+			crouch_punch.RestartFrames();
+			playerState = PLAYER_CROUCHING;
+		}
+		break;
+
+	case PLAYER_CROUCH_KICK:
+
+		if (crouch_kick.IsEnded())
+		{
+			crouch_kick.RestartFrames();
+			playerState = PLAYER_CROUCHING;
+		}
+		break;
+
+	case PLAYER_FORWARD_LOW_PUNCH:
+
+		if (F_L_punch.IsEnded())
+		{
+			F_L_punch.RestartFrames();
+			playerState = PLAYER_IDLE;
+		}
+		break;
+
+	case PLAYER_FORWARD_LOW_KICK:
+
+		if (F_L_kick.IsEnded())
+		{
+			F_L_kick.RestartFrames();
+			playerState = PLAYER_IDLE;
+		}
+		break;
+
+	case PLAYER_FORWARD_MEDIUM_PUNCH:
+
+		if (F_M_punch.IsEnded())
+		{
+			F_M_punch.RestartFrames();
+			playerState = PLAYER_IDLE;
+		}
+		break;
+
+	case PLAYER_FORWARD_MEDIUM_KICK:
+
+		if (F_M_kick.IsEnded())
+		{
+			F_M_kick.RestartFrames();
+			playerState = PLAYER_IDLE;
+		}
+		break;
+
+	case PLAYER_FORWARD_HIGH_PUNCH:
+
+		if (F_H_punch.IsEnded())
+		{
+			F_H_punch.RestartFrames();
+			playerState = PLAYER_IDLE;
+		}
+		break;
+
+	case PLAYER_FORWARD_HIGH_KICK:
+
+		if (F_H_kick.IsEnded())
+		{
+			F_H_kick.RestartFrames();
+			playerState = PLAYER_IDLE;
+		}
+		break;
+
+	case PLAYER_HIT:
+
+		if (hit.IsEnded())
+		{
+			hit.RestartFrames();
+			if (distance_jumped > 0){
+				going_up = false;
+				playerState = PLAYER_JUMPING;
+			}
+			else
+				playerState = PLAYER_IDLE;
+			hitted = false;
+			head_hitted = false;
+			leg_hitted = false;
+			already_hitted = false;
+		}
+		break;
+
+	case PLAYER_CROUCH_HIT:
+
+		if (crouch_hit.IsEnded())
+		{
+			crouch_hit.RestartFrames();
+			playerState = PLAYER_CROUCHING;
+			hitted = false;
+			head_hitted = false;
+			leg_hitted = false;
+			already_hitted = false;
+		}
+		break;
+
+	case PLAYER_FACE_HIT:
+
+		if (face_hit.IsEnded())
+		{
+			face_hit.RestartFrames();
+			playerState = PLAYER_IDLE;
+			hitted = false;
+			head_hitted = false;
+			leg_hitted = false;
+			already_hitted = false;
+		}
+		break;
+
+	case PLAYER_YOGA_FIRE:
+		if (yoga_fire.GetCurrentFrameNumber() == 3 && SDL_GetTicks() - lastShotTimer > 500)
+		{
+			if (looking_right)
+			{
+				iPoint particlePosition(position.x + 42 + 14, position.y - 54 + 10);
+				App->particles->newParticle(particlePosition, graphics, particula, destroy_particula, 2);
+			}
+			else
+			{
+				iPoint particlePosition(position.x - 42 - 14, position.y - 54 + 10);
+				App->particles->newParticle(particlePosition, graphics, particula, destroy_particula, -2);
+			}
+			lastShotTimer = SDL_GetTicks();
+		}
+
+		if (yoga_fire.IsEnded())
+		{
+			yoga_fire.RestartFrames();
+			playerState = PLAYER_IDLE;
+		}
+		break;
+
+	case PLAYER_YOGA_FLAME:
+
+		if (yoga_flame.IsEnded())
+		{
+			yoga_flame.RestartFrames();
+			playerState = PLAYER_IDLE;
+
+		}
+		break;
+
+	case PLAYER_YOGA_MUMMY:
+
+		going_up = false;
+		if (distance_jumped == 0)
+		{
+			yoga_mummy.RestartFrames();
+			playerState = PLAYER_IDLE;
+			jump_attacked = false;
+		}
+		else if (yoga_mummy.IsEnded() && distance_jumped > 0)
+		{
+			yoga_mummy.RestartFrames();
+			playerState = PLAYER_JUMPING;
+			jump_attacked = true;
+		}
+		else if (yoga_mummy.IsEnded())
+		{
+			yoga_mummy.RestartFrames();
+			playerState = PLAYER_IDLE;
+			jump_attacked = false;
+		}
+		break;
+
+	case PLAYER_YOGA_SPEAR:
+
+		going_up = false;
+		if (distance_jumped == 0)
+		{
+			yoga_spear.RestartFrames();
+			playerState = PLAYER_IDLE;
+			jump_attacked = false;
+		}
+		else if (yoga_spear.IsEnded() && distance_jumped > 0)
+		{
+			yoga_spear.RestartFrames();
+			playerState = PLAYER_JUMPING;
+			jump_attacked = true;
+		}
+		else if (yoga_spear.IsEnded())
+		{
+			yoga_spear.RestartFrames();
+			playerState = PLAYER_IDLE;
+			jump_attacked = false;
+		}
+		break;
+
+	case PLAYER_BLOCKING:
+		if (!otherPlayer->IsAttacking() ||
+			(looking_right && !(GetPlayerInput(INPUT_LEFT))) ||
+			(!looking_right && !(GetPlayerInput(INPUT_RIGHT))))
+		{
+			block.RestartFrames();
+			playerState = PLAYER_IDLE;
+		}
+		else if (otherPlayer->IsAttacking() &&
+			(GetPlayerInput(INPUT_DOWN)))
+		{
+			block.RestartFrames();
+			playerState = PLAYER_CROUCH_BLOCKING;
+		}
+		else if (block.IsEnded())
+			block.RestartFrames();
+		break;
+
+	case PLAYER_CROUCH_BLOCKING:
+		if ((!otherPlayer->IsAttacking() ||
+			(looking_right && !(GetPlayerInput(INPUT_LEFT))) ||
+			(!looking_right && !(GetPlayerInput(INPUT_RIGHT))))
+			&& (GetPlayerInput(INPUT_DOWN)))
+		{
+			crouch_block.RestartFrames();
+			playerState = PLAYER_CROUCHING;
+		}
+		else if (!(GetPlayerInput(INPUT_DOWN)) && (!otherPlayer->IsAttacking() ||
+			(looking_right && !(GetPlayerInput(INPUT_LEFT))) ||
+			(!looking_right && !(GetPlayerInput(INPUT_RIGHT)))))
+		{
+			crouch_block.RestartFrames();
+			playerState = PLAYER_IDLE;
+		}
+		else if (otherPlayer->IsAttacking() && !(GetPlayerInput(INPUT_DOWN)) &&
+			((looking_right && (GetPlayerInput(INPUT_LEFT))) ||
+			(!looking_right && (GetPlayerInput(INPUT_RIGHT)))))
+		{
+			crouch_block.RestartFrames();
+			playerState = PLAYER_BLOCKING;
+		}
+		else if (crouch_block.IsEnded())
+			crouch_block.RestartFrames();
+		break;
+
+	case PLAYER_BLOCKING_HITTED:
+		if (block.IsEnded())
+		{
+			hitted = false;
+			head_hitted = false;
+			leg_hitted = false;
+			already_hitted = false;
+			block.RestartFrames();
+			playerState = PLAYER_BLOCKING;
+		}
+		break;
+
+	case PLAYER_CROUCH_BLOCKING_HITTED:
+		if (crouch_block.IsEnded())
+		{
+			hitted = false;
+			head_hitted = false;
+			leg_hitted = false;
+			already_hitted = false;
+			crouch_block.RestartFrames();
+			playerState = PLAYER_CROUCH_BLOCKING;
+		}
+		break;
+
+	case PLAYER_AIR_HITTED:
+		if (air_hit.IsEnded())
+		{
+			hitted = false;
+			head_hitted = false;
+			leg_hitted = false;
+			already_hitted = false;
+			air_hit.RestartFrames();
+			going_up = false;
+			playerState = PLAYER_JUMPING;
+		}
+		break;
+	}
+
+	starting_combo = COMBO_NOTHING;
+
 	return UPDATE_CONTINUE;
 }
 
@@ -901,130 +1807,132 @@ update_status ModulePlayerDhalsim::PostUpdate()
 // On Collision
 void ModulePlayerDhalsim::OnCollision(Collider* c1, Collider* c2)
 {
-	if (c1->type == COLLIDER_BODY_PLAYER_ONE && c2->type == COLLIDER_BODY_PLAYER_TWO)
-		colliding_players = true;
-	else if (c1->type == COLLIDER_BODY_PLAYER_TWO && c2->type == COLLIDER_BODY_PLAYER_ONE)
-		colliding_players = true;
-	else if (c1->type == COLLIDER_PLAYER_ONE && c2->type == COLLIDER_ATTACK_PLAYER_TWO && c2->rect.w * c2->rect.h != 0)
-	{
-		if (!hitted && playerState != PLAYER_BLOCKING && playerState != PLAYER_CROUCH_BLOCKING && playerState != PLAYER_BLOCKING_HITTED && playerState != PLAYER_CROUCH_BLOCKING_HITTED)
+	if (!win && !dead && !time_0){
+		if (c1->type == COLLIDER_BODY_PLAYER_ONE && c2->type == COLLIDER_BODY_PLAYER_TWO)
+			colliding_players = true;
+		else if (c1->type == COLLIDER_BODY_PLAYER_TWO && c2->type == COLLIDER_BODY_PLAYER_ONE)
+			colliding_players = true;
+		else if (c1->type == COLLIDER_PLAYER_ONE && c2->type == COLLIDER_ATTACK_PLAYER_TWO && c2->rect.w * c2->rect.h != 0)
 		{
-			life -= c2->damage;
-			already_hitted = true;
-		}
-		else if (!already_hitted && (otherPlayer->GetPlayerState() == PLAYER_CROUCH_PUNCH || otherPlayer->GetPlayerState() == PLAYER_CROUCH_KICK) && playerState != PLAYER_CROUCH_BLOCKING && playerState != PLAYER_CROUCH_BLOCKING_HITTED)
-		{
-			life -= c2->damage;
-			already_hitted = true;
-			leg_hitted = true;
-		}
+			if (!hitted && playerState != PLAYER_BLOCKING && playerState != PLAYER_CROUCH_BLOCKING && playerState != PLAYER_BLOCKING_HITTED && playerState != PLAYER_CROUCH_BLOCKING_HITTED)
+			{
+				life -= c2->damage;
+				already_hitted = true;
+			}
+			else if (!already_hitted && (otherPlayer->GetPlayerState() == PLAYER_CROUCH_PUNCH || otherPlayer->GetPlayerState() == PLAYER_CROUCH_KICK) && playerState != PLAYER_CROUCH_BLOCKING && playerState != PLAYER_CROUCH_BLOCKING_HITTED)
+			{
+				life -= c2->damage;
+				already_hitted = true;
+				leg_hitted = true;
+			}
 
-		if (life < 0)
-		{
-			App->scene_bison->RestartScene(otherPlayer->wins + 1);
-			App->audio->PlayFx(audio_id_dead);
-			dead = true;
-			life = 0;
+			if (life < 0)
+			{
+				App->scene_bison->RestartScene(otherPlayer->wins + 1);
+				App->audio->PlayFx(audio_id_dead);
+				dead = true;
+				life = 0;
+			}
+			else
+			{
+				if (c2->damageType == L_ATTACK)
+					App->audio->PlayFx(audio_id_L_impact);
+				else if (c2->damageType == M_ATTACK)
+					App->audio->PlayFx(audio_id_M_impact);
+				else if (c2->damageType == H_ATTACK)
+					App->audio->PlayFx(audio_id_H_impact);
+			}
+
+			hitted = true;
+			if (c1 == &collider_head)
+				head_hitted = true;
 		}
-		else
+		else if (c1->type == COLLIDER_PLAYER_TWO && c2->type == COLLIDER_ATTACK_PLAYER_ONE  && c2->rect.w * c2->rect.h != 0)
 		{
-			if (c2->damageType == L_ATTACK)
+			if (!hitted && playerState != PLAYER_BLOCKING && playerState != PLAYER_CROUCH_BLOCKING && playerState != PLAYER_BLOCKING_HITTED && playerState != PLAYER_CROUCH_BLOCKING_HITTED)
+			{
+				life -= c2->damage;
+				already_hitted = true;
+			}
+			else if (!already_hitted && (otherPlayer->GetPlayerState() == PLAYER_CROUCH_PUNCH || otherPlayer->GetPlayerState() == PLAYER_CROUCH_KICK) && playerState != PLAYER_CROUCH_BLOCKING && playerState != PLAYER_CROUCH_BLOCKING_HITTED)
+			{
+				life -= c2->damage;
+				already_hitted = true;
+				leg_hitted = true;
+			}
+
+
+			if (life < 0)
+			{
+				App->scene_bison->RestartScene(otherPlayer->wins + 1);
+				App->audio->PlayFx(audio_id_dead);
+				dead = true;
+				life = 0;
+			}
+			else
+			{
+				if (c2->damageType == L_ATTACK)
+					App->audio->PlayFx(audio_id_L_impact);
+				else if (c2->damageType == M_ATTACK)
+					App->audio->PlayFx(audio_id_M_impact);
+				else if (c2->damageType == H_ATTACK)
+					App->audio->PlayFx(audio_id_H_impact);
+			}
+
+
+			hitted = true;
+			if (c1 == &collider_head)
+				head_hitted = true;
+		}
+		else if ((c1->type == COLLIDER_PLAYER_ONE || c1->type == COLLIDER_ATTACK_PLAYER_ONE) && c2->type == COLLIDER_PARTICLES && c2->rect.w * c2->rect.h != 0)
+		{
+			if (!hitted && playerState != PLAYER_BLOCKING && playerState != PLAYER_CROUCH_BLOCKING && playerState != PLAYER_BLOCKING_HITTED && playerState != PLAYER_CROUCH_BLOCKING_HITTED)
+			{
+				life -= 18;
 				App->audio->PlayFx(audio_id_L_impact);
-			else if (c2->damageType == M_ATTACK)
-				App->audio->PlayFx(audio_id_M_impact);
-			else if (c2->damageType == H_ATTACK)
-				App->audio->PlayFx(audio_id_H_impact);
-		}
+			}
 
-		hitted = true;
-		if (c1 == &collider_head)
-			head_hitted = true;
-	}
-	else if (c1->type == COLLIDER_PLAYER_TWO && c2->type == COLLIDER_ATTACK_PLAYER_ONE  && c2->rect.w * c2->rect.h != 0)
-	{
-		if (!hitted && playerState != PLAYER_BLOCKING && playerState != PLAYER_CROUCH_BLOCKING && playerState != PLAYER_BLOCKING_HITTED && playerState != PLAYER_CROUCH_BLOCKING_HITTED)
-		{
-			life -= c2->damage;
-			already_hitted = true;
-		}
-		else if (!already_hitted && (otherPlayer->GetPlayerState() == PLAYER_CROUCH_PUNCH || otherPlayer->GetPlayerState() == PLAYER_CROUCH_KICK) && playerState != PLAYER_CROUCH_BLOCKING && playerState != PLAYER_CROUCH_BLOCKING_HITTED)
-		{
-			life -= c2->damage;
-			already_hitted = true;
-			leg_hitted = true;
-		}
+			if (life < 0)
+			{
+				App->scene_bison->RestartScene(otherPlayer->wins + 1);
+				App->audio->PlayFx(audio_id_dead);
+				dead = true;
+				life = 0;
+			}
 
-
-		if (life < 0)
-		{
-			App->scene_bison->RestartScene(otherPlayer->wins + 1);
-			App->audio->PlayFx(audio_id_dead);
-			dead = true;
-			life = 0;
+			hitted = true;
+			if (c1 == &collider_head)
+				head_hitted = true;
 		}
-		else
+		else if ((c1->type == COLLIDER_PLAYER_TWO || c1->type == COLLIDER_ATTACK_PLAYER_TWO) && c2->type == COLLIDER_PARTICLES && c2->rect.w * c2->rect.h != 0)
 		{
-			if (c2->damageType == L_ATTACK)
+			if (!hitted && playerState != PLAYER_BLOCKING && playerState != PLAYER_CROUCH_BLOCKING && playerState != PLAYER_BLOCKING_HITTED && playerState != PLAYER_CROUCH_BLOCKING_HITTED)
+			{
+				life -= 18;
 				App->audio->PlayFx(audio_id_L_impact);
-			else if (c2->damageType == M_ATTACK)
-				App->audio->PlayFx(audio_id_M_impact);
-			else if (c2->damageType == H_ATTACK)
-				App->audio->PlayFx(audio_id_H_impact);
+			}
+
+			if (life < 0)
+			{
+				App->scene_bison->RestartScene(otherPlayer->wins + 1);
+				App->audio->PlayFx(audio_id_dead);
+				dead = true;
+				life = 0;
+			}
+
+			hitted = true;
+			if (c1 == &collider_head)
+				head_hitted = true;
 		}
-
-
-		hitted = true;
-		if (c1 == &collider_head)
-			head_hitted = true;
-	}
-	else if ((c1->type == COLLIDER_PLAYER_ONE || c1->type == COLLIDER_ATTACK_PLAYER_ONE) && c2->type == COLLIDER_PARTICLES && c2->rect.w * c2->rect.h != 0)
-	{
-		if (!hitted && playerState != PLAYER_BLOCKING && playerState != PLAYER_CROUCH_BLOCKING && playerState != PLAYER_BLOCKING_HITTED && playerState != PLAYER_CROUCH_BLOCKING_HITTED)
-		{
-			life -= 18;
-			App->audio->PlayFx(audio_id_L_impact);
-		}
-
-		if (life < 0)
-		{
-			App->scene_bison->RestartScene(otherPlayer->wins + 1);
-			App->audio->PlayFx(audio_id_dead);
-			dead = true;
-			life = 0;
-		}
-
-		hitted = true;
-		if (c1 == &collider_head)
-			head_hitted = true;
-	}
-	else if ((c1->type == COLLIDER_PLAYER_TWO || c1->type == COLLIDER_ATTACK_PLAYER_TWO)  && c2->type == COLLIDER_PARTICLES && c2->rect.w * c2->rect.h != 0)
-	{
-		if (!hitted && playerState != PLAYER_BLOCKING && playerState != PLAYER_CROUCH_BLOCKING && playerState != PLAYER_BLOCKING_HITTED && playerState != PLAYER_CROUCH_BLOCKING_HITTED)
-		{
-			life -= 18;
-			App->audio->PlayFx(audio_id_L_impact);
-		}
-
-		if (life < 0)
-		{
-			App->scene_bison->RestartScene(otherPlayer->wins + 1);
-			App->audio->PlayFx(audio_id_dead);
-			dead = true;
-			life = 0;
-		}
-
-		hitted = true;
-		if (c1 == &collider_head)
-			head_hitted = true;
 	}
 }
 
 // Returns true if the player is the limit of the camera
 bool ModulePlayerDhalsim::playerInCameraLimit() const
 {
-	if (App->renderer->camera.x <= -(collider_body.rect.x*SCREEN_SIZE))
+	if (App->renderer->camera.x <= -((collider_body.rect.x - collider_body.rect.w)*SCREEN_SIZE))
 		return true;
-	if (App->renderer->camera.x - App->renderer->camera.w >= -((collider_body.rect.x + collider_body.rect.w)*SCREEN_SIZE))
+	if (App->renderer->camera.x - App->renderer->camera.w >= -((collider_body.rect.x + collider_body.rect.w*2)*SCREEN_SIZE))
 		return true;
 	return false;
 }
@@ -1044,13 +1952,13 @@ void ModulePlayerDhalsim::MovePlayer(int distance)
 			}
 			else
 			{
-				if (App->renderer->camera.x - App->renderer->camera.w < -((player_collider.rect.x + player_collider.rect.w)*SCREEN_SIZE))
+				if (App->renderer->camera.x - App->renderer->camera.w < -((player_collider.rect.x + player_collider.rect.w*2)*SCREEN_SIZE))
 					position.x += distance;
 			}
 		}
 		else
 		{
-			if (App->renderer->camera.x - App->renderer->camera.w < -((player_collider.rect.x + player_collider.rect.w)*SCREEN_SIZE))
+			if (App->renderer->camera.x - App->renderer->camera.w < -((player_collider.rect.x + player_collider.rect.w*2)*SCREEN_SIZE))
 				position.x += distance;
 		}
 	}
@@ -1066,13 +1974,13 @@ void ModulePlayerDhalsim::MovePlayer(int distance)
 			}
 			else
 			{
-				if (App->renderer->camera.x > -(player_collider.rect.x*SCREEN_SIZE))
+				if (App->renderer->camera.x > -(player_collider.rect.x*SCREEN_SIZE) + (player_collider.rect.w*SCREEN_SIZE))
 					position.x += distance;
 			}
 		}
 		else
 		{
-			if (App->renderer->camera.x > -(player_collider.rect.x*SCREEN_SIZE))
+			if (App->renderer->camera.x > -(player_collider.rect.x*SCREEN_SIZE) + (player_collider.rect.w*SCREEN_SIZE))
 				position.x += distance;
 		}
 	}
@@ -1187,7 +2095,7 @@ bool ModulePlayerDhalsim::GetTime_0() const
 	return time_0;
 }
 
-void ModulePlayerDhalsim::SetTime_0(bool timer_0)
+void ModulePlayerDhalsim::SetTime_0(bool time_0)
 {
 	this->time_0 = time_0;
 }
@@ -1235,4 +2143,9 @@ void ModulePlayerDhalsim::SetStartingCombo(combo_types starting_combo)
 int ModulePlayerDhalsim::GetDistanceJumped() const
 {
 	return distance_jumped;
+}
+
+bool ModulePlayerDhalsim::GetPlayerInput(input_type actionKey)
+{
+	return false;
 }

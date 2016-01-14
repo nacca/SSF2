@@ -90,6 +90,19 @@ enum damage_type{
 	NONE_DAMAGE
 };
 
+enum input_type{
+	INPUT_UP,
+	INPUT_DOWN,
+	INPUT_LEFT,
+	INPUT_RIGHT,
+	INPUT_L_PUNCH,
+	INPUT_L_KICK,
+	INPUT_M_PUNCH,
+	INPUT_M_KICK,
+	INPUT_H_PUNCH,
+	INPUT_H_KICK
+};
+
 // Deletes a buffer
 #define RELEASE( x ) \
     {\
@@ -113,7 +126,7 @@ enum damage_type{
 // Configuration -----------
 #define SCREEN_WIDTH 256
 #define SCREEN_HEIGHT 224
-#define SCREEN_SIZE 2
+#define SCREEN_SIZE 3
 #define FULLSCREEN false
 #define VSYNC true
 #define TITLE "Super Street Fighter 2 - Tribute"

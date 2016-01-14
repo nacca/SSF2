@@ -31,6 +31,8 @@ public:
 	void MovePlayer(int distance);
 	bool playerInCameraLimit() const;
 
+	virtual bool GetPlayerInput(input_type actionKey);
+
 	int GetWins() const;
 	void SetWins(int wins);
 
@@ -45,7 +47,7 @@ public:
 	void SetDead(bool dead);
 
 	bool GetTime_0() const;
-	void SetTime_0(bool timer_0);
+	void SetTime_0(bool time_0);
 
 	bool GetJumping() const;
 	void SetJumping(bool jumping);
