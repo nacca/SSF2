@@ -216,7 +216,7 @@ update_status ModuleSceneBison::Update()
 	timeNow -= initialTime;
 	timeNow /= 1000;
 	timeNow = 90 - timeNow;
-	if (timeNow <= 0 && !restarting)
+	if (timeNow <= 0 && !restarting && !end)
 	{
 		timeNow = 0;
 		if (App->player_one->GetLife() > App->player_two->GetLife())
@@ -237,7 +237,8 @@ update_status ModuleSceneBison::Update()
 			RestartScene(0);
 		}
 	}
-	else if (timeNow <= 0)
+	
+	if (timeNow <= 0)
 	{
 		timeNow = 0;
 	}
