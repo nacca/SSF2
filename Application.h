@@ -14,8 +14,7 @@ class ModuleFadeToBlack;
 class ModuleSceneBison;
 class ModuleParticleSystem;
 class ModuleCollisions;
-class ModulePlayerOne;
-class ModulePlayerTwo;
+class ModulePlayerDhalsim;
 class ModuleComboDetection;
 
 class Application
@@ -39,8 +38,8 @@ public:
 	ModuleSceneBison* scene_bison;
 	ModuleParticleSystem* particles;
 	ModuleCollisions* collisions;
-	ModulePlayerOne* player_one;
-	ModulePlayerTwo* player_two;
+	ModulePlayerDhalsim* player_one;
+	ModulePlayerDhalsim* player_two;
 	ModuleComboDetection* combo;
 
 private:

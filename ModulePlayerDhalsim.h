@@ -13,7 +13,7 @@ struct SDL_Texture;
 class ModulePlayerDhalsim : public Module
 {
 public:
-	ModulePlayerDhalsim(bool start_enabled = true);
+	ModulePlayerDhalsim(int playerNum, bool start_enabled = true);
 	virtual ~ModulePlayerDhalsim();
 
 	virtual bool Start();
@@ -152,6 +152,8 @@ protected:
 
 	player_state playerState;
 	combo_types starting_combo;
+
+	int numPlayer;
 
 };
 

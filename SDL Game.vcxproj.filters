@@ -58,12 +58,6 @@
     <ClInclude Include="ModuleCollisions.h">
       <Filter>Core Modules</Filter>
     </ClInclude>
-    <ClInclude Include="ModulePlayerOne.h">
-      <Filter>Game Modules</Filter>
-    </ClInclude>
-    <ClInclude Include="ModulePlayerTwo.h">
-      <Filter>Game Modules</Filter>
-    </ClInclude>
     <ClInclude Include="ModuleComboDetection.h">
       <Filter>Game Modules</Filter>
     </ClInclude>
@@ -113,12 +107,6 @@
     </ClCompile>
     <ClCompile Include="ModuleCollisions.cpp">
       <Filter>Core Modules</Filter>
-    </ClCompile>
-    <ClCompile Include="ModulePlayerOne.cpp">
-      <Filter>Game Modules</Filter>
-    </ClCompile>
-    <ClCompile Include="ModulePlayerTwo.cpp">
-      <Filter>Game Modules</Filter>
     </ClCompile>
     <ClCompile Include="ModuleComboDetection.cpp">
       <Filter>Game Modules</Filter>

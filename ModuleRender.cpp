@@ -4,8 +4,7 @@
 #include "ModuleWindow.h"
 #include "ModuleInput.h"
 #include "SDL/include/SDL.h"
-#include "ModulePlayerOne.h"
-#include "ModulePlayerTwo.h"
+#include "ModulePlayerDhalsim.h"
 
 // Constructor
 ModuleRender::ModuleRender()

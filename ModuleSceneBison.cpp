@@ -7,10 +7,6 @@
 #include "ModuleAudio.h"
 #include "SDL/include/SDL.h"
 #include "ModulePlayerDhalsim.h"
-#include "ModulePlayerOne.h"
-#include "ModulePlayerTwo.h"
-
-#include <iostream>
 
 // Creator
 ModuleSceneBison::ModuleSceneBison(bool start_enabled) : Module(start_enabled)
@@ -215,7 +211,7 @@ update_status ModuleSceneBison::Update()
 	int timeNow = (int)SDL_GetTicks();
 	timeNow -= initialTime;
 	timeNow /= 1000;
-	timeNow = 90 - timeNow;
+	timeNow = 99 - timeNow;
 	if (timeNow <= 0 && !restarting && !end)
 	{
 		timeNow = 0;

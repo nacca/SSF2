@@ -13,8 +13,10 @@
 // Basic Module Operations
 
 // Constructors
-ModulePlayerDhalsim::ModulePlayerDhalsim(bool start_enabled) : Module(start_enabled)
+ModulePlayerDhalsim::ModulePlayerDhalsim(int playerNum, bool start_enabled) : Module(start_enabled)
 {
+	numPlayer = playerNum;
+
 	// idle animation
 	idle.frames.push_back({ { 3, 23, 52, 87 }, 25, { { -12, -73, 26, 70 }, { 2, -81, 14, 15 }, { -10, -68, 28, 32 }, { -10, -51, 28, 49 }, { 0, 0, 0, 0 } }, 10 });
 	idle.frames.push_back({ { 59, 24, 49, 86 }, 25, { { -12, -73, 26, 70 }, { 2, -81, 14, 15 }, { -10, -68, 28, 32 }, { -10, -51, 28, 49 }, { 0, 0, 0, 0 } }, 10 });
@@ -318,6 +320,47 @@ ModulePlayerDhalsim::ModulePlayerDhalsim(bool start_enabled) : Module(start_enab
 	destroy_particula.frames.push_back({ { 696, 546, 22, 28 }, 11, { 0, 0, 0, 0 }, 4 });
 	destroy_particula.loop = false;
 
+	if (numPlayer == 1)
+	{
+		position.x = 150;
+		position.y = 200;
+
+		player_collider.type = COLLIDER_BODY_PLAYER_ONE;
+		player_collider.module = this;
+
+		collider_head.type = COLLIDER_PLAYER_ONE;
+		collider_head.module = this;
+
+		collider_body.type = COLLIDER_PLAYER_ONE;
+		collider_body.module = this;
+
+		collider_legs.type = COLLIDER_PLAYER_ONE;
+		collider_legs.module = this;
+
+		collider_attack.type = COLLIDER_ATTACK_PLAYER_ONE;
+		collider_attack.module = this;
+	}
+	else
+	{
+		position.x = 300;
+		position.y = 200;
+
+		player_collider.type = COLLIDER_BODY_PLAYER_TWO;
+		player_collider.module = this;
+
+		collider_head.type = COLLIDER_PLAYER_TWO;
+		collider_head.module = this;
+
+		collider_body.type = COLLIDER_PLAYER_TWO;
+		collider_body.module = this;
+
+		collider_legs.type = COLLIDER_PLAYER_TWO;
+		collider_legs.module = this;
+
+		collider_attack.type = COLLIDER_ATTACK_PLAYER_TWO;
+		collider_attack.module = this;
+	}
+
 	playerState = PLAYER_IDLE;
 	colliding_players = false;
 	jumping = false;
@@ -345,9 +388,39 @@ ModulePlayerDhalsim::~ModulePlayerDhalsim()
 // Load assets
 bool ModulePlayerDhalsim::Start()
 {
-	LOG("Loading Base Dhalsim");
+	LOG("Loading Dhalsim");
 
-	graphics = App->textures->Load("dhalsim.png"); // arcade version
+	if (numPlayer == 1)
+	{
+		graphics = App->textures->Load("dhalsim.png");
+		otherPlayer = App->player_two;
+	}
+	else
+	{
+		graphics = App->textures->Load("dhalsim_recolor.png");
+		otherPlayer = App->player_one;
+	}
+
+	App->collisions->AddCollider(&player_collider);
+	App->collisions->AddCollider(&collider_head);
+	App->collisions->AddCollider(&collider_body);
+	App->collisions->AddCollider(&collider_legs);
+	App->collisions->AddCollider(&collider_attack);
+
+	audio_id_yoga_fire = App->audio->LoadFx("yoga_fire.wav");
+	audio_id_yoga_flame = App->audio->LoadFx("yoga_flame.wav");
+	audio_id_dead = App->audio->LoadFx("dhalsim_dead.wav");
+	audio_id_L_attack = App->audio->LoadFx("SF2_hit_1.wav");;
+	audio_id_M_attack = App->audio->LoadFx("SF2_hit_2.wav");;
+	audio_id_H_attack = App->audio->LoadFx("SF2_hit_3.wav");;
+	audio_id_L_impact = App->audio->LoadFx("SF2_impact_1.wav");;
+	audio_id_M_impact = App->audio->LoadFx("SF2_impact_2.wav");;
+	audio_id_H_impact = App->audio->LoadFx("SF2_impact_3.wav");;
+
+	if (otherPlayer->getPosition().x > position.x)
+		looking_right = true;
+	else
+		looking_right = false;
 
 	return true;
 }
@@ -2026,6 +2099,40 @@ void ModulePlayerDhalsim::MovePlayer(int distance)
 // Resets the player states
 void ModulePlayerDhalsim::restartPlayer(bool everything)
 {
+
+	if (numPlayer == 1)
+	{
+		position.x = 150;
+		position.y = 200;
+	}
+	else
+	{
+		position.x = 300;
+		position.y = 200;
+	}
+
+	if (everything)
+		wins = 0;
+
+	playerState = PLAYER_IDLE;
+	colliding_players = false;
+	jumping = false;
+	hitted = false;
+	head_hitted = false;
+	life = 200;
+	win = false;
+	dead = false;
+	time_0 = false;
+	starting_combo = COMBO_NOTHING;
+
+	ko.RestartFrames();
+	victory1.RestartFrames();
+	victory2.RestartFrames();
+
+	distance_jumped = 0;
+	jump_attacked = false;
+	leg_hitted = false;
+	already_hitted = false;
 }
 
 // Get and Set variables
@@ -2184,5 +2291,77 @@ int ModulePlayerDhalsim::GetDistanceJumped() const
 
 bool ModulePlayerDhalsim::GetPlayerInput(input_type actionKey)
 {
+	if (numPlayer == 1)
+	{
+		switch (actionKey)
+		{
+		case INPUT_UP:
+			return App->input->GetKey(SDL_SCANCODE_I) == KEY_REPEAT;
+			break;
+		case INPUT_DOWN:
+			return App->input->GetKey(SDL_SCANCODE_K) == KEY_REPEAT;
+			break;
+		case INPUT_LEFT:
+			return App->input->GetKey(SDL_SCANCODE_J) == KEY_REPEAT;
+			break;
+		case INPUT_RIGHT:
+			return App->input->GetKey(SDL_SCANCODE_L) == KEY_REPEAT;
+			break;
+		case INPUT_L_PUNCH:
+			return App->input->GetKey(SDL_SCANCODE_A) == KEY_DOWN;
+			break;
+		case INPUT_L_KICK:
+			return App->input->GetKey(SDL_SCANCODE_Q) == KEY_DOWN;
+			break;
+		case INPUT_M_PUNCH:
+			return App->input->GetKey(SDL_SCANCODE_S) == KEY_DOWN;
+			break;
+		case INPUT_M_KICK:
+			return App->input->GetKey(SDL_SCANCODE_W) == KEY_DOWN;
+			break;
+		case INPUT_H_PUNCH:
+			return App->input->GetKey(SDL_SCANCODE_D) == KEY_DOWN;
+			break;
+		case INPUT_H_KICK:
+			return App->input->GetKey(SDL_SCANCODE_E) == KEY_DOWN;
+			break;
+		}
+	}
+	else
+	{
+		switch (actionKey)
+		{
+		case INPUT_UP:
+			return (App->input->GetButton(SDL_CONTROLLER_AXIS_LEFTX) == KEY_REPEAT || App->input->yDir == -1 || App->input->GetKey(SDL_SCANCODE_UP) == KEY_REPEAT);
+			break;
+		case INPUT_DOWN:
+			return (App->input->GetButton(SDL_CONTROLLER_AXIS_LEFTY) == KEY_REPEAT || App->input->yDir == 1 || App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_REPEAT);
+			break;
+		case INPUT_LEFT:
+			return (App->input->GetButton(SDL_CONTROLLER_AXIS_RIGHTX) == KEY_REPEAT || App->input->xDir == -1 || App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_REPEAT);
+			break;
+		case INPUT_RIGHT:
+			return (App->input->GetButton(SDL_CONTROLLER_AXIS_RIGHTY) == KEY_REPEAT || App->input->xDir == 1 || App->input->GetKey(SDL_SCANCODE_RIGHT) == KEY_REPEAT);
+			break;
+		case INPUT_L_PUNCH:
+			return (App->input->GetButton(12) == KEY_DOWN) || (App->input->GetKey(SDL_SCANCODE_KP_4) == KEY_DOWN);
+			break;
+		case INPUT_L_KICK:
+			return (App->input->GetButton(10) == KEY_DOWN) || (App->input->GetKey(SDL_SCANCODE_KP_7) == KEY_DOWN);
+			break;
+		case INPUT_M_PUNCH:
+			return (App->input->GetButton(11) == KEY_DOWN) || (App->input->GetKey(SDL_SCANCODE_KP_5) == KEY_DOWN);
+			break;
+		case INPUT_M_KICK:
+			return (App->input->GetButton(13) == KEY_DOWN) || (App->input->GetKey(SDL_SCANCODE_KP_8) == KEY_DOWN);
+			break;
+		case INPUT_H_PUNCH:
+			return (App->input->GetButton(8) == KEY_DOWN) || (App->input->GetKey(SDL_SCANCODE_KP_6) == KEY_DOWN);
+			break;
+		case INPUT_H_KICK:
+			return (App->input->GetButton(9) == KEY_DOWN) || (App->input->GetKey(SDL_SCANCODE_KP_9) == KEY_DOWN);
+			break;
+		}
+	}
 	return false;
 }

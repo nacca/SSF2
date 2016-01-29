@@ -8,8 +8,7 @@
 #include "ModuleSceneBison.h"
 #include "ModuleParticleSystem.h"
 #include "ModuleCollisions.h"
-#include "ModulePlayerOne.h"
-#include "ModulePlayerTwo.h"
+#include "ModulePlayerDhalsim.h"
 #include "ModuleComboDetection.h"
 
 Application::Application()
@@ -26,8 +25,8 @@ Application::Application()
 	modules.push_back(combo = new ModuleComboDetection());
 	modules.push_back(scene_bison = new ModuleSceneBison(false));
 	modules.push_back(particles = new ModuleParticleSystem());
-	modules.push_back(player_one = new ModulePlayerOne(false));
-	modules.push_back(player_two = new ModulePlayerTwo(false));
+	modules.push_back(player_one = new ModulePlayerDhalsim(1, false));
+	modules.push_back(player_two = new ModulePlayerDhalsim(2, false));
 
 	modules.push_back(renderer = new ModuleRender());
 
