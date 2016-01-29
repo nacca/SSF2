@@ -371,10 +371,9 @@ update_status ModuleComboDetection::PreUpdate()
 			countdown_previous_state_player_two = 0;
 			countdown_first_state_player_two = 0;
 		}
-		else if (combo_air_start_player_two && 
-			((App->player_two->GetPlayerInput(INPUT_L_PUNCH)) ||
-			(App->player_two->GetPlayerInput(INPUT_M_PUNCH)) ||
-			(App->player_two->GetPlayerInput(INPUT_H_PUNCH))))
+		else if ((App->player_two->GetPlayerInput(INPUT_L_KICK)) ||
+			(App->player_two->GetPlayerInput(INPUT_M_KICK)) ||
+			(App->player_two->GetPlayerInput(INPUT_H_KICK)))
 		{
 			if ((App->player_two->GetDistanceJumped() > 20) && combo_air_start_player_two && App->player_two->GetPlayerState() == PLAYER_JUMPING)
 			{
