@@ -67,6 +67,12 @@
     <ClInclude Include="Animation.h">
       <Filter>Utils</Filter>
     </ClInclude>
+    <ClInclude Include="Extern\jsoncpp-master\dist\json\json.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Extern\jsoncpp-master\dist\json\json-forwards.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -110,6 +116,9 @@
     </ClCompile>
     <ClCompile Include="ModuleComboDetection.cpp">
       <Filter>Game Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="Extern\jsoncpp-master\dist\jsoncpp.cpp">
+      <Filter>Utils</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

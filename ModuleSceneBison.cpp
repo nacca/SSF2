@@ -131,9 +131,9 @@ bool ModuleSceneBison::Start()
 {
 	LOG("Loading bison scene");
 	
-	graphics = App->textures->Load("bison_stage_v2.png");
-	miscellaneous = App->textures->Load("miscellaneous_v2.png");
-	restartTexture = App->textures->Load("restartFont.png");
+	graphics = App->textures->Load("Game/bison_stage_v2.png");
+	miscellaneous = App->textures->Load("Game/miscellaneous_v2.png");
+	restartTexture = App->textures->Load("Game/restartFont.png");
 
 	if (!App->player_one->Enable())
 		return false;
@@ -143,7 +143,7 @@ bool ModuleSceneBison::Start()
 
 	initialTime = SDL_GetTicks();
 
-	App->audio->PlayMusic("bison.wav");
+	App->audio->PlayMusic("Game/bison.wav");
 	
 	return true;
 }

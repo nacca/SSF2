@@ -10,6 +10,8 @@
 #include "ModuleSceneBison.h"
 #include "ModuleAudio.h"
 
+#include <fstream>
+
 // Basic Module Operations
 
 // Constructors
@@ -17,47 +19,31 @@ ModulePlayerDhalsim::ModulePlayerDhalsim(int playerNum, bool start_enabled) : Mo
 {
 	numPlayer = playerNum;
 
+	Json::Value root;
+
+	std::filebuf fb;
+	if (fb.open("Game/dhalsim_data.json", std::ios::in))
+	{
+		std::istream is(&fb);
+		is >> root;
+		fb.close();
+	}
+
 	// idle animation
-	idle.frames.push_back({ { 3, 23, 52, 87 }, 25, { { -12, -73, 26, 70 }, { 2, -81, 14, 15 }, { -10, -68, 28, 32 }, { -10, -51, 28, 49 }, { 0, 0, 0, 0 } }, 10 });
-	idle.frames.push_back({ { 59, 24, 49, 86 }, 25, { { -12, -73, 26, 70 }, { 2, -81, 14, 15 }, { -10, -68, 28, 32 }, { -10, -51, 28, 49 }, { 0, 0, 0, 0 } }, 10 });
-	idle.frames.push_back({ { 113, 29, 55, 81 }, 25, { { -12, -73, 26, 70 }, { 2, -81, 14, 15 }, { -10, -68, 28, 32 }, { -10, -51, 28, 49 }, { 0, 0, 0, 0 } }, 10 });
-	idle.frames.push_back({ { 174, 24, 52, 86 }, 25, { { -12, -73, 26, 70 }, { 2, -81, 14, 15 }, { -10, -68, 28, 32 }, { -10, -51, 28, 49 }, { 0, 0, 0, 0 } }, 10 });
-	idle.frames.push_back({ { 231, 23, 49, 87 }, 25, { { -12, -73, 26, 70 }, { 2, -81, 14, 15 }, { -10, -68, 28, 32 }, { -10, -51, 28, 49 }, { 0, 0, 0, 0 } }, 10 });
-	idle.frames.push_back({ { 284, 28, 54, 82 }, 25, { { -12, -73, 26, 70 }, { 2, -81, 14, 15 }, { -10, -68, 28, 32 }, { -10, -51, 28, 49 }, { 0, 0, 0, 0 } }, 10 });
-	idle.frames.push_back({ { 343, 24, 52, 86 }, 25, { { -12, -73, 26, 70 }, { 2, -81, 14, 15 }, { -10, -68, 28, 32 }, { -10, -51, 28, 49 }, { 0, 0, 0, 0 } }, 10 });
-	idle.frames.push_back({ { 399, 25, 49, 85 }, 25, { { -12, -73, 26, 70 }, { 2, -81, 14, 15 }, { -10, -68, 28, 32 }, { -10, -51, 28, 49 }, { 0, 0, 0, 0 } }, 10 });
-	idle.frames.push_back({ { 454, 28, 54, 82 }, 25, { { -12, -73, 26, 70 }, { 2, -81, 14, 15 }, { -10, -68, 28, 32 }, { -10, -51, 28, 49 }, { 0, 0, 0, 0 } }, 10 });
+	SetAnimationDataFromJSON(idle, root["idle"][0]);
 
 	// forward animation
-	forward.frames.push_back({ { 516, 25, 51, 85 }, 25, { { -12, -77, 26, 72 }, { 0, -78, 12, 13 }, { -6, -65, 17, 18 }, { -18, -46, 36, 45 }, { 0, 0, 0, 0 } }, 10 });
-	forward.frames.push_back({ { 572, 22, 50, 88 }, 25, { { -12, -77, 26, 72 }, { -1, -80, 12, 13 }, { -9, -67, 15, 18 }, { -18, -47, 34, 46 }, { 0, 0, 0, 0 } }, 10 });
-	forward.frames.push_back({ { 626, 20, 52, 90 }, 25, { { -12, -77, 26, 72 }, { -1, -82, 12, 13 }, { -9, -69, 17, 18 }, { -10, -50, 19, 49 }, { 0, 0, 0, 0 } }, 10 });
-	forward.frames.push_back({ { 683, 22, 53, 88 }, 25, { { -12, -77, 26, 72 }, { 1, -80, 12, 13 }, { -8, -67, 23, 17 }, { -8, -50, 19, 49 }, { 0, 0, 0, 0 } }, 10 });
-	forward.frames.push_back({ { 742, 23, 49, 87 }, 25, { { -12, -77, 26, 72 }, { -1, -78, 12, 13 }, { -11, -66, 23, 18 }, { -21, -48, 34, 47 }, { 0, 0, 0, 0 } }, 10 });
-	forward.frames.push_back({ { 797, 22, 52, 88 }, 25, { { -12, -77, 26, 72 }, { 2, -80, 12, 13 }, { -7, -67, 22, 18 }, { -7, -50, 19, 49 }, { 0, 0, 0, 0 } }, 10 });
-	forward.frames.push_back({ { 853, 20, 52, 90 }, 25, { { -12, -77, 26, 72 }, { -1, -82, 12, 13 }, { -9, -69, 21, 18 }, { -10, -52, 19, 51 }, { 0, 0, 0, 0 } }, 10 });
-	forward.frames.push_back({ { 909, 22, 50, 88 }, 25, { { -12, -77, 26, 72 }, { -1, -80, 12, 13 }, { -8, -67, 19, 17 }, { -13, -50, 28, 48 }, { 0, 0, 0, 0 } }, 10 });
+	SetAnimationDataFromJSON(forward, root["forward"][0]);
 
 	// backward animation
-	backward.frames.push_back({ { 909, 22, 50, 88 }, 25, { { -12, -77, 26, 72 }, { -1, -80, 12, 13 }, { -8, -67, 19, 17 }, { -13, -50, 28, 48 }, { 0, 0, 0, 0 } }, 10 });
-	backward.frames.push_back({ { 853, 20, 52, 90 }, 25, { { -12, -77, 26, 72 }, { -1, -82, 12, 13 }, { -9, -69, 21, 18 }, { -10, -52, 19, 51 }, { 0, 0, 0, 0 } }, 10 });
-	backward.frames.push_back({ { 797, 22, 52, 88 }, 25, { { -12, -77, 26, 72 }, { 2, -80, 12, 13 }, { -7, -67, 22, 18 }, { -7, -50, 19, 49 }, { 0, 0, 0, 0 } }, 10 });
-	backward.frames.push_back({ { 742, 23, 49, 87 }, 25, { { -12, -77, 26, 72 }, { -1, -78, 12, 13 }, { -11, -66, 23, 18 }, { -21, -48, 34, 47 }, { 0, 0, 0, 0 } }, 10 });
-	backward.frames.push_back({ { 683, 22, 53, 88 }, 25, { { -12, -77, 26, 72 }, { 1, -80, 12, 13 }, { -8, -67, 23, 17 }, { -8, -50, 19, 49 }, { 0, 0, 0, 0 } }, 10 });
-	backward.frames.push_back({ { 626, 20, 52, 90 }, 25, { { -12, -77, 26, 72 }, { -1, -82, 12, 13 }, { -9, -69, 17, 18 }, { -10, -50, 19, 49 }, { 0, 0, 0, 0 } }, 10 });
-	backward.frames.push_back({ { 572, 22, 50, 88 }, 25, { { -12, -77, 26, 72 }, { -1, -80, 12, 13 }, { -9, -67, 15, 18 }, { -18, -47, 34, 46 }, { 0, 0, 0, 0 } }, 10 });
-	backward.frames.push_back({ { 516, 25, 51, 85 }, 25, { { -12, -77, 26, 72 }, { 0, -78, 12, 13 }, { -6, -65, 17, 18 }, { -18, -46, 36, 45 }, { 0, 0, 0, 0 } }, 10 });
+	SetAnimationDataFromJSON(backward, root["backward"][0]);
 
 	// crouching animation
-	crouching.frames.push_back({ { 1144, 42, 45, 68 }, 25, { { -8, -62, 26, 60 }, { 4, -67, 11, 13 }, { -8, -54, 22, 17 }, { -7, -36, 30, 35 }, { 0, 0, 0, 0 } }, 10 });
-	crouching.frames.push_back({ { 1194, 52, 45, 58 }, 25, { { -8, -52, 26, 50 }, { 4, -57, 11, 13 }, { -8, -44, 24, 17 }, { -15, -27, 35, 26 }, { 0, 0, 0, 0 } }, 10});
-	crouching.loop = false;
+	SetAnimationDataFromJSON(crouching, root["crouching"][0]);
 
-	block.frames.push_back({ { 1250, 25, 49, 85 }, 25, { { -23, -73, 26, 70 }, { -8, -81, 14, 15 }, { -20, -68, 28, 32 }, { -20, -51, 28, 49 }, { 0, 0, 0, 0 } }, 10 });
-	block.loop = false;
+	SetAnimationDataFromJSON(block, root["block"][0]);
 
-	crouch_block.frames.push_back({ { 1305, 49, 45, 61 }, 23, { { -8, -52, 26, 50 }, { 4, -57, 11, 13 }, { -8, -44, 24, 17 }, { -15, -27, 35, 26 }, { 0, 0, 0, 0 } }, 10 });
-	crouch_block.loop = false;
+	SetAnimationDataFromJSON(crouch_block, root["crouch-block"][0]);
 
 	// jump animation
 	jump.frames.push_back({ { 971, 42, 45, 68 }, 25, { { -12, -58, 26, 55 }, { 3, -68, 12, 14 }, { -11, -55, 26, 26 }, { -11, -40, 26, 37 }, { 0, 0, 0, 0 } }, 1 });
@@ -392,12 +378,12 @@ bool ModulePlayerDhalsim::Start()
 
 	if (numPlayer == 1)
 	{
-		graphics = App->textures->Load("dhalsim.png");
+		graphics = App->textures->Load("Game/dhalsim.png");
 		otherPlayer = App->player_two;
 	}
 	else
 	{
-		graphics = App->textures->Load("dhalsim_recolor.png");
+		graphics = App->textures->Load("Game/dhalsim_recolor.png");
 		otherPlayer = App->player_one;
 	}
 
@@ -407,15 +393,15 @@ bool ModulePlayerDhalsim::Start()
 	App->collisions->AddCollider(&collider_legs);
 	App->collisions->AddCollider(&collider_attack);
 
-	audio_id_yoga_fire = App->audio->LoadFx("yoga_fire.wav");
-	audio_id_yoga_flame = App->audio->LoadFx("yoga_flame.wav");
-	audio_id_dead = App->audio->LoadFx("dhalsim_dead.wav");
-	audio_id_L_attack = App->audio->LoadFx("SF2_hit_1.wav");;
-	audio_id_M_attack = App->audio->LoadFx("SF2_hit_2.wav");;
-	audio_id_H_attack = App->audio->LoadFx("SF2_hit_3.wav");;
-	audio_id_L_impact = App->audio->LoadFx("SF2_impact_1.wav");;
-	audio_id_M_impact = App->audio->LoadFx("SF2_impact_2.wav");;
-	audio_id_H_impact = App->audio->LoadFx("SF2_impact_3.wav");;
+	audio_id_yoga_fire = App->audio->LoadFx("Game/yoga_fire.wav");
+	audio_id_yoga_flame = App->audio->LoadFx("Game/yoga_flame.wav");
+	audio_id_dead = App->audio->LoadFx("Game/dhalsim_dead.wav");
+	audio_id_L_attack = App->audio->LoadFx("Game/SF2_hit_1.wav");;
+	audio_id_M_attack = App->audio->LoadFx("Game/SF2_hit_2.wav");;
+	audio_id_H_attack = App->audio->LoadFx("Game/SF2_hit_3.wav");;
+	audio_id_L_impact = App->audio->LoadFx("Game/SF2_impact_1.wav");;
+	audio_id_M_impact = App->audio->LoadFx("Game/SF2_impact_2.wav");;
+	audio_id_H_impact = App->audio->LoadFx("Game/SF2_impact_3.wav");;
 
 	if (otherPlayer->getPosition().x > position.x)
 		looking_right = true;
@@ -2364,4 +2350,38 @@ bool ModulePlayerDhalsim::GetPlayerInput(input_type actionKey)
 		}
 	}
 	return false;
+}
+
+void ModulePlayerDhalsim::SetSDLRectFromData(SDL_Rect& sdl_rect, const Json::Value& jsonValue)
+{
+	sdl_rect.x = jsonValue[0].asInt();
+	sdl_rect.y = jsonValue[1].asInt();
+	sdl_rect.w = jsonValue[2].asInt();
+	sdl_rect.h = jsonValue[3].asInt();
+}
+
+void ModulePlayerDhalsim::SetAnimationDataFromJSON(Animation& animation, Json::Value& jsonValue)
+{
+	int numberOfFrames = jsonValue.get("numberOfFrames", "0").asInt();
+
+	for (int i = 0; i < numberOfFrames; ++i)
+	{
+		Json::Value currentValue = jsonValue["frames"][i];
+		AnimationStructure animationStructure;
+
+		SetSDLRectFromData(animationStructure.frame, currentValue["frame"]);
+
+		animationStructure.pivot = currentValue["pivot"].asInt();
+
+		SetSDLRectFromData(animationStructure.colliders.Position_collider, currentValue["position-collider"]);
+		SetSDLRectFromData(animationStructure.colliders.Collider_head, currentValue["head-collider"]);
+		SetSDLRectFromData(animationStructure.colliders.Collider_body, currentValue["body-collider"]);
+		SetSDLRectFromData(animationStructure.colliders.Collider_legs, currentValue["legs-collider"]);
+		SetSDLRectFromData(animationStructure.colliders.Collider_attack, currentValue["attack-collider"]);
+
+		animationStructure.duration = currentValue["duration"].asInt();
+
+		animation.frames.push_back(animationStructure);
+		animation.loop = jsonValue.get("loop", true).asBool();
+	}
 }

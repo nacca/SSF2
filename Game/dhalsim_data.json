@@ -1,0 +1,1396 @@
+{
+    "idle" :
+    [
+        {
+            "numberOfFrames" : 9,
+            "loop" : true,
+            "frames" :
+            [
+                {
+                    "frame" :
+                    [
+                        3,
+                        23,
+                        52,
+                        87
+                    ],
+                    "pivot" : 25,
+                    "position-collider" :
+                    [
+                        -12,
+                        -73,
+                        26,
+                        70
+                    ],
+                    "head-collider" :
+                    [
+                        2,
+                        -81,
+                        14,
+                        15
+                    ],
+                    "body-collider" :
+                    [
+                        -10,
+                        -68,
+                        28,
+                        32
+                    ],
+                    "legs-collider" :
+                    [
+                        -10,
+                        -51,
+                        28,
+                        49
+                    ],
+                    "attack-collider" :
+                    [
+                        0,
+                        0,
+                        0,
+                        0
+                    ],
+                    "duration" : 10
+                },
+                {
+                    "frame" :
+                    [
+                        59,
+                        24,
+                        49,
+                        86
+                    ],
+                    "pivot" : 25,
+                    "position-collider" :
+                    [
+                        -12,
+                        -73,
+                        26,
+                        70
+                    ],
+                    "head-collider" :
+                    [
+                        2,
+                        -81,
+                        14,
+                        15
+                    ],
+                    "body-collider" :
+                    [
+                        -10,
+                        -68,
+                        28,
+                        32
+                    ],
+                    "legs-collider" :
+                    [
+                        -10,
+                        -51,
+                        28,
+                        49
+                    ],
+                    "attack-collider" :
+                    [
+                        0,
+                        0,
+                        0,
+                        0
+                    ],
+                    "duration" : 10
+                },
+                {
+                    "frame" :
+                    [
+                        113,
+                        29,
+                        55,
+                        81
+                    ],
+                    "pivot" : 25,
+                    "position-collider" :
+                    [
+                        -12,
+                        -73,
+                        26,
+                        70
+                    ],
+                    "head-collider" :
+                    [
+                        2,
+                        -81,
+                        14,
+                        15
+                    ],
+                    "body-collider" :
+                    [
+                        -10,
+                        -68,
+                        28,
+                        32
+                    ],
+                    "legs-collider" :
+                    [
+                        -10,
+                        -51,
+                        28,
+                        49
+                    ],
+                    "attack-collider" :
+                    [
+                        0,
+                        0,
+                        0,
+                        0
+                    ],
+                    "duration" : 10
+                },
+                {
+                    "frame" :
+                    [
+                        174,
+                        24,
+                        52,
+                        86
+                    ],
+                    "pivot" : 25,
+                    "position-collider" :
+                    [
+                        -12,
+                        -73,
+                        26,
+                        70
+                    ],
+                    "head-collider" :
+                    [
+                        2,
+                        -81,
+                        14,
+                        15
+                    ],
+                    "body-collider" :
+                    [
+                        -10,
+                        -68,
+                        28,
+                        32
+                    ],
+                    "legs-collider" :
+                    [
+                        -10,
+                        -51,
+                        28,
+                        49
+                    ],
+                    "attack-collider" :
+                    [
+                        0,
+                        0,
+                        0,
+                        0
+                    ],
+                    "duration" : 10
+                },
+                {
+                    "frame" :
+                    [
+                        231, 
+                        23, 
+                        49, 
+                        87
+                    ],
+                    "pivot" : 25,
+                    "position-collider" :
+                    [
+                        -12,
+                        -73,
+                        26,
+                        70
+                    ],
+                    "head-collider" :
+                    [
+                        2,
+                        -81,
+                        14,
+                        15
+                    ],
+                    "body-collider" :
+                    [
+                        -10,
+                        -68,
+                        28,
+                        32
+                    ],
+                    "legs-collider" :
+                    [
+                        -10,
+                        -51,
+                        28,
+                        49
+                    ],
+                    "attack-collider" :
+                    [
+                        0,
+                        0,
+                        0,
+                        0
+                    ],
+                    "duration" : 10
+                },
+                {
+                    "frame" :
+                    [
+                        284, 
+                        28, 
+                        54, 
+                        82
+                    ],
+                    "pivot" : 25,
+                    "position-collider" :
+                    [
+                        -12,
+                        -73,
+                        26,
+                        70
+                    ],
+                    "head-collider" :
+                    [
+                        2,
+                        -81,
+                        14,
+                        15
+                    ],
+                    "body-collider" :
+                    [
+                        -10,
+                        -68,
+                        28,
+                        32
+                    ],
+                    "legs-collider" :
+                    [
+                        -10,
+                        -51,
+                        28,
+                        49
+                    ],
+                    "attack-collider" :
+                    [
+                        0,
+                        0,
+                        0,
+                        0
+                    ],
+                    "duration" : 10
+                },
+                {
+                    "frame" :
+                    [
+                        343, 
+                        24, 
+                        52, 
+                        86
+                    ],
+                    "pivot" : 25,
+                    "position-collider" :
+                    [
+                        -12,
+                        -73,
+                        26,
+                        70
+                    ],
+                    "head-collider" :
+                    [
+                        2,
+                        -81,
+                        14,
+                        15
+                    ],
+                    "body-collider" :
+                    [
+                        -10,
+                        -68,
+                        28,
+                        32
+                    ],
+                    "legs-collider" :
+                    [
+                        -10,
+                        -51,
+                        28,
+                        49
+                    ],
+                    "attack-collider" :
+                    [
+                        0,
+                        0,
+                        0,
+                        0
+                    ],
+                    "duration" : 10
+                },
+                {
+                    "frame" :
+                    [
+                        399, 
+                        25, 
+                        49, 
+                        85
+                    ],
+                    "pivot" : 25,
+                    "position-collider" :
+                    [
+                        -12,
+                        -73,
+                        26,
+                        70
+                    ],
+                    "head-collider" :
+                    [
+                        2,
+                        -81,
+                        14,
+                        15
+                    ],
+                    "body-collider" :
+                    [
+                        -10,
+                        -68,
+                        28,
+                        32
+                    ],
+                    "legs-collider" :
+                    [
+                        -10,
+                        -51,
+                        28,
+                        49
+                    ],
+                    "attack-collider" :
+                    [
+                        0,
+                        0,
+                        0,
+                        0
+                    ],
+                    "duration" : 10
+                },
+                {
+                    "frame" :
+                    [
+                        454, 
+                        28, 
+                        54, 
+                        82
+                    ],
+                    "pivot" : 25,
+                    "position-collider" :
+                    [
+                        -12,
+                        -73,
+                        26,
+                        70
+                    ],
+                    "head-collider" :
+                    [
+                        2,
+                        -81,
+                        14,
+                        15
+                    ],
+                    "body-collider" :
+                    [
+                        -10,
+                        -68,
+                        28,
+                        32
+                    ],
+                    "legs-collider" :
+                    [
+                        -10,
+                        -51,
+                        28,
+                        49
+                    ],
+                    "attack-collider" :
+                    [
+                        0,
+                        0,
+                        0,
+                        0
+                    ],
+                    "duration" : 10
+                }
+            ]
+        }
+    ],
+    "forward" :
+    [
+        {
+            "numberOfFrames" : 8,
+            "loop" : true,
+            "frames" :
+            [
+                {
+                    "frame" :
+                    [
+                        516, 
+                        25, 
+                        51, 
+                        85
+                    ],
+                    "pivot" : 25,
+                    "position-collider" :
+                    [
+                        -12, 
+                        -77, 
+                        26, 
+                        72
+                    ],
+                    "head-collider" :
+                    [
+                        0, 
+                        -78, 
+                        12, 
+                        13
+                    ],
+                    "body-collider" :
+                    [
+                        -6, 
+                        -65, 
+                        17, 
+                        18
+                    ],
+                    "legs-collider" :
+                    [
+                        -18, 
+                        -46, 
+                        36, 
+                        45
+                    ],
+                    "attack-collider" :
+                    [
+                        0,
+                        0,
+                        0,
+                        0
+                    ],
+                    "duration" : 10
+                },
+                {
+                    "frame" :
+                    [
+                        572, 
+                        22, 
+                        50, 
+                        88
+                    ],
+                    "pivot" : 25,
+                    "position-collider" :
+                    [
+                        -12, 
+                        -77, 
+                        26, 
+                        72
+                    ],
+                    "head-collider" :
+                    [
+                        -1, 
+                        -80, 
+                        12, 
+                        13
+                    ],
+                    "body-collider" :
+                    [
+                        -9, 
+                        -65, 
+                        15, 
+                        18
+                    ],
+                    "legs-collider" :
+                    [
+                        -18, 
+                        -47, 
+                        34, 
+                        46
+                    ],
+                    "attack-collider" :
+                    [
+                        0,
+                        0,
+                        0,
+                        0
+                    ],
+                    "duration" : 10
+                },
+                {
+                    "frame" :
+                    [
+                        626, 
+                        20, 
+                        52, 
+                        90
+                    ],
+                    "pivot" : 25,
+                    "position-collider" :
+                    [
+                        -12, 
+                        -77, 
+                        26, 
+                        72
+                    ],
+                    "head-collider" :
+                    [
+                        -1,
+                        -82, 
+                        12, 
+                        13
+                    ],
+                    "body-collider" :
+                    [
+                        -9, 
+                        -69, 
+                        17, 
+                        18
+                    ],
+                    "legs-collider" :
+                    [
+                        -10, 
+                        -50, 
+                        19, 
+                        49
+                    ],
+                    "attack-collider" :
+                    [
+                        0,
+                        0,
+                        0,
+                        0
+                    ],
+                    "duration" : 10
+                },
+                {
+                    "frame" :
+                    [
+                        683, 
+                        22, 
+                        53, 
+                        88
+                    ],
+                    "pivot" : 25,
+                    "position-collider" :
+                    [
+                        -12, 
+                        -77, 
+                        26, 
+                        72
+                    ],
+                    "head-collider" :
+                    [
+                        1, 
+                        -80, 
+                        12, 
+                        13
+                    ],
+                    "body-collider" :
+                    [
+                        -8, 
+                        -67, 
+                        23, 
+                        17
+                    ],
+                    "legs-collider" :
+                    [
+                        -8, 
+                        -50, 
+                        19, 
+                        49
+                    ],
+                    "attack-collider" :
+                    [
+                        0,
+                        0,
+                        0,
+                        0
+                    ],
+                    "duration" : 10
+                },
+                {
+                    "frame" :
+                    [
+                        742, 
+                        23, 
+                        49, 
+                        87
+                    ],
+                    "pivot" : 25,
+                    "position-collider" :
+                    [
+                        -12, 
+                        -77, 
+                        26, 
+                        72
+                    ],
+                    "head-collider" :
+                    [
+                        -1,
+                        -78, 
+                        12, 
+                        13
+                    ],
+                    "body-collider" :
+                    [
+                        -11,
+                        -66, 
+                        23, 
+                        18
+                    ],
+                    "legs-collider" :
+                    [
+                        -21, 
+                        -48, 
+                        34, 
+                        47
+                    ],
+                    "attack-collider" :
+                    [
+                        0,
+                        0,
+                        0,
+                        0
+                    ],
+                    "duration" : 10
+                },
+                {
+                    "frame" :
+                    [
+                        797, 
+                        22, 
+                        52, 
+                        88
+                    ],
+                    "pivot" : 25,
+                    "position-collider" :
+                    [
+                        -12, 
+                        -77, 
+                        26, 
+                        72
+                    ],
+                    "head-collider" :
+                    [
+                        2, 
+                        -80, 
+                        12, 
+                        13
+                    ],
+                    "body-collider" :
+                    [
+                        -7, 
+                        -67, 
+                        22, 
+                        18
+                    ],
+                    "legs-collider" :
+                    [
+                        -7, 
+                        -50, 
+                        19, 
+                        49
+                    ],
+                    "attack-collider" :
+                    [
+                        0,
+                        0,
+                        0,
+                        0
+                    ],
+                    "duration" : 10
+                },
+                {
+                    "frame" :
+                    [
+                        853, 
+                        20, 
+                        52, 
+                        90
+                    ],
+                    "pivot" : 25,
+                    "position-collider" :
+                    [
+                        -12, 
+                        -77, 
+                        26, 
+                        72
+                    ],
+                    "head-collider" :
+                    [
+                        -1, 
+                        -82, 
+                        12, 
+                        13
+                    ],
+                    "body-collider" :
+                    [
+                        -9, 
+                        -69, 
+                        21, 
+                        18
+                    ],
+                    "legs-collider" :
+                    [
+                        -10, 
+                        -52, 
+                        19, 
+                        51
+                    ],
+                    "attack-collider" :
+                    [
+                        0,
+                        0,
+                        0,
+                        0
+                    ],
+                    "duration" : 10
+                },
+                {
+                    "frame" :
+                    [
+                        909, 
+                        22, 
+                        50, 
+                        88
+                    ],
+                    "pivot" : 25,
+                    "position-collider" :
+                    [
+                        -12, 
+                        -77, 
+                        26, 
+                        72
+                    ],
+                    "head-collider" :
+                    [
+                        -1, 
+                        -80, 
+                        12, 
+                        13
+                    ],
+                    "body-collider" :
+                    [
+                        -8, 
+                        -67, 
+                        19, 
+                        17
+                    ],
+                    "legs-collider" :
+                    [
+                        -13, 
+                        -50, 
+                        28, 
+                        48
+                    ],
+                    "attack-collider" :
+                    [
+                        0,
+                        0,
+                        0,
+                        0
+                    ],
+                    "duration" : 10
+                }                
+            ]
+        }
+    ],
+    "backward" :
+    [
+        {
+            "numberOfFrames" : 8,
+            "loop" : true,
+            "frames" :
+            [
+                {
+                    "frame" :
+                    [
+                        909, 
+                        22, 
+                        50, 
+                        88
+                    ],
+                    "pivot" : 25,
+                    "position-collider" :
+                    [
+                        -12, 
+                        -77, 
+                        26, 
+                        72
+                    ],
+                    "head-collider" :
+                    [
+                        -1, 
+                        -80, 
+                        12, 
+                        13
+                    ],
+                    "body-collider" :
+                    [
+                        -8, 
+                        -67, 
+                        19, 
+                        17
+                    ],
+                    "legs-collider" :
+                    [
+                        -13, 
+                        -50, 
+                        28, 
+                        48
+                    ],
+                    "attack-collider" :
+                    [
+                        0,
+                        0,
+                        0,
+                        0
+                    ],
+                    "duration" : 10
+                },                
+                {
+                    "frame" :
+                    [
+                        853, 
+                        20, 
+                        52, 
+                        90
+                    ],
+                    "pivot" : 25,
+                    "position-collider" :
+                    [
+                        -12, 
+                        -77, 
+                        26, 
+                        72
+                    ],
+                    "head-collider" :
+                    [
+                        -1, 
+                        -82, 
+                        12, 
+                        13
+                    ],
+                    "body-collider" :
+                    [
+                        -9, 
+                        -69, 
+                        21, 
+                        18
+                    ],
+                    "legs-collider" :
+                    [
+                        -10, 
+                        -52, 
+                        19, 
+                        51
+                    ],
+                    "attack-collider" :
+                    [
+                        0,
+                        0,
+                        0,
+                        0
+                    ],
+                    "duration" : 10
+                },
+                {
+                    "frame" :
+                    [
+                        797, 
+                        22, 
+                        52, 
+                        88
+                    ],
+                    "pivot" : 25,
+                    "position-collider" :
+                    [
+                        -12, 
+                        -77, 
+                        26, 
+                        72
+                    ],
+                    "head-collider" :
+                    [
+                        2, 
+                        -80, 
+                        12, 
+                        13
+                    ],
+                    "body-collider" :
+                    [
+                        -7, 
+                        -67, 
+                        22, 
+                        18
+                    ],
+                    "legs-collider" :
+                    [
+                        -7, 
+                        -50, 
+                        19, 
+                        49
+                    ],
+                    "attack-collider" :
+                    [
+                        0,
+                        0,
+                        0,
+                        0
+                    ],
+                    "duration" : 10
+                },
+                {
+                    "frame" :
+                    [
+                        742, 
+                        23, 
+                        49, 
+                        87
+                    ],
+                    "pivot" : 25,
+                    "position-collider" :
+                    [
+                        -12, 
+                        -77, 
+                        26, 
+                        72
+                    ],
+                    "head-collider" :
+                    [
+                        -1,
+                        -78, 
+                        12, 
+                        13
+                    ],
+                    "body-collider" :
+                    [
+                        -11,
+                        -66, 
+                        23, 
+                        18
+                    ],
+                    "legs-collider" :
+                    [
+                        -21, 
+                        -48, 
+                        34, 
+                        47
+                    ],
+                    "attack-collider" :
+                    [
+                        0,
+                        0,
+                        0,
+                        0
+                    ],
+                    "duration" : 10
+                },
+                {
+                    "frame" :
+                    [
+                        683, 
+                        22, 
+                        53, 
+                        88
+                    ],
+                    "pivot" : 25,
+                    "position-collider" :
+                    [
+                        -12, 
+                        -77, 
+                        26, 
+                        72
+                    ],
+                    "head-collider" :
+                    [
+                        1, 
+                        -80, 
+                        12, 
+                        13
+                    ],
+                    "body-collider" :
+                    [
+                        -8, 
+                        -67, 
+                        23, 
+                        17
+                    ],
+                    "legs-collider" :
+                    [
+                        -8, 
+                        -50, 
+                        19, 
+                        49
+                    ],
+                    "attack-collider" :
+                    [
+                        0,
+                        0,
+                        0,
+                        0
+                    ],
+                    "duration" : 10
+                },
+                {
+                    "frame" :
+                    [
+                        626, 
+                        20, 
+                        52, 
+                        90
+                    ],
+                    "pivot" : 25,
+                    "position-collider" :
+                    [
+                        -12, 
+                        -77, 
+                        26, 
+                        72
+                    ],
+                    "head-collider" :
+                    [
+                        -1,
+                        -82, 
+                        12, 
+                        13
+                    ],
+                    "body-collider" :
+                    [
+                        -9, 
+                        -69, 
+                        17, 
+                        18
+                    ],
+                    "legs-collider" :
+                    [
+                        -10, 
+                        -50, 
+                        19, 
+                        49
+                    ],
+                    "attack-collider" :
+                    [
+                        0,
+                        0,
+                        0,
+                        0
+                    ],
+                    "duration" : 10
+                },
+                {
+                    "frame" :
+                    [
+                        572, 
+                        22, 
+                        50, 
+                        88
+                    ],
+                    "pivot" : 25,
+                    "position-collider" :
+                    [
+                        -12, 
+                        -77, 
+                        26, 
+                        72
+                    ],
+                    "head-collider" :
+                    [
+                        -1, 
+                        -80, 
+                        12, 
+                        13
+                    ],
+                    "body-collider" :
+                    [
+                        -9, 
+                        -65, 
+                        15, 
+                        18
+                    ],
+                    "legs-collider" :
+                    [
+                        -18, 
+                        -47, 
+                        34, 
+                        46
+                    ],
+                    "attack-collider" :
+                    [
+                        0,
+                        0,
+                        0,
+                        0
+                    ],
+                    "duration" : 10
+                },
+                {
+                    "frame" :
+                    [
+                        516, 
+                        25, 
+                        51, 
+                        85
+                    ],
+                    "pivot" : 25,
+                    "position-collider" :
+                    [
+                        -12, 
+                        -77, 
+                        26, 
+                        72
+                    ],
+                    "head-collider" :
+                    [
+                        0, 
+                        -78, 
+                        12, 
+                        13
+                    ],
+                    "body-collider" :
+                    [
+                        -6, 
+                        -65, 
+                        17, 
+                        18
+                    ],
+                    "legs-collider" :
+                    [
+                        -18, 
+                        -46, 
+                        36, 
+                        45
+                    ],
+                    "attack-collider" :
+                    [
+                        0,
+                        0,
+                        0,
+                        0
+                    ],
+                    "duration" : 10
+                }
+            ]
+        }
+    ],
+    "crouching" :
+    [
+        {
+            "numberOfFrames" : 2,
+            "loop" : false,
+            "frames" :
+            [
+                {
+                    "frame" :
+                    [
+                        1144, 
+                        42, 
+                        45, 
+                        68
+                    ],
+                    "pivot" : 25,
+                    "position-collider" :
+                    [
+                        -8, 
+                        -62, 
+                        26, 
+                        60
+                    ],
+                    "head-collider" :
+                    [
+                        4, 
+                        -67, 
+                        11, 
+                        13
+                    ],
+                    "body-collider" :
+                    [
+                        -8, 
+                        -54, 
+                        22, 
+                        17
+                    ],
+                    "legs-collider" :
+                    [
+                        -7, 
+                        -36, 
+                        30, 
+                        35
+                    ],
+                    "attack-collider" :
+                    [
+                        0,
+                        0,
+                        0,
+                        0
+                    ],
+                    "duration" : 10
+                },
+                {
+                    "frame" :
+                    [
+                        1194, 
+                        52, 
+                        45, 
+                        58
+                    ],
+                    "pivot" : 25,
+                    "position-collider" :
+                    [
+                        -8, 
+                        -52, 
+                        26, 
+                        50
+                    ],
+                    "head-collider" :
+                    [
+                        4, 
+                        -57, 
+                        11, 
+                        13
+                    ],
+                    "body-collider" :
+                    [
+                        -8, 
+                        -44, 
+                        24, 
+                        17
+                    ],
+                    "legs-collider" :
+                    [
+                        -15, 
+                        -27, 
+                        35, 
+                        26
+                    ],
+                    "attack-collider" :
+                    [
+                        0,
+                        0,
+                        0,
+                        0
+                    ],
+                    "duration" : 10
+                }
+            ]
+        }
+    ],
+    "block" :
+    [
+        {
+            "numberOfFrames" : 1,
+            "loop" : false,
+            "frames" :
+            [
+                {
+                    "frame" :
+                    [
+                        1250, 
+                        25, 
+                        49, 
+                        85
+                    ],
+                    "pivot" : 25,
+                    "position-collider" :
+                    [
+                        -23, 
+                        -73, 
+                        26, 
+                        70
+                    ],
+                    "head-collider" :
+                    [
+                        -8, 
+                        -81, 
+                        14, 
+                        15
+                    ],
+                    "body-collider" :
+                    [
+                        -20, 
+                        -68, 
+                        28, 
+                        32
+                    ],
+                    "legs-collider" :
+                    [
+                        -20, 
+                        -51, 
+                        28, 
+                        49
+                    ],
+                    "attack-collider" :
+                    [
+                        0,
+                        0,
+                        0,
+                        0
+                    ],
+                    "duration" : 10
+                }
+            ]
+        }
+    ],
+    "crouch-block" :
+    [
+        {
+            "numberOfFrames" : 1,
+            "loop" : false,
+            "frames" :
+            [
+                {
+                    "frame" :
+                    [
+                        1305, 
+                        49, 
+                        45, 
+                        61
+                    ],
+                    "pivot" : 25,
+                    "position-collider" :
+                    [
+                        -8, 
+                        -52, 
+                        26, 
+                        50
+                    ],
+                    "head-collider" :
+                    [
+                        4, 
+                        -57, 
+                        11, 
+                        13
+                    ],
+                    "body-collider" :
+                    [
+                        -8, 
+                        -44, 
+                        24, 
+                        17
+                    ],
+                    "legs-collider" :
+                    [
+                        -15, 
+                        -27, 
+                        35, 
+                        26
+                    ],
+                    "attack-collider" :
+                    [
+                        0,
+                        0,
+                        0,
+                        0
+                    ],
+                    "duration" : 10
+                }
+            ]
+        }
+    ]    
+}

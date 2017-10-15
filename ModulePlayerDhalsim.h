@@ -7,6 +7,7 @@
 #include "Globals.h"
 #include "Point.h"
 #include "ModuleCollisions.h"
+#include <json/json.h>
 
 struct SDL_Texture;
 
@@ -62,6 +63,9 @@ public:
 
 	combo_types GetStartingCombo() const;
 	void SetStartingCombo(combo_types starting_combo);
+
+	void SetSDLRectFromData(SDL_Rect& sdl_rect, const Json::Value& jsonValue);
+	void SetAnimationDataFromJSON(Animation& animation, Json::Value& jsonValue);
 
 protected:
 	SDL_Texture* graphics = nullptr;
