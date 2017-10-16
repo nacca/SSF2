@@ -46,11 +46,7 @@ ModulePlayerDhalsim::ModulePlayerDhalsim(int playerNum, bool start_enabled) : Mo
 	SetAnimationDataFromJSON(crouch_block, root["crouch-block"][0]);
 
 	// jump animation
-	jump.frames.push_back({ { 971, 42, 45, 68 }, 25, { { -12, -58, 26, 55 }, { 3, -68, 12, 14 }, { -11, -55, 26, 26 }, { -11, -40, 26, 37 }, { 0, 0, 0, 0 } }, 1 });
-	jump.frames.push_back({ { 1023, 14, 34, 96 }, 8, { { -7, -85, 26, 70 }, { 5, -96, 12, 14 }, { -7, -89, 27, 31 }, { -7, -69, 27, 69 }, { 0, 0, 0, 0 } }, 22 });
-	jump.frames.push_back({ { 1063, 24, 35, 86 }, 8, { { -5, -76, 26, 51 }, { 7, -86, 12, 14 }, { -5, -79, 23, 25 }, { -5, -59, 27, 34 }, { 0, 0, 0, 0 } }, 16 });
-	jump.frames.push_back({ { 1101, 14, 34, 96 }, 8, { { -7, -85, 26, 70 }, { 5, -96, 12, 14 }, { -7, -89, 27, 31 }, { -7, -69, 27, 69 }, { 0, 0, 0, 0 } }, 22 });
-	jump.loop = false;
+	SetAnimationDataFromJSON(jump, root["jump"][0]);
 
 	// Far attacks
 	// L_punch animation
