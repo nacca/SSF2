@@ -64,8 +64,16 @@ public:
 	combo_types GetStartingCombo() const;
 	void SetStartingCombo(combo_types starting_combo);
 
+
+private:
+	void SetUpAnimations();
+	void SetUpPlayer(int numPlayer);
+
 	void SetSDLRectFromData(SDL_Rect& sdl_rect, const Json::Value& jsonValue);
-	void SetAnimationDataFromJSON(Animation& animation, Json::Value& jsonValue);
+	void SetPlayerAnimationDataFromJSON(Animation& animation, Json::Value& jsonValue);
+	void SetParticleAnimationDataFromJSON(ParticleAnimation& particleAnimation, Json::Value& jsonValue);
+
+	void TemporalFunction(ofstream& myfile, string s, Animation& animation);
 
 protected:
 	SDL_Texture* graphics = nullptr;

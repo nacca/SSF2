@@ -12,13 +12,47 @@
 
 #include <fstream>
 
+#include <iostream>
+using namespace std;
+
 // Basic Module Operations
 
 // Constructors
-ModulePlayerDhalsim::ModulePlayerDhalsim(int playerNum, bool start_enabled) : Module(start_enabled)
+
+ModulePlayerDhalsim::ModulePlayerDhalsim(int playerNum, bool start_enabled) :
+	Module(start_enabled),
+	playerState(PLAYER_IDLE),
+	colliding_players(false),
+	jumping(false),
+	hitted(false),
+	head_hitted(false),
+	leg_hitted(false),
+	life(200),
+	wins(0),
+	win(false),
+	dead(false),
+	time_0(false),
+	starting_combo(COMBO_NOTHING),
+	damageType(NONE_DAMAGE),
+	distance_jumped(0),
+	jump_attacked(false),
+	already_hitted(false)
 {
 	numPlayer = playerNum;
 
+	SetUpAnimations();
+	SetUpPlayer(numPlayer);
+
+	lastShotTimer = SDL_GetTicks();
+}
+
+// Destructor
+ModulePlayerDhalsim::~ModulePlayerDhalsim()
+{
+}
+
+void ModulePlayerDhalsim::SetUpAnimations()
+{
 	Json::Value root;
 
 	std::filebuf fb;
@@ -29,279 +63,62 @@ ModulePlayerDhalsim::ModulePlayerDhalsim(int playerNum, bool start_enabled) : Mo
 		fb.close();
 	}
 
-	// idle animation
-	SetAnimationDataFromJSON(idle, root["idle"][0]);
+	// Movement animations
+	SetPlayerAnimationDataFromJSON(idle, root["idle"][0]);
+	SetPlayerAnimationDataFromJSON(forward, root["forward"][0]);
+	SetPlayerAnimationDataFromJSON(backward, root["backward"][0]);
+	SetPlayerAnimationDataFromJSON(crouching, root["crouching"][0]);
+	SetPlayerAnimationDataFromJSON(block, root["block"][0]);
+	SetPlayerAnimationDataFromJSON(crouch_block, root["crouch-block"][0]);
+	SetPlayerAnimationDataFromJSON(jump, root["jump"][0]);
 
-	// forward animation
-	SetAnimationDataFromJSON(forward, root["forward"][0]);
-
-	// backward animation
-	SetAnimationDataFromJSON(backward, root["backward"][0]);
-
-	// crouching animation
-	SetAnimationDataFromJSON(crouching, root["crouching"][0]);
-
-	SetAnimationDataFromJSON(block, root["block"][0]);
-
-	SetAnimationDataFromJSON(crouch_block, root["crouch-block"][0]);
-
-	// jump animation
-	SetAnimationDataFromJSON(jump, root["jump"][0]);
-
-	// Far attacks
-	// L_punch animation
-	L_punch.frames.push_back({ { 2, 170, 61, 78 }, 25, { { -13, -70, 26, 68 }, { 13, -77, 14, 14 }, { -2, -68, 29, 33 }, { -2, -44, 29, 42 }, { 0, 0, 0, 0 } }, 5 });
-	L_punch.frames.push_back({ { 68, 175, 91, 73 }, 25, { { -13, -70, 26, 68 }, { 13, -77, 14, 14 }, { -2, -68, 29, 33 }, { -2, -44, 29, 42 }, { 13, -72, 44, 16 } }, 6 });
-	L_punch.frames.push_back({ { 166, 170, 61, 78 }, 25, { { -13, -70, 26, 68 }, { 13, -77, 14, 14 }, { -2, -68, 29, 33 }, { -2, -44, 29, 42 }, { 0, 0, 0, 0 } }, 5});
-	L_punch.loop = false;
-
-	// M_punch animation
-	M_punch.frames.push_back({ { 235, 178, 62, 70 }, 25, { { -12, -73, 26, 70 }, { 25, -62, 16, 19 }, { 6, -43, 25, 39 }, { -10, -43, 22, 39 }, { 0, 0, 0, 0 } }, 7 });
-	M_punch.frames.push_back({ { 302, 205, 97, 43 }, 25, { { -12, -73, 26, 70 }, { 20, -43, 52, 12 }, { 6, -43, 25, 39 }, { -10, -43, 22, 39 }, { 50, -43, 28, 12 } }, 4 });
-	M_punch.frames.push_back({ { 403, 205, 144, 43 }, 25, { { -12, -73, 26, 70 }, { 22, -43, 92, 12 }, { 6, -43, 25, 39 }, { -10, -43, 22, 39 }, { 95, -43, 28, 12 } }, 6 });
-	M_punch.frames.push_back({ { 302, 205, 97, 43 }, 25, { { -12, -73, 26, 70 }, { 20, -43, 52, 12 }, { 6, -43, 25, 39 }, { -10, -43, 22, 39 }, { 50, -43, 28, 12 } }, 4 });
-	M_punch.frames.push_back({ { 235, 178, 62, 70 }, 25, { { -12, -73, 26, 70 }, { 25, -62, 16, 19 }, { 6, -43, 25, 39 }, { -10, -43, 22, 39 }, { 0, 0, 0, 0 } }, 5 });
-	M_punch.loop = false;
-	
-	// H_punch animation
-	H_punch.frames.push_back({ { 554, 178, 62, 70 }, 25, { { -12, -73, 26, 70 }, { 25, -62, 16, 19 }, { 6, -43, 25, 39 }, { -10, -43, 22, 39 }, { 0, 0, 0, 0 } }, 7 });
-	H_punch.frames.push_back({ { 621, 205, 101, 43 }, 25, { { -12, -73, 26, 70 }, { 20, -43, 52, 12 }, { 6, -43, 25, 39 }, { -10, -43, 22, 39 }, { 50, -43, 28, 12 } }, 4 });
-	H_punch.frames.push_back({ { 727, 205, 153, 43 }, 25, { { -12, -73, 26, 70 }, { 22, -43, 92, 12 }, { 6, -43, 25, 39 }, { -10, -43, 22, 39 }, { 95, -43, 28, 12 } }, 6 });
-	H_punch.frames.push_back({ { 621, 205, 101, 43 }, 25, { { -12, -73, 26, 70 }, { 20, -43, 52, 12 }, { 6, -43, 25, 39 }, { -10, -43, 22, 39 }, { 50, -43, 28, 12 } }, 10 });
-	H_punch.frames.push_back({ { 554, 178, 62, 70 }, 25, { { -12, -73, 26, 70 }, { 25, -62, 16, 19 }, { 6, -43, 25, 39 }, { -10, -43, 22, 39 }, { 0, 0, 0, 0 } }, 9 });
-	H_punch.loop = false;
-
-	// L_kick animation
-	L_kick.frames.push_back({ { 2, 283, 51, 84 }, 25, { { -11, -74, 26, 72 }, { 16, -82, 13, 16 }, { 0, -67, 29, 37 }, { 0, -46, 29, 44 }, { 0, 0, 0, 0 } }, 2 });
-	L_kick.frames.push_back({ { 59, 269, 88, 98 }, 25, { { -11, -74, 26, 72 }, { 8, -82, 45, 16 }, { 0, -67, 29, 37 }, { 0, -46, 29, 44 }, { 0, 0, 0, 0 } }, 3 });
-	L_kick.frames.push_back({ { 153, 269, 116, 98 }, 25, { { -11, -74, 26, 72 }, { -3, -90, 93, 26 }, { 15, -82, 62, 28 }, { -5, -67, 29, 65 }, { 48, -90, 49, 20 } }, 8 });
-	L_kick.frames.push_back({ { 59, 269, 88, 98 }, 25, { { -11, -74, 26, 72 }, { 8, -82, 45, 16 }, { 0, -67, 29, 37 }, { 0, -46, 29, 44 }, { 0, 0, 0, 0 } }, 4 });
-	L_kick.frames.push_back({ { 2, 283, 51, 84 }, 25, { { -11, -74, 26, 72 }, { 16, -82, 13, 16 }, { 0, -67, 29, 37 }, { 0, -46, 29, 44 }, { 0, 0, 0, 0 } }, 5 });
-	L_kick.loop = false;
-
-	// M_kick animation
-	M_kick.frames.push_back({ { 277, 283, 52, 84 }, 25, { { -11, -74, 26, 72 }, { 16, -82, 13, 16 }, { 0, -67, 29, 37 }, { 0, -46, 29, 44 }, { 0, 0, 0, 0 } }, 2 });
-	M_kick.frames.push_back({ { 335, 281, 92, 86 }, 25, { { -11, -74, 26, 72 }, { 8, -82, 45, 16 }, { 0, -67, 29, 37 }, { 0, -46, 29, 44 }, { 0, 0, 0, 0 } }, 3 });
-	M_kick.frames.push_back({ { 432, 264, 128, 103 }, 25, { { -11, -74, 26, 72 }, { -3, -90, 93, 26 }, { 15, -82, 62, 28 }, { -5, -67, 29, 65 }, { 69, -96, 33, 20 } }, 8 });
-	M_kick.frames.push_back({ { 335, 281, 92, 86 }, 25, { { -11, -74, 26, 72 }, { 8, -82, 45, 16 }, { 0, -67, 29, 37 }, { 0, -46, 29, 44 }, { 0, 0, 0, 0 } }, 4 });
-	M_kick.frames.push_back({ { 277, 283, 52, 84 }, 25, { { -11, -74, 26, 72 }, { 16, -82, 13, 16 }, { 0, -67, 29, 37 }, { 0, -46, 29, 44 }, { 0, 0, 0, 0 } }, 5 });
-	M_kick.loop = false;
-
-	// H_kick animation
-	H_kick.frames.push_back({ { 569, 279, 58, 88 }, 25, { { -12, -73, 26, 70 }, { 4, -81, 14, 15 }, { -10, -68, 28, 32 }, { -10, -51, 28, 49 }, { 0, 0, 0, 0 } }, 3 });
-	H_kick.frames.push_back({ { 632, 272, 62, 95 }, 25, { { -12, -73, 26, 70 }, { 4, -81, 14, 15 }, { -10, -68, 28, 32 }, { -10, -51, 28, 49 }, { 0, 0, 0, 0 } }, 3 });
-	H_kick.frames.push_back({ { 698, 274, 91, 93 }, 25, { { -12, -73, 26, 70 }, { -7, -83, 44, 18 }, { -10, -68, 28, 32 }, { -10, -51, 28, 49 }, { 0, 0, 0, 0 } }, 4 });
-	H_kick.frames.push_back({ { 793, 270, 136, 97 }, 25, { { -12, -73, 26, 70 }, { 13, -83, 67, 29 }, { 13, -87, 94, 22 }, { -10, -68, 28, 66 }, { 68, -98, 42, 28 } }, 6 });
-	H_kick.frames.push_back({ { 933, 274, 91, 93 }, 25, { { -12, -73, 26, 70 }, { -7, -83, 44, 18 }, { -10, -68, 28, 32 }, { -10, -51, 28, 49 }, { 0, 0, 0, 0 } }, 10 });
-	H_kick.frames.push_back({ { 1028, 284, 72, 83 }, 25, { { -12, -73, 26, 70 }, { 4, -81, 14, 15 }, { -10, -68, 28, 32 }, { -10, -51, 28, 49 }, { 0, 0, 0, 0 } }, 9 });
-	H_kick.loop = false;
+	// Far attacks animations
+	SetPlayerAnimationDataFromJSON(L_punch, root["L_punch"][0]);
+	SetPlayerAnimationDataFromJSON(M_punch, root["M_punch"][0]);
+	SetPlayerAnimationDataFromJSON(H_punch, root["H_punch"][0]);
+	SetPlayerAnimationDataFromJSON(L_kick, root["L_kick"][0]);
+	SetPlayerAnimationDataFromJSON(M_kick, root["M_kick"][0]);
+	SetPlayerAnimationDataFromJSON(H_kick, root["H_kick"][0]);
 
 	// Near attacks
-
-	// F_L_punch animation
-	F_L_punch.frames.push_back({ { 886, 147, 49, 101 }, 25, { { -12, -73, 26, 70 }, { 2, -81, 14, 15 }, { -10, -68, 28, 32 }, { -10, -51, 28, 49 }, { 2, -92, 32, 21 } }, 3 });
-	F_L_punch.frames.push_back({ { 940, 178, 72, 70 }, 25, { { -12, -73, 26, 70 }, { 2, -81, 14, 15 }, { -10, -68, 28, 32 }, { -10, -51, 28, 49 }, { 6, -77, 41, 8 } }, 6 });
-	F_L_punch.frames.push_back({ { 1016, 147, 49, 101 }, 25, { { -12, -73, 26, 70 }, { 2, -81, 14, 15 }, { -10, -68, 28, 32 }, { -10, -51, 28, 49 }, { 2, -92, 32, 21 } }, 5 });
-	F_L_punch.loop = false;
-
-	// F_M_punch animation
-	F_M_punch.frames.push_back({ { 1073, 163, 59, 85 }, 25, { { -12, -73, 26, 70 }, { 4, -81, 14, 15 }, { -10, -68, 28, 32 }, { -10, -51, 28, 49 }, { 17, -59, 22, 25 } }, 5 });
-	F_M_punch.frames.push_back({ { 1137, 129, 60, 119 }, 25, { { -12, -73, 26, 70 }, { 9, -96, 10, 33 }, { -10, -68, 28, 32 }, { -10, -51, 28, 49 }, { 21, -113, 5, 44 } }, 6 });
-	F_M_punch.frames.push_back({ { 1201, 163, 59, 85 }, 25, { { -12, -73, 26, 70 }, { 4, -81, 14, 15 }, { -10, -68, 28, 32 }, { -10, -51, 28, 49 }, { 0, 0, 0, 0 } }, 5 });
-	F_M_punch.loop = false;
-
-	// F_H_punch animation
-	F_H_punch.frames.push_back({ { 1267, 164, 49, 84 }, 25, { { -12, -73, 26, 70 }, { 2, -81, 14, 15 }, { -10, -68, 28, 32 }, { -10, -51, 28, 49 }, { 0, 0, 0, 0 } }, 7 });
-	F_H_punch.frames.push_back({ { 1321, 161, 49, 87 }, 25, { { -12, -73, 26, 70 }, { 2, -81, 14, 15 }, { -10, -68, 28, 32 }, { -10, -51, 28, 49 }, { 0, 0, 0, 0 } }, 4 });
-	F_H_punch.frames.push_back({ { 1375, 167, 63, 81 }, 25, { { -12, -73, 26, 70 }, { 24, -67, 14, 19 }, { -10, -68, 28, 32 }, { -10, -51, 28, 49 }, { 12, -67, 29, 25 } }, 6 });
-	F_H_punch.frames.push_back({ { 1442, 165, 65, 83 }, 25, { { -12, -73, 26, 70 }, { 24, -67, 14, 19 }, { -10, -68, 28, 32 }, { -10, -51, 28, 49 }, { 11, -65, 44, 31 } }, 10 });
-	F_H_punch.frames.push_back({ { 1512, 167, 63, 81 }, 25, { { -12, -73, 26, 70 }, { 24, -67, 14, 19 }, { -10, -68, 28, 32 }, { -10, -51, 28, 49 }, { 0, 0, 0, 0 } }, 9 });
-	F_H_punch.frames.push_back({ { 1581, 161, 49, 87 }, 25, { { -12, -73, 26, 70 }, { 2, -81, 14, 15 }, { -10, -68, 28, 32 }, { -10, -51, 28, 49 }, { 0, 0, 0, 0 } }, 9 });
-	F_H_punch.loop = false;
-
-	// F_L_kick animation
-	F_L_kick.frames.push_back({ { 1107, 283, 52, 84 }, 25, { { -12, -73, 26, 70 }, { 4, -81, 14, 15 }, { -10, -68, 28, 32 }, { -10, -51, 28, 49 }, { 0, 0, 0, 0 } }, 3 });
-	F_L_kick.frames.push_back({ { 1165, 283, 89, 84 }, 25, { { -12, -73, 26, 70 }, { 5, -82, 48, 18 }, { -10, -68, 28, 32 }, { -10, -51, 28, 49 }, { 17, -87, 49, 24 } }, 8 });
-	F_L_kick.frames.push_back({ { 1354, 283, 52, 84 }, 25, { { -12, -73, 26, 70 }, { 4, -81, 14, 15 }, { -10, -68, 28, 32 }, { -10, -51, 28, 49 }, { 0, 0, 0, 0 } }, 5 });
-	F_L_kick.loop = false;
-
-	// F_M_kick animation
-	F_M_kick.frames.push_back({ { 1107, 283, 52, 84 }, 25, { { -12, -73, 26, 70 }, { 4, -81, 14, 15 }, { -10, -68, 28, 32 }, { -10, -51, 28, 49 }, { 0, 0, 0, 0 } }, 3 });
-	F_M_kick.frames.push_back({ { 1259, 274, 91, 93 }, 25, { { -12, -73, 26, 70 }, { 5, -82, 48, 18 }, { -10, -68, 28, 32 }, { -10, -51, 28, 49 }, { 17, -87, 49, 24 } }, 8 });
-	F_M_kick.frames.push_back({ { 1354, 283, 52, 84 }, 25, { { -12, -73, 26, 70 }, { 4, -81, 14, 15 }, { -10, -68, 28, 32 }, { -10, -51, 28, 49 }, { 0, 0, 0, 0 } }, 5 });
-	F_M_kick.loop = false;
-
-	// F_H_kick animation
-	F_H_kick.frames.push_back({ { 1414, 299, 49, 68 }, 25, { { -12, -73, 26, 70 }, { 2, -81, 14, 15 }, { -10, -68, 28, 32 }, { -10, -51, 28, 49 }, { 0, 0, 0, 0 } }, 5 });
-	F_H_kick.frames.push_back({ { 1468, 273, 55, 94 }, 25, { { -12, -73, 26, 70 }, { 4, -81, 14, 15 }, { -10, -68, 28, 32 }, { -10, -51, 28, 49 }, { 0, 0, 0, 0 } }, 2 });
-	F_H_kick.frames.push_back({ { 1526, 259, 66, 108 }, 25, { { -12, -73, 26, 70 }, { 4, -81, 14, 15 }, { -10, -68, 28, 32 }, { -10, -51, 28, 49 }, { 9, -80, 45, 33 } }, 8 });
-	F_H_kick.frames.push_back({ { 1596, 273, 55, 94 }, 25, { { -12, -73, 26, 70 }, { 4, -81, 14, 15 }, { -10, -68, 28, 32 }, { -10, -51, 28, 49 }, { 0, 0, 0, 0 } }, 3 });
-	F_H_kick.frames.push_back({ { 1657, 299, 49, 68 }, 25, { { -12, -73, 26, 70 }, { 2, -81, 14, 15 }, { -10, -68, 28, 32 }, { -10, -51, 28, 49 }, { 0, 0, 0, 0 } }, 5 });
-	F_H_kick.loop = false;
+	SetPlayerAnimationDataFromJSON(F_L_punch, root["F_L_punch"][0]);
+	SetPlayerAnimationDataFromJSON(F_M_punch, root["F_M_punch"][0]);
+	SetPlayerAnimationDataFromJSON(F_H_punch, root["F_H_punch"][0]);
+	SetPlayerAnimationDataFromJSON(F_L_kick, root["F_L_kick"][0]);
+	SetPlayerAnimationDataFromJSON(F_M_kick, root["F_M_kick"][0]);
+	SetPlayerAnimationDataFromJSON(F_H_kick, root["F_H_kick"][0]);
 
 	// Especial position attacks
+	SetPlayerAnimationDataFromJSON(crouch_punch, root["crouch_punch"][0]);
+	SetPlayerAnimationDataFromJSON(crouch_kick, root["crouch_kick"][0]);
+	SetPlayerAnimationDataFromJSON(jump_punch, root["jump_punch"][0]);
+	SetPlayerAnimationDataFromJSON(jump_kick, root["jump_kick"][0]);
 
-	// crouch_punch animation
-	crouch_punch.frames.push_back({ { 5, 410, 51, 56 }, 24, { { -13, -46, 28, 45 }, { 7, -57, 14, 15 }, { -8, -46, 27, 23 }, { -8, -26, 27, 25 }, { 0, 0, 0, 0 } }, 5 });
-	crouch_punch.frames.push_back({ { 61, 434, 87, 32 }, 23, { { -13, -46, 28, 45 }, { 7, -31, 24, 29 }, { 21, -27, 42, 19 }, { -6, -33, 24, 29 }, { 0, 0, 0, 0 } }, 3 });
-	crouch_punch.frames.push_back({ { 153, 434, 134, 32 }, 23, { { -13, -46, 28, 45 }, { 7, -31, 24, 29 }, { 30, -30, 83, 22 }, { -6, -33, 24, 29 }, { 79, -28, 32, 15 } }, 6 });
-	crouch_punch.frames.push_back({ { 293, 434, 87, 32 }, 23, { { -13, -46, 28, 45 }, { 7, -31, 24, 29 }, { 21, -27, 42, 19 }, { -6, -33, 24, 29 }, { 0, 0, 0, 0 } }, 4 });
-	crouch_punch.frames.push_back({ { 385, 410, 51, 56 }, 24, { { -13, -46, 28, 45 }, { 7, -57, 14, 15 }, { -8, -46, 27, 23 }, { -8, -26, 27, 25 }, { 0, 0, 0, 0 } }, 5 });
-	crouch_punch.loop = false;
+	// Hit animation
+	SetPlayerAnimationDataFromJSON(hit, root["hit"][0]);
+	SetPlayerAnimationDataFromJSON(face_hit, root["face_hit"][0]);
+	SetPlayerAnimationDataFromJSON(crouch_hit, root["crouch_hit"][0]);
+	SetPlayerAnimationDataFromJSON(air_hit, root["air_hit"][0]);
 
-	// crouch_kick animation
-	crouch_kick.frames.push_back({ { 444, 409, 47, 57 }, 23, { { -13, -46, 28, 45 }, { 7, -57, 14, 15 }, { -8, -46, 27, 23 }, { -8, -26, 27, 25 }, { 0, 0, 0, 0 } }, 2 });
-	crouch_kick.frames.push_back({ { 496, 427, 86, 39 }, 43, { { -14, -26, 25, 23 }, { -35, -38, 14, 15 }, { -36, -33, 35, 31 }, { -1, -33, 40, 31 }, { -8, -29, 43, 24 } }, 14 });
-	crouch_kick.frames.push_back({ { 586, 409, 47, 57 }, 23, { { -13, -46, 28, 45 }, { 7, -57, 14, 15 }, { -8, -46, 27, 23 }, { -8, -26, 27, 25 }, { 0, 0, 0, 0 } }, 5 });
-	crouch_kick.loop = false;
+	// End animations
+	SetPlayerAnimationDataFromJSON(ko, root["ko"][0]);
+	SetPlayerAnimationDataFromJSON(victory1, root["victory1"][0]);
+	SetPlayerAnimationDataFromJSON(victory2, root["victory2"][0]);
+	SetPlayerAnimationDataFromJSON(time_out, root["time_out"][0]);
 
-	// jump_punch animation
-	jump_punch.frames.push_back({ { 643, 393, 66, 74 }, 8, { { -3, -63, 26, 36 }, { 1, -68, 27, 29 }, { 5, -52, 43, 22 }, { 1, -43, 27, 19 }, { 0, 0, 0, 0 } }, 7 });
-	jump_punch.frames.push_back({ { 714, 393, 102, 74 }, 8, { { -3, -63, 26, 36 }, { 1, -68, 27, 44 }, { 22, -56, 37, 32 }, { 59, -33, 32, 29 }, { 58, -30, 31, 23 } }, 10 });
-	jump_punch.frames.push_back({ { 822, 393, 66, 74 }, 8, { { -3, -63, 26, 36 }, { 1, -68, 27, 29 }, { 5, -52, 43, 22 }, { 1, -43, 27, 19 }, { 0, 0, 0, 0 } }, 7 });
-	jump_punch.loop = false;
+	// Special attacks
+	SetPlayerAnimationDataFromJSON(yoga_fire, root["yoga_fire"][0]);
+	SetPlayerAnimationDataFromJSON(yoga_flame, root["yoga_flame"][0]);
+	SetPlayerAnimationDataFromJSON(yoga_mummy, root["yoga_mummy"][0]);
+	SetPlayerAnimationDataFromJSON(yoga_spear, root["yoga_spear"][0]);
 
-	// jump_kick animation
-	jump_kick.frames.push_back({ { 897, 394, 78, 73 }, 8, { { -4, -61, 27, 40 }, { 0, -63, 26, 30 }, { 0, -38, 26, 19 }, { 3, -47, 42, 22 }, { 0, 0, 0, 0 } }, 10 });
-	jump_kick.frames.push_back({ { 978, 394, 117, 73 }, 8, { { -4, -61, 27, 40 }, { 0, -63, 26, 34 }, { 35, -36, 37, 20 }, { 56, -28, 51, 25 }, { 73, -26, 26, 19 } }, 12 });
-	jump_kick.frames.push_back({ { 1098, 394, 78, 73 }, 8, { { -4, -61, 27, 40 }, { 0, -63, 26, 30 }, { 0, -38, 26, 19 }, { 3, -47, 42, 22 }, { 0, 0, 0, 0 } }, 10 });
-	jump_kick.loop = false;
+	// particle animations
+	SetParticleAnimationDataFromJSON(particula, root["particle"][0]);
+	SetParticleAnimationDataFromJSON(destroy_particula, root["destroy-particle"][0]);
+}
 
-	// hit animation
-	hit.frames.push_back({ { 7, 731, 49, 81 }, 25, { { -12, -73, 26, 70 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 } }, 10 });
-	hit.frames.push_back({ { 64, 725, 49, 87 }, 25, { { -12, -73, 26, 70 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 } }, 10 });
-	hit.frames.push_back({ { 117, 723, 49, 89 }, 25, { { -12, -73, 26, 70 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 } }, 10 });
-	hit.loop = false;
-
-	// face_hit animation
-	face_hit.frames.push_back({ { 175, 728, 49, 84 }, 25, { { -12, -73, 26, 70 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 } }, 10 });
-	face_hit.frames.push_back({ { 227, 725, 51, 87 }, 27, { { -12, -73, 26, 70 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 } }, 10 });
-	face_hit.frames.push_back({ { 282, 725, 61, 87 }, 36, { { -12, -73, 26, 70 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 } }, 10 });
-	face_hit.loop = false;
-
-	// crouch_hit animation
-	crouch_hit.frames.push_back({ { 350, 749, 45, 63 }, 22, { { -8, -62, 26, 60 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 } }, 30 });
-	crouch_hit.loop = false;
-
-	// air_hit animation
-	air_hit.frames.push_back({ { 932, 755, 74, 57 }, 58, { { -59, -29, 76, 29 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 } }, 15 });
-	air_hit.loop = false;
-
-	// ko animation
-	ko.frames.push_back({ { 932, 755, 74, 57 }, 58, { { -59, -29, 76, 29 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 } }, 30 });
-	ko.frames.push_back({ { 1011, 783, 83, 29 }, 58, { { -59, -29, 76, 29 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 } }, 30 });
-	ko.frames.push_back({ { 1098, 755, 74, 57 }, 58, { { -59, -29, 76, 29 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 } }, 30 });
-	ko.frames.push_back({ { 1177, 783, 83, 29 }, 58, { { -59, -29, 76, 29 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 } }, 30 });
-	ko.loop = false;
-
-	// victory1 animation
-	victory1.frames.push_back({ { 5, 843, 60, 96 }, 29, { { -12, -73, 26, 70 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 } }, 10 });
-	victory1.frames.push_back({ { 71, 843, 62, 96 }, 30, { { -12, -73, 26, 70 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 } }, 10 });
-	victory1.frames.push_back({ { 137, 843, 62, 96 }, 30, { { -12, -73, 26, 70 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 } }, 10 });
-	victory1.frames.push_back({ { 203, 858, 74, 81 }, 28, { { -12, -73, 26, 70 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 } }, 10 });
-	victory1.frames.push_back({ { 280, 858, 74, 81 }, 28, { { -12, -73, 26, 70 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 } }, 10 });
-	victory1.frames.push_back({ { 358, 843, 62, 96 }, 28, { { -12, -73, 26, 70 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 } }, 10 });
-	victory1.frames.push_back({ { 426, 843, 62, 96 }, 28, { { -12, -73, 26, 70 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 } }, 10 });
-	victory1.frames.push_back({ { 497, 843, 60, 96 }, 28, { { -12, -73, 26, 70 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 } }, 10 });
-	victory1.frames.push_back({ { 426, 843, 62, 96 }, 28, { { -12, -73, 26, 70 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 } }, 10 });
-	victory1.frames.push_back({ { 358, 843, 62, 96 }, 28, { { -12, -73, 26, 70 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 } }, 10 });
-	victory1.frames.push_back({ { 280, 858, 74, 81 }, 28, { { -12, -73, 26, 70 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 } }, 10 });
-	victory1.frames.push_back({ { 203, 858, 74, 81 }, 28, { { -12, -73, 26, 70 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 } }, 10 });
-	victory1.frames.push_back({ { 137, 843, 62, 96 }, 30, { { -12, -73, 26, 70 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 } }, 10 });
-	victory1.frames.push_back({ { 71, 843, 62, 96 }, 30, { { -12, -73, 26, 70 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 } }, 10 });
-	victory1.frames.push_back({ { 5, 843, 60, 96 }, 29, { { -12, -73, 26, 70 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 } }, 10 });
-	victory1.loop = true;
-
-	// victory2 animation
-	victory2.frames.push_back({ { 563, 871, 45, 68 }, 25, { { -12, -73, 26, 70 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 } }, 10 });
-	victory2.frames.push_back({ { 613, 838, 49, 101 }, 25, { { -12, -73, 26, 70 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 } }, 10 });
-	victory2.frames.push_back({ { 667, 837, 49, 102 }, 25, { { -12, -73, 26, 70 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 } }, 10 });
-	victory2.frames.push_back({ { 722, 833, 57, 106 }, 25, { { -12, -73, 26, 70 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 } }, 10 });
-	victory2.loop = false;
-
-	// time_out animation
-	time_out.frames.push_back({ { 785, 854, 59, 85 }, 25, { { -12, -73, 26, 70 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 } }, 10 });
-	time_out.loop = true;
-
-	// yoga fire animation
-	yoga_fire.frames.push_back({ { 301, 492, 49, 84 }, 25, { { -12, -73, 26, 70 }, { -3, -82, 14, 15 }, { -12, -79, 29, 35 }, { -12, -35, 29, 33 }, { 0, 0, 0, 0 } }, 4 });
-	yoga_fire.frames.push_back({ { 353, 489, 61, 87 }, 37, { { -12, -73, 26, 70 }, { -34, -91, 14, 15 }, { -28, -76, 29, 39 }, { -12, -35, 29, 33 }, { 0, 0, 0, 0 } }, 7 });
-	yoga_fire.frames.push_back({ { 418, 495, 62, 81 }, 25, { { -12, -73, 26, 70 }, { 25, -70, 14, 15 }, { -3, -78, 28, 38 }, { -10, -34, 28, 32 }, { 0, 0, 0, 0 } }, 3 });
-	yoga_fire.frames.push_back({ { 485, 493, 68, 83 }, 25, { { -12, -73, 26, 70 }, { 31, -60, 14, 15 }, { -3, -78, 28, 38 }, { -10, -34, 28, 32 }, { 0, 0, 0, 0 } }, 6 });
-	yoga_fire.frames.push_back({ { 557, 495, 62, 81 }, 25, { { -12, -73, 26, 70 }, { 25, -70, 14, 15 }, { -3, -78, 28, 38 }, { -10, -34, 28, 32 }, { 0, 0, 0, 0 } }, 9 });
-	yoga_fire.loop = false;
-
-	// yoga flame animation
-	yoga_flame.frames.push_back({ { 739, 492, 49, 84 }, 25, { { -12, -73, 26, 70 }, { -3, -82, 14, 15 }, { -12, -79, 29, 35 }, { -12, -35, 29, 33 }, { 0, 0, 0, 0 } }, 4 });
-	yoga_flame.frames.push_back({ { 791, 489, 61, 87 }, 37, { { -12, -73, 26, 70 }, { -34, -91, 14, 15 }, { -28, -76, 29, 39 }, { -12, -35, 29, 33 }, { 0, 0, 0, 0 } }, 7 });
-	yoga_flame.frames.push_back({ { 855, 495, 81, 81 }, 25, { { -12, -73, 26, 70 }, { 25, -70, 14, 15 }, { -3, -78, 28, 38 }, { -10, -34, 28, 32 }, { 0, 0, 0, 0 } }, 7 });
-	yoga_flame.frames.push_back({ { 940, 493, 87, 83 }, 25, { { -12, -73, 26, 70 }, { 31, -60, 14, 15 }, { -3, -78, 28, 38 }, { -10, -34, 28, 32 }, { 42, -54, 20, 15 } }, 3 });
-	yoga_flame.frames.push_back({ { 940, 493, 67, 83 }, 25, { { -12, -73, 26, 70 }, { 31, -60, 14, 15 }, { -3, -78, 28, 38 }, { -10, -34, 28, 32 }, { 42, -54, 20, 15 } }, 1 });
-	yoga_flame.frames.push_back({ { 940, 493, 87, 83 }, 25, { { -12, -73, 26, 70 }, { 31, -60, 14, 15 }, { -3, -78, 28, 38 }, { -10, -34, 28, 32 }, { 42, -54, 20, 15 } }, 3 });
-	yoga_flame.frames.push_back({ { 940, 493, 67, 83 }, 25, { { -12, -73, 26, 70 }, { 31, -60, 14, 15 }, { -3, -78, 28, 38 }, { -10, -34, 28, 32 }, { 42, -54, 20, 15 } }, 1 });
-	yoga_flame.frames.push_back({ { 1031, 493, 105, 83 }, 25, { { -12, -73, 26, 70 }, { 31, -60, 14, 15 }, { -3, -78, 28, 38 }, { -10, -34, 28, 32 }, { 48, -62, 32, 26 } }, 3 });
-	yoga_flame.frames.push_back({ { 1031, 493, 85, 83 }, 25, { { -12, -73, 26, 70 }, { 31, -60, 14, 15 }, { -3, -78, 28, 38 }, { -10, -34, 28, 32 }, { 48, -62, 32, 26 } }, 1 });
-	yoga_flame.frames.push_back({ { 1031, 493, 105, 83 }, 25, { { -12, -73, 26, 70 }, { 31, -60, 14, 15 }, { -3, -78, 28, 38 }, { -10, -34, 28, 32 }, { 48, -62, 32, 26 } }, 3 });
-	yoga_flame.frames.push_back({ { 1031, 493, 85, 83 }, 25, { { -12, -73, 26, 70 }, { 31, -60, 14, 15 }, { -3, -78, 28, 38 }, { -10, -34, 28, 32 }, { 48, -62, 32, 26 } }, 1 });
-	yoga_flame.frames.push_back({ { 1031, 493, 105, 83 }, 25, { { -12, -73, 26, 70 }, { 31, -60, 14, 15 }, { -3, -78, 28, 38 }, { -10, -34, 28, 32 }, { 48, -62, 32, 26 } }, 3 });
-	yoga_flame.frames.push_back({ { 1031, 493, 85, 83 }, 25, { { -12, -73, 26, 70 }, { 31, -60, 14, 15 }, { -3, -78, 28, 38 }, { -10, -34, 28, 32 }, { 48, -62, 32, 26 } }, 1 });
-	yoga_flame.frames.push_back({ { 1031, 493, 105, 83 }, 25, { { -12, -73, 26, 70 }, { 31, -60, 14, 15 }, { -3, -78, 28, 38 }, { -10, -34, 28, 32 }, { 48, -62, 32, 26 } }, 3 });
-	yoga_flame.frames.push_back({ { 1031, 493, 85, 83 }, 25, { { -12, -73, 26, 70 }, { 31, -60, 14, 15 }, { -3, -78, 28, 38 }, { -10, -34, 28, 32 }, { 48, -62, 32, 26 } }, 1 });
-	yoga_flame.frames.push_back({ { 1140, 493, 108, 83 }, 25, { { -12, -73, 26, 70 }, { 31, -60, 14, 15 }, { -3, -78, 28, 38 }, { -10, -34, 28, 32 }, { 0, 0, 0, 0 } }, 3 });
-	yoga_flame.frames.push_back({ { 1140, 493, 88, 83 }, 25, { { -12, -73, 26, 70 }, { 31, -60, 14, 15 }, { -3, -78, 28, 38 }, { -10, -34, 28, 32 }, { 0, 0, 0, 0 } }, 1 });
-	yoga_flame.frames.push_back({ { 1253, 493, 102, 83 }, 25, { { -12, -73, 26, 70 }, { 31, -60, 14, 15 }, { -3, -78, 28, 38 }, { -10, -34, 28, 32 }, { 0, 0, 0, 0 } }, 3 });
-	yoga_flame.frames.push_back({ { 1253, 493, 82, 83 }, 25, { { -12, -73, 26, 70 }, { 31, -60, 14, 15 }, { -3, -78, 28, 38 }, { -10, -34, 28, 32 }, { 0, 0, 0, 0 } }, 1 });
-	yoga_flame.frames.push_back({ { 1359, 493, 101, 83 }, 25, { { -12, -73, 26, 70 }, { 31, -60, 14, 15 }, { -3, -78, 28, 38 }, { -10, -34, 28, 32 }, { 0, 0, 0, 0 } }, 3 });
-	yoga_flame.frames.push_back({ { 1359, 493, 81, 83 }, 25, { { -12, -73, 26, 70 }, { 31, -60, 14, 15 }, { -3, -78, 28, 38 }, { -10, -34, 28, 32 }, { 0, 0, 0, 0 } }, 1 });
-	yoga_flame.frames.push_back({ { 1465, 493, 68, 83 }, 25, { { -12, -73, 26, 70 }, { 31, -60, 14, 15 }, { -3, -78, 28, 38 }, { -10, -34, 28, 32 }, { 0, 0, 0, 0 } }, 5 });
-	yoga_flame.loop = false;
-
-	// yoga mummy animation
-	yoga_mummy.frames.push_back({ { 1183, 425, 89, 38 }, 45, { { -12, -46, 26, 27 }, { 30, -27, 14, 15 }, { -1, -38, 36, 38 }, { -33, -38, 32, 38 }, { 13, -38, 31, 38 } }, 5 });
-	yoga_mummy.frames.push_back({ { 1279, 425, 89, 38 }, 45, { { -12, -46, 26, 27 }, { 30, -27, 14, 15 }, { -1, -38, 36, 38 }, { -33, -38, 32, 38 }, { 13, -38, 31, 38 } }, 5 });
-	yoga_mummy.frames.push_back({ { 1376, 425, 89, 38 }, 45, { { -12, -46, 26, 27 }, { 30, -27, 14, 15 }, { -1, -38, 36, 38 }, { -33, -38, 32, 38 }, { 13, -38, 31, 38 } }, 5 });
-	yoga_mummy.frames.push_back({ { 1468, 425, 89, 38 }, 45, { { -12, -46, 26, 27 }, { 30, -27, 14, 15 }, { -1, -38, 36, 38 }, { -33, -38, 32, 38 }, { 13, -38, 31, 38 } }, 5 });
-	yoga_mummy.frames.push_back({ { 1183, 425, 89, 38 }, 45, { { -12, -46, 26, 27 }, { 30, -27, 14, 15 }, { -1, -38, 36, 38 }, { -33, -38, 32, 38 }, { 13, -38, 31, 38 } }, 5 });
-	yoga_mummy.frames.push_back({ { 1279, 425, 89, 38 }, 45, { { -12, -46, 26, 27 }, { 30, -27, 14, 15 }, { -1, -38, 36, 38 }, { -33, -38, 32, 38 }, { 13, -38, 31, 38 } }, 5 });
-	yoga_mummy.frames.push_back({ { 1376, 425, 89, 38 }, 45, { { -12, -46, 26, 27 }, { 30, -27, 14, 15 }, { -1, -38, 36, 38 }, { -33, -38, 32, 38 }, { 13, -38, 31, 38 } }, 5 });
-	yoga_mummy.frames.push_back({ { 1468, 425, 89, 38 }, 45, { { -12, -46, 26, 27 }, { 30, -27, 14, 15 }, { -1, -38, 36, 38 }, { -33, -38, 32, 38 }, { 13, -38, 31, 38 } }, 5 });
-	yoga_mummy.frames.push_back({ { 1183, 425, 89, 38 }, 45, { { -12, -46, 26, 27 }, { 30, -27, 14, 15 }, { -1, -38, 36, 38 }, { -33, -38, 32, 38 }, { 13, -38, 31, 38 } }, 5 });
-	yoga_mummy.frames.push_back({ { 1279, 425, 89, 38 }, 45, { { -12, -46, 26, 27 }, { 30, -27, 14, 15 }, { -1, -38, 36, 38 }, { -33, -38, 32, 38 }, { 13, -38, 31, 38 } }, 5 });
-	yoga_mummy.frames.push_back({ { 1376, 425, 89, 38 }, 45, { { -12, -46, 26, 27 }, { 30, -27, 14, 15 }, { -1, -38, 36, 38 }, { -33, -38, 32, 38 }, { 13, -38, 31, 38 } }, 5 });
-	yoga_mummy.frames.push_back({ { 1468, 425, 89, 38 }, 45, { { -12, -46, 26, 27 }, { 30, -27, 14, 15 }, { -1, -38, 36, 38 }, { -33, -38, 32, 38 }, { 13, -38, 31, 38 } }, 5 });
-	yoga_mummy.loop = false;
-
-	// yoga spear animation
-	yoga_spear.frames.push_back({ { 5, 501, 70, 75 }, 35, { { -12, -46, 26, 27 }, { -35, -75, 14, 15 }, { -30, -65, 29, 25 }, { -2, -41, 25, 22 }, { 7, -37, 33, 35 } }, 5 });
-	yoga_spear.frames.push_back({ { 79, 501, 60, 75 }, 35, { { -12, -46, 26, 27 }, { -35, -75, 14, 15 }, { -30, -65, 29, 25 }, { -2, -41, 25, 22 }, { 7, -37, 33, 35 } }, 5 });
-	yoga_spear.frames.push_back({ { 143, 501, 73, 75 }, 35, { { -12, -46, 26, 27 }, { -35, -75, 14, 15 }, { -30, -65, 29, 25 }, { -2, -41, 25, 22 }, { 7, -37, 33, 35 } }, 5 });
-	yoga_spear.frames.push_back({ { 220, 501, 73, 75 }, 35, { { -12, -46, 26, 27 }, { -35, -75, 14, 15 }, { -30, -65, 29, 25 }, { -2, -41, 25, 22 }, { 7, -37, 33, 35 } }, 5 });
-	yoga_spear.frames.push_back({ { 5, 501, 70, 75 }, 35, { { -12, -46, 26, 27 }, { -35, -75, 14, 15 }, { -30, -65, 29, 25 }, { -2, -41, 25, 22 }, { 7, -37, 33, 35 } }, 5 });
-	yoga_spear.frames.push_back({ { 79, 501, 60, 75 }, 35, { { -12, -46, 26, 27 }, { -35, -75, 14, 15 }, { -30, -65, 29, 25 }, { -2, -41, 25, 22 }, { 7, -37, 33, 35 } }, 5 });
-	yoga_spear.frames.push_back({ { 143, 501, 73, 75 }, 35, { { -12, -46, 26, 27 }, { -35, -75, 14, 15 }, { -30, -65, 29, 25 }, { -2, -41, 25, 22 }, { 7, -37, 33, 35 } }, 5 });
-	yoga_spear.frames.push_back({ { 220, 501, 73, 75 }, 35, { { -12, -46, 26, 27 }, { -35, -75, 14, 15 }, { -30, -65, 29, 25 }, { -2, -41, 25, 22 }, { 7, -37, 33, 35 } }, 5 });
-	yoga_spear.frames.push_back({ { 5, 501, 70, 75 }, 35, { { -12, -46, 26, 27 }, { -35, -75, 14, 15 }, { -30, -65, 29, 25 }, { -2, -41, 25, 22 }, { 7, -37, 33, 35 } }, 5 });
-	yoga_spear.frames.push_back({ { 79, 501, 60, 75 }, 35, { { -12, -46, 26, 27 }, { -35, -75, 14, 15 }, { -30, -65, 29, 25 }, { -2, -41, 25, 22 }, { 7, -37, 33, 35 } }, 5 });
-	yoga_spear.frames.push_back({ { 143, 501, 73, 75 }, 35, { { -12, -46, 26, 27 }, { -35, -75, 14, 15 }, { -30, -65, 29, 25 }, { -2, -41, 25, 22 }, { 7, -37, 33, 35 } }, 5 });
-	yoga_spear.frames.push_back({ { 220, 501, 73, 75 }, 35, { { -12, -46, 26, 27 }, { -35, -75, 14, 15 }, { -30, -65, 29, 25 }, { -2, -41, 25, 22 }, { 7, -37, 33, 35 } }, 5 });
-	yoga_spear.loop = false;
-
-	// particula animation
-	particula.frames.push_back({ { 627, 519, 27, 17 }, 13, { -4, -10, 8, 10 }, 6 });
-	particula.frames.push_back({ { 627, 519, 0, 0 }, 13, { -4, -10, 8, 10 }, 1 });
-	particula.frames.push_back({ { 663, 519, 26, 17 }, 13, { -4, -10, 8, 10 }, 6 });
-	particula.frames.push_back({ { 663, 519, 0, 0 }, 13, { -4, -10, 8, 10 }, 1 });
-	particula.frames.push_back({ { 698, 520, 26, 14 }, 13, { -4, -10, 8, 10 }, 6 });
-	particula.frames.push_back({ { 698, 520, 0, 0 }, 13, { -4, -10, 8, 10 }, 1 });
-	particula.loop = true;
-
-	// destroy particula animation
-	destroy_particula.frames.push_back({ { 636, 552, 16, 16 }, 8, { 0, 0, 0, 0 }, 4 });
-	destroy_particula.frames.push_back({ { 660, 549, 8, 22 }, 4, { 0, 0, 0, 0 }, 4 });
-	destroy_particula.frames.push_back({ { 674, 547, 16, 26 }, 8, { 0, 0, 0, 0 }, 4 });
-	destroy_particula.frames.push_back({ { 696, 546, 22, 28 }, 11, { 0, 0, 0, 0 }, 4 });
-	destroy_particula.loop = false;
-
+void ModulePlayerDhalsim::SetUpPlayer(int numPlayer)
+{
 	if (numPlayer == 1)
 	{
 		position.x = 150;
@@ -342,29 +159,6 @@ ModulePlayerDhalsim::ModulePlayerDhalsim(int playerNum, bool start_enabled) : Mo
 		collider_attack.type = COLLIDER_ATTACK_PLAYER_TWO;
 		collider_attack.module = this;
 	}
-
-	playerState = PLAYER_IDLE;
-	colliding_players = false;
-	jumping = false;
-	hitted = false;
-	head_hitted = false;
-	leg_hitted = false;
-	life = 200;
-	wins = 0;
-	win = false;
-	dead = false;
-	time_0 = false;
-	starting_combo = COMBO_NOTHING;
-	damageType = NONE_DAMAGE;
-	distance_jumped = 0;
-	jump_attacked = false;
-	already_hitted = false;
-	lastShotTimer = SDL_GetTicks();
-}
-
-// Destructor
-ModulePlayerDhalsim::~ModulePlayerDhalsim()
-{
 }
 
 // Load assets
@@ -2356,7 +2150,7 @@ void ModulePlayerDhalsim::SetSDLRectFromData(SDL_Rect& sdl_rect, const Json::Val
 	sdl_rect.h = jsonValue[3].asInt();
 }
 
-void ModulePlayerDhalsim::SetAnimationDataFromJSON(Animation& animation, Json::Value& jsonValue)
+void ModulePlayerDhalsim::SetPlayerAnimationDataFromJSON(Animation& animation, Json::Value& jsonValue)
 {
 	int numberOfFrames = jsonValue.get("numberOfFrames", "0").asInt();
 
@@ -2379,5 +2173,27 @@ void ModulePlayerDhalsim::SetAnimationDataFromJSON(Animation& animation, Json::V
 
 		animation.frames.push_back(animationStructure);
 		animation.loop = jsonValue.get("loop", true).asBool();
+	}
+}
+
+void ModulePlayerDhalsim::SetParticleAnimationDataFromJSON(ParticleAnimation& particleAnimation, Json::Value& jsonValue)
+{
+	int numberOfFrames = jsonValue.get("numberOfFrames", "0").asInt();
+
+	for (int i = 0; i < numberOfFrames; ++i)
+	{
+		Json::Value currentValue = jsonValue["frames"][i];
+		ParticleAnimationStructure particleAnimationStructure;
+
+		SetSDLRectFromData(particleAnimationStructure.frame, currentValue["frame"]);
+
+		particleAnimationStructure.pivot = currentValue["pivot"].asInt();
+
+		SetSDLRectFromData(particleAnimationStructure.collider, currentValue["collider"]);
+
+		particleAnimationStructure.duration = currentValue["duration"].asInt();
+
+		particleAnimation.frames.push_back(particleAnimationStructure);
+		particleAnimation.loop = jsonValue.get("loop", true).asBool();
 	}
 }
