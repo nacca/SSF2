@@ -11,7 +11,7 @@ public:
 	~ModuleFadeToBlack();
 
 	bool Start();
-	update_status Update();
+	UpdateStatus Update();
 	void FadeToBlack(Module* module_on, Module* module_off = nullptr, float time = 1.0f);
 	bool isFading() const;
 

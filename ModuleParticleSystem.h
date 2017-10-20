@@ -31,8 +31,8 @@ public:
 	virtual ~ModuleParticleSystem();
 
 	virtual bool Start();
-	virtual update_status Update();
-	virtual update_status PostUpdate();
+	virtual UpdateStatus Update();
+	virtual UpdateStatus PostUpdate();
 
 	virtual void OnCollision(Collider* c1, Collider* c2);
 	

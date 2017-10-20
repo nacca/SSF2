@@ -20,17 +20,17 @@ public:
 	ModuleComboDetection(bool start_enabled = true);
 	~ModuleComboDetection();
 
-	update_status PreUpdate();
+	UpdateStatus PreUpdate();
 
 private:
 	previous_states previous_state_player_one;
 	int countdown_previous_state_player_one;
 	int countdown_first_state_player_one;
-	combo_types type_of_combo_player_one;
+	ComboTypes type_of_combo_player_one;
 	previous_states previous_state_player_two;
 	int countdown_previous_state_player_two;
 	int countdown_first_state_player_two;
-	combo_types type_of_combo_player_two;
+	ComboTypes type_of_combo_player_two;
 	bool combo_air_start_player_one;
 	bool combo_air_start_player_two;
 };

@@ -59,9 +59,9 @@ bool Application::Init()
 	return ret;
 }
 
-update_status Application::Update()
+UpdateStatus Application::Update()
 {
-	update_status ret = UPDATE_CONTINUE;
+	UpdateStatus ret = UPDATE_CONTINUE;
 
 	for (list<Module*>::iterator it = modules.begin(); it != modules.end() && ret == UPDATE_CONTINUE; ++it)
 	if ((*it)->IsEnabled() == true)

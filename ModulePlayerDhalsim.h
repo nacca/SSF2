@@ -18,9 +18,9 @@ public:
 	virtual ~ModulePlayerDhalsim();
 
 	virtual bool Start();
-	virtual update_status PreUpdate();
-	virtual update_status Update();
-	virtual update_status PostUpdate();
+	virtual UpdateStatus PreUpdate();
+	virtual UpdateStatus Update();
+	virtual UpdateStatus PostUpdate();
 	virtual bool CleanUp();
 
 	bool IsAttacking() const;
@@ -32,7 +32,7 @@ public:
 	void MovePlayer(int distance);
 	bool playerInCameraLimit() const;
 
-	virtual bool GetPlayerInput(input_type actionKey);
+	virtual bool GetPlayerInput(InputType actionKey);
 
 	int GetWins() const;
 	void SetWins(int wins);
@@ -53,16 +53,16 @@ public:
 	bool GetJumping() const;
 	void SetJumping(bool jumping);
 
-	bool GetLooking_right() const;
-	void SetLooking_right(bool looking_right);
+	bool GetLookingRight() const;
+	void SetLookingRight(bool lookingRight);
 
 	int GetDistanceJumped() const;
 
-	player_state GetPlayerState() const;
-	void SetPlayerState(player_state playerState);
+	PlayerState GetPlayerState() const;
+	void SetPlayerState(PlayerState playerState);
 
-	combo_types GetStartingCombo() const;
-	void SetStartingCombo(combo_types starting_combo);
+	ComboTypes GetStartingCombo() const;
+	void SetStartingCombo(ComboTypes starting_combo);
 
 
 private:
@@ -76,21 +76,21 @@ private:
 	void TemporalFunction(ofstream& myfile, string s, Animation& animation);
 
 protected:
-	SDL_Texture* graphics = nullptr;
-	iPoint position;
-	bool move_right;
-	bool move_left;
-	Collider collider_head;
-	Collider collider_body;
-	Collider collider_legs;
-	Collider collider_attack;
-	Collider player_collider;
+	SDL_Texture* m_Graphics = nullptr;
+	iPoint m_Position;
+	bool m_IsMovingRight;
+	bool m_IsMovingLeft;
+	Collider m_ColliderHead;
+	Collider m_ColliderBody;
+	Collider m_ColliderLegs;
+	Collider m_ColliderAttack;
+	Collider m_PlayerCollider;
 
-	ParticleAnimation particula;
-	ParticleAnimation destroy_particula;
+	ParticleAnimation m_Particle;
+	ParticleAnimation m_DestroyParticle;
 
-	bool colliding_players;
-	Uint32 lastShotTimer;
+	bool m_AreCollidingPlayers;
+	Uint32 m_LastShotTimer;
 
 	Animation idle;
 	Animation forward;
@@ -128,44 +128,44 @@ protected:
 	Animation yoga_mummy;
 	Animation yoga_spear;
 
-	bool hitted;
-	bool head_hitted;
-	bool leg_hitted;
-	bool already_hitted;
+	bool m_Hitted;
+	bool m_HeadHitted;
+	bool m_LegHitted;
+	bool m_AlreadyHitted;
 
-	int distance_jumped;
-	bool going_up;
-	bool jump_attacked;
+	int m_DistanceJumped;
+	bool m_GoingUp;
+	bool m_JumpAttacked;
 
-	int audio_id_yoga_fire;
-	int audio_id_yoga_flame;
-	int audio_id_dead;
-	int audio_id_L_attack;
-	int audio_id_M_attack;
-	int audio_id_H_attack;
-	int audio_id_L_impact;
-	int audio_id_M_impact;
-	int audio_id_H_impact;
+	int m_AudioIdYogaFire;
+	int m_AudioIdYogaFlame;
+	int m_AudioIdDead;
+	int m_AudioIdLAttack;
+	int m_AudioIdMAttack;
+	int m_AudioIdHAttack;
+	int m_AudioIdLImpact;
+	int m_AudioIdMImpact;
+	int m_AudioIdHImpact;
 
-	damage_type damageType;
+	DamageType m_DamageType;
 
-	direction_jumping directionJump;
-	direction_jumping directionMummy;
+	DirectionJumping m_DirectionJump;
+	DirectionJumping m_DirectionMummy;
 
-	ModulePlayerDhalsim* otherPlayer;
+	ModulePlayerDhalsim* m_OtherPlayer;
 
-	int wins;
-	int life;
-	bool win;
-	bool dead;
-	bool time_0;
-	bool jumping;
-	bool looking_right;
+	int m_Wins;
+	int m_Life;
+	bool m_Win;
+	bool m_Dead;
+	bool m_Time0;
+	bool m_Jumping;
+	bool m_LookingRight;
 
-	player_state playerState;
-	combo_types starting_combo;
+	PlayerState m_PlayerState;
+	ComboTypes m_StartingCombo;
 
-	int numPlayer;
+	int m_NumPlayer;
 
 };
 

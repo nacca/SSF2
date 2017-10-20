@@ -14,8 +14,8 @@ public:
 	~ModuleSceneBison();
 
 	bool Start();
-	update_status Update();
-	update_status PostUpdate();
+	UpdateStatus Update();
+	UpdateStatus PostUpdate();
 	bool CleanUp();
 
 	void RestartScene(int wins);

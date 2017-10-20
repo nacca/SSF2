@@ -7,7 +7,8 @@
 
 void log(const char file[], int line, const char* format, ...);
 
-enum combo_types{
+enum ComboTypes
+{
 	COMBO_YOGA_FIRE,
 	COMBO_YOGA_FLAME,
 	AERIAL_COMBO,
@@ -16,7 +17,7 @@ enum combo_types{
 	COMBO_NOTHING
 };
 
-enum collider_type
+enum ColliderType
 {
 	COLLIDER_PLAYER_ONE,
 	COLLIDER_BODY_PLAYER_ONE,
@@ -28,21 +29,21 @@ enum collider_type
 	COLLIDER_OTHERS
 };
 
-enum update_status
+enum UpdateStatus
 {
 	UPDATE_CONTINUE = 1,
 	UPDATE_STOP,
 	UPDATE_ERROR
 };
 
-enum direction_jumping
+enum DirectionJumping
 {
 	JUMP_STATIC,
 	JUMP_LEFT,
 	JUMP_RIGHT
 };
 
-enum player_state
+enum PlayerState
 {
 	PLAYER_IDLE,
 	PLAYER_WALKING_FORWARD,
@@ -83,14 +84,16 @@ enum player_state
 	PLAYER_AIR_HITTED
 };
 
-enum damage_type{
+enum DamageType
+{
 	L_ATTACK,
 	M_ATTACK,
 	H_ATTACK,
 	NONE_DAMAGE
 };
 
-enum input_type{
+enum InputType
+{
 	INPUT_UP,
 	INPUT_DOWN,
 	INPUT_LEFT,

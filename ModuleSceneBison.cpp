@@ -165,7 +165,7 @@ bool ModuleSceneBison::CleanUp()
 }
 
 // Update: draw background
-update_status ModuleSceneBison::Update()
+UpdateStatus ModuleSceneBison::Update()
 {
 	// Draw
 	App->renderer->Blit(graphics, -28, 159, &ground, 1.0f); // Ground
@@ -275,7 +275,7 @@ update_status ModuleSceneBison::Update()
 }
 
 // Manages the black fades to restart screens
-update_status ModuleSceneBison::PostUpdate()
+UpdateStatus ModuleSceneBison::PostUpdate()
 {
 	if (restarting)
 	{

@@ -88,7 +88,7 @@ ModuleCollisions::~ModuleCollisions()
 {
 }
 
-update_status ModuleCollisions::PreUpdate()
+UpdateStatus ModuleCollisions::PreUpdate()
 {
 	if (App->input->GetKey(SDL_SCANCODE_Z) == KEY_DOWN) {
 		if (show_colliders)
@@ -99,7 +99,7 @@ update_status ModuleCollisions::PreUpdate()
 	return UPDATE_CONTINUE;
 }
 
-update_status ModuleCollisions::Update()
+UpdateStatus ModuleCollisions::Update()
 {
 
 	for (list<Collider*>::iterator it1 = colliders.begin(); it1 != colliders.end(); ++it1)
@@ -125,7 +125,7 @@ update_status ModuleCollisions::Update()
 	return UPDATE_CONTINUE;
 }
 
-update_status ModuleCollisions::PostUpdate()
+UpdateStatus ModuleCollisions::PostUpdate()
 {
 	if (show_colliders)
 	{
@@ -153,7 +153,7 @@ update_status ModuleCollisions::PostUpdate()
 	return UPDATE_CONTINUE;
 }
 
-void ModuleCollisions::AddCollider(SDL_Rect rec, collider_type type, Module* module)
+void ModuleCollisions::AddCollider(SDL_Rect rec, ColliderType type, Module* module)
 {
 	Collider collider = { rec, type, module };
 	colliders.push_back(&collider);
@@ -175,7 +175,7 @@ bool ModuleCollisions::IsCollision(SDL_Rect rec1, SDL_Rect rec2)
 		return false;
 }
 
-bool ModuleCollisions::CanCollide(collider_type type1, collider_type type2)
+bool ModuleCollisions::CanCollide(ColliderType type1, ColliderType type2)
 {
 	return matrix[type1][type2];
 }

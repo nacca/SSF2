@@ -17,8 +17,8 @@ public:
 	~ModuleRender();
 
 	bool Init();
-	update_status PreUpdate();
-	update_status PostUpdate();
+	UpdateStatus PreUpdate();
+	UpdateStatus PostUpdate();
 	bool CleanUp();
 
 	bool ScreenLeftLimit() const;

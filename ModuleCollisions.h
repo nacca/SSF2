@@ -9,11 +9,11 @@ using namespace std;
 struct Collider{
 
 	SDL_Rect rect;
-	collider_type type;
+	ColliderType type;
 	Module* module;
 	bool needDelete;
 	int damage;
-	damage_type damageType;
+	DamageType damageType;
 
 	Collider()
 	{
@@ -25,7 +25,7 @@ struct Collider{
 		damageType = NONE_DAMAGE;
 	}
 
-	Collider(SDL_Rect rect, collider_type type, Module* module)
+	Collider(SDL_Rect rect, ColliderType type, Module* module)
 	{
 		this->rect = rect;
 		this->type = type;
@@ -45,14 +45,14 @@ public:
 	ModuleCollisions(bool start_enabled = true);
 	virtual ~ModuleCollisions();
 
-	virtual update_status PreUpdate();
-	virtual update_status Update();
-	virtual update_status PostUpdate();
+	virtual UpdateStatus PreUpdate();
+	virtual UpdateStatus Update();
+	virtual UpdateStatus PostUpdate();
 
-	void AddCollider(SDL_Rect rec, collider_type type, Module* module);
+	void AddCollider(SDL_Rect rec, ColliderType type, Module* module);
 	void AddCollider(Collider* collider);
 
-	bool CanCollide(collider_type type1, collider_type type2);
+	bool CanCollide(ColliderType type1, ColliderType type2);
 	bool IsCollision(SDL_Rect rec1, SDL_Rect rec2);
 
 private:

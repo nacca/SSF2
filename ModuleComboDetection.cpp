@@ -21,7 +21,7 @@ ModuleComboDetection::~ModuleComboDetection()
 
 }
 
-update_status ModuleComboDetection::PreUpdate()
+UpdateStatus ModuleComboDetection::PreUpdate()
 {
 	--countdown_previous_state_player_one;
 	--countdown_first_state_player_one;
@@ -41,8 +41,8 @@ update_status ModuleComboDetection::PreUpdate()
 			}
 			if ((App->player_one->GetPlayerInput(INPUT_DOWN)) &&
 				(App->player_one->GetPlayerState() == PLAYER_JUMPING) &&
-				(App->player_one->GetPlayerInput(INPUT_LEFT) && App->player_one->GetLooking_right()) ||
-				(App->player_one->GetPlayerInput(INPUT_RIGHT) && !App->player_one->GetLooking_right()))
+				(App->player_one->GetPlayerInput(INPUT_LEFT) && App->player_one->GetLookingRight()) ||
+				(App->player_one->GetPlayerInput(INPUT_RIGHT) && !App->player_one->GetLookingRight()))
 			{
 				if (App->player_one->GetPlayerState() == PLAYER_JUMPING)
 					combo_air_start_player_one = true;				previous_state_player_one = COMBO_DOWN_BACK;
@@ -50,8 +50,8 @@ update_status ModuleComboDetection::PreUpdate()
 				countdown_previous_state_player_one = 15;
 				countdown_first_state_player_one = 75;
 			}
-			if ((App->player_one->GetPlayerInput(INPUT_LEFT) && App->player_one->GetLooking_right()) ||
-				(App->player_one->GetPlayerInput(INPUT_RIGHT) && !App->player_one->GetLooking_right()))
+			if ((App->player_one->GetPlayerInput(INPUT_LEFT) && App->player_one->GetLookingRight()) ||
+				(App->player_one->GetPlayerInput(INPUT_RIGHT) && !App->player_one->GetLookingRight()))
 			{
 				if (App->player_one->GetPlayerState() == PLAYER_JUMPING)
 					combo_air_start_player_one = true;				previous_state_player_one = COMBO_BACK;
@@ -67,14 +67,14 @@ update_status ModuleComboDetection::PreUpdate()
 				previous_state_player_one = NOTHING;
 			}
 			else if ((App->player_one->GetPlayerInput(INPUT_DOWN)) &&
-				(((App->player_one->GetPlayerInput(INPUT_RIGHT)) && !App->player_one->GetLooking_right()) ||
-				((App->player_one->GetPlayerInput(INPUT_LEFT)) && App->player_one->GetLooking_right())))
+				(((App->player_one->GetPlayerInput(INPUT_RIGHT)) && !App->player_one->GetLookingRight()) ||
+				((App->player_one->GetPlayerInput(INPUT_LEFT)) && App->player_one->GetLookingRight())))
 			{
 				previous_state_player_one = COMBO_DOWN_BACK;
 				countdown_previous_state_player_one = 15;
 			}
-			else if (((App->player_one->GetPlayerInput(INPUT_RIGHT)) && !App->player_one->GetLooking_right()) ||
-				((App->player_one->GetPlayerInput(INPUT_LEFT)) && App->player_one->GetLooking_right()))
+			else if (((App->player_one->GetPlayerInput(INPUT_RIGHT)) && !App->player_one->GetLookingRight()) ||
+				((App->player_one->GetPlayerInput(INPUT_LEFT)) && App->player_one->GetLookingRight()))
 			{
 				countdown_previous_state_player_one = 15;
 			}
@@ -86,8 +86,8 @@ update_status ModuleComboDetection::PreUpdate()
 				previous_state_player_one = NOTHING;
 			}
 			else if ((App->player_one->GetPlayerInput(INPUT_DOWN)) &&
-				(((App->player_one->GetPlayerInput(INPUT_RIGHT)) && !App->player_one->GetLooking_right()) ||
-				((App->player_one->GetPlayerInput(INPUT_LEFT)) && App->player_one->GetLooking_right())))
+				(((App->player_one->GetPlayerInput(INPUT_RIGHT)) && !App->player_one->GetLookingRight()) ||
+				((App->player_one->GetPlayerInput(INPUT_LEFT)) && App->player_one->GetLookingRight())))
 			{
 				countdown_previous_state_player_one = 15;
 			}
@@ -104,8 +104,8 @@ update_status ModuleComboDetection::PreUpdate()
 				previous_state_player_one = NOTHING;
 			}
 			else if ((App->player_one->GetPlayerInput(INPUT_DOWN)) &&
-				(((App->player_one->GetPlayerInput(INPUT_RIGHT)) && App->player_one->GetLooking_right()) ||
-				((App->player_one->GetPlayerInput(INPUT_LEFT)) && !App->player_one->GetLooking_right())))
+				(((App->player_one->GetPlayerInput(INPUT_RIGHT)) && App->player_one->GetLookingRight()) ||
+				((App->player_one->GetPlayerInput(INPUT_LEFT)) && !App->player_one->GetLookingRight())))
 			{
 				previous_state_player_one = COMBO_DOWN_FRONT;
 				countdown_previous_state_player_one = 15;
@@ -147,13 +147,13 @@ update_status ModuleComboDetection::PreUpdate()
 				countdown_first_state_player_one = 0;
 			}
 			else if ((App->player_one->GetPlayerInput(INPUT_DOWN)) &&
-				(((App->player_one->GetPlayerInput(INPUT_RIGHT)) && App->player_one->GetLooking_right()) ||
-				((App->player_one->GetPlayerInput(INPUT_LEFT)) && !App->player_one->GetLooking_right())))
+				(((App->player_one->GetPlayerInput(INPUT_RIGHT)) && App->player_one->GetLookingRight()) ||
+				((App->player_one->GetPlayerInput(INPUT_LEFT)) && !App->player_one->GetLookingRight())))
 			{
 				countdown_previous_state_player_one = 15;
 			}
-			else if (((App->player_one->GetPlayerInput(INPUT_RIGHT)) && App->player_one->GetLooking_right()) ||
-				((App->player_one->GetPlayerInput(INPUT_LEFT)) && !App->player_one->GetLooking_right()))
+			else if (((App->player_one->GetPlayerInput(INPUT_RIGHT)) && App->player_one->GetLookingRight()) ||
+				((App->player_one->GetPlayerInput(INPUT_LEFT)) && !App->player_one->GetLookingRight()))
 			{
 				previous_state_player_one = COMBO_FRONT;
 				countdown_previous_state_player_one = 15;
@@ -200,8 +200,8 @@ update_status ModuleComboDetection::PreUpdate()
 				countdown_previous_state_player_one = 0;
 				countdown_first_state_player_one = 0;
 			}
-			else if (((App->player_one->GetPlayerInput(INPUT_RIGHT)) && App->player_one->GetLooking_right()) ||
-				((App->player_one->GetPlayerInput(INPUT_LEFT)) && !App->player_one->GetLooking_right()))
+			else if (((App->player_one->GetPlayerInput(INPUT_RIGHT)) && App->player_one->GetLookingRight()) ||
+				((App->player_one->GetPlayerInput(INPUT_LEFT)) && !App->player_one->GetLookingRight()))
 			{
 				countdown_previous_state_player_one = 15;
 			}
@@ -223,8 +223,8 @@ update_status ModuleComboDetection::PreUpdate()
 		}
 		if ((App->player_two->GetPlayerInput(INPUT_DOWN)) &&
 			(App->player_two->GetPlayerState() == PLAYER_JUMPING) &&
-			(App->player_two->GetPlayerInput(INPUT_LEFT) && App->player_two->GetLooking_right()) ||
-			(App->player_two->GetPlayerInput(INPUT_RIGHT) && !App->player_two->GetLooking_right()))
+			(App->player_two->GetPlayerInput(INPUT_LEFT) && App->player_two->GetLookingRight()) ||
+			(App->player_two->GetPlayerInput(INPUT_RIGHT) && !App->player_two->GetLookingRight()))
 		{
 			if (App->player_two->GetPlayerState() == PLAYER_JUMPING)
 				combo_air_start_player_two = true;
@@ -233,8 +233,8 @@ update_status ModuleComboDetection::PreUpdate()
 			countdown_previous_state_player_two = 15;
 			countdown_first_state_player_two = 75;
 		}
-		if ((App->player_two->GetPlayerInput(INPUT_LEFT) && App->player_two->GetLooking_right()) ||
-			(App->player_two->GetPlayerInput(INPUT_RIGHT) && !App->player_two->GetLooking_right()))
+		if ((App->player_two->GetPlayerInput(INPUT_LEFT) && App->player_two->GetLookingRight()) ||
+			(App->player_two->GetPlayerInput(INPUT_RIGHT) && !App->player_two->GetLookingRight()))
 		{
 			if (App->player_two->GetPlayerState() == PLAYER_JUMPING)
 				combo_air_start_player_two = true;
@@ -251,14 +251,14 @@ update_status ModuleComboDetection::PreUpdate()
 			previous_state_player_two = NOTHING;
 		}
 		else if ((App->player_two->GetPlayerInput(INPUT_DOWN)) &&
-			(((App->player_two->GetPlayerInput(INPUT_RIGHT)) && !App->player_two->GetLooking_right()) ||
-			((App->player_two->GetPlayerInput(INPUT_LEFT)) && App->player_two->GetLooking_right())))
+			(((App->player_two->GetPlayerInput(INPUT_RIGHT)) && !App->player_two->GetLookingRight()) ||
+			((App->player_two->GetPlayerInput(INPUT_LEFT)) && App->player_two->GetLookingRight())))
 		{
 			previous_state_player_two = COMBO_DOWN_BACK;
 			countdown_previous_state_player_two = 15;
 		}
-		else if (((App->player_two->GetPlayerInput(INPUT_RIGHT)) && !App->player_two->GetLooking_right()) ||
-			((App->player_two->GetPlayerInput(INPUT_LEFT)) && App->player_two->GetLooking_right()))
+		else if (((App->player_two->GetPlayerInput(INPUT_RIGHT)) && !App->player_two->GetLookingRight()) ||
+			((App->player_two->GetPlayerInput(INPUT_LEFT)) && App->player_two->GetLookingRight()))
 		{
 			countdown_previous_state_player_two = 15;
 		}
@@ -270,8 +270,8 @@ update_status ModuleComboDetection::PreUpdate()
 			previous_state_player_two = NOTHING;
 		}
 		else if ((App->player_two->GetPlayerInput(INPUT_DOWN)) &&
-			(((App->player_two->GetPlayerInput(INPUT_RIGHT)) && !App->player_two->GetLooking_right()) ||
-			((App->player_two->GetPlayerInput(INPUT_LEFT)) && App->player_two->GetLooking_right())))
+			(((App->player_two->GetPlayerInput(INPUT_RIGHT)) && !App->player_two->GetLookingRight()) ||
+			((App->player_two->GetPlayerInput(INPUT_LEFT)) && App->player_two->GetLookingRight())))
 		{
 			countdown_previous_state_player_two = 15;
 		}
@@ -288,8 +288,8 @@ update_status ModuleComboDetection::PreUpdate()
 			previous_state_player_two = NOTHING;
 		}
 		else if ((App->player_two->GetPlayerInput(INPUT_DOWN)) &&
-			(((App->player_two->GetPlayerInput(INPUT_RIGHT)) && App->player_two->GetLooking_right()) ||
-			((App->player_two->GetPlayerInput(INPUT_LEFT)) && !App->player_two->GetLooking_right())))
+			(((App->player_two->GetPlayerInput(INPUT_RIGHT)) && App->player_two->GetLookingRight()) ||
+			((App->player_two->GetPlayerInput(INPUT_LEFT)) && !App->player_two->GetLookingRight())))
 		{
 			previous_state_player_two = COMBO_DOWN_FRONT;
 			countdown_previous_state_player_two = 15;
@@ -331,13 +331,13 @@ update_status ModuleComboDetection::PreUpdate()
 			countdown_first_state_player_two = 0;
 		}
 		else if ((App->player_two->GetPlayerInput(INPUT_DOWN)) &&
-			(((App->player_two->GetPlayerInput(INPUT_RIGHT)) && App->player_two->GetLooking_right()) ||
-			((App->player_two->GetPlayerInput(INPUT_LEFT)) && !App->player_two->GetLooking_right())))
+			(((App->player_two->GetPlayerInput(INPUT_RIGHT)) && App->player_two->GetLookingRight()) ||
+			((App->player_two->GetPlayerInput(INPUT_LEFT)) && !App->player_two->GetLookingRight())))
 		{
 			countdown_previous_state_player_two = 15;
 		}
-		else if (((App->player_two->GetPlayerInput(INPUT_RIGHT)) && App->player_two->GetLooking_right()) ||
-			((App->player_two->GetPlayerInput(INPUT_LEFT)) && !App->player_two->GetLooking_right()))
+		else if (((App->player_two->GetPlayerInput(INPUT_RIGHT)) && App->player_two->GetLookingRight()) ||
+			((App->player_two->GetPlayerInput(INPUT_LEFT)) && !App->player_two->GetLookingRight()))
 		{
 			previous_state_player_two = COMBO_FRONT;
 			countdown_previous_state_player_two = 15;
@@ -384,8 +384,8 @@ update_status ModuleComboDetection::PreUpdate()
 			countdown_previous_state_player_two = 0;
 			countdown_first_state_player_two = 0;
 		}
-		else if (((App->player_two->GetPlayerInput(INPUT_RIGHT)) && App->player_two->GetLooking_right()) ||
-			((App->player_two->GetPlayerInput(INPUT_LEFT)) && !App->player_two->GetLooking_right()))
+		else if (((App->player_two->GetPlayerInput(INPUT_RIGHT)) && App->player_two->GetLookingRight()) ||
+			((App->player_two->GetPlayerInput(INPUT_LEFT)) && !App->player_two->GetLookingRight()))
 		{
 			countdown_previous_state_player_two = 15;
 		}

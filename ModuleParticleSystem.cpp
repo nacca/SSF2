@@ -24,7 +24,7 @@ bool ModuleParticleSystem::Start()
 	return true;
 }
 
-update_status ModuleParticleSystem::Update()
+UpdateStatus ModuleParticleSystem::Update()
 {
 	for (list<Particle*>::iterator it = particleList.begin(); it != particleList.end(); ++it)
 	{		
@@ -59,7 +59,7 @@ update_status ModuleParticleSystem::Update()
 	return UPDATE_CONTINUE;
 }
 
-update_status ModuleParticleSystem::PostUpdate()
+UpdateStatus ModuleParticleSystem::PostUpdate()
 {
 	for (list<Particle*>::iterator it = particleList.begin(); it != particleList.end(); )
 	{
