@@ -271,7 +271,7 @@ UpdateStatus ModuleSceneBison::Update()
 	black_rectangles = { 0, 214, 256  , 10 };
 	App->renderer->DrawStaticRect(&black_rectangles);
 
-	return UPDATE_CONTINUE;
+	return UpdateStatus_Continue;
 }
 
 // Manages the black fades to restart screens
@@ -343,7 +343,7 @@ UpdateStatus ModuleSceneBison::PostUpdate()
 		}
 
 	}
-	return UPDATE_CONTINUE;
+	return UpdateStatus_Continue;
 }
 
 // Used to indicates the necessity of restarting the scene

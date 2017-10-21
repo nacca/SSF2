@@ -75,6 +75,9 @@ private:
 
 	void TemporalFunction(ofstream& myfile, string s, Animation& animation);
 
+	void AddColliders();
+	void LoadAudioSounds();
+
 protected:
 	SDL_Texture* m_Graphics = nullptr;
 	iPoint m_Position;

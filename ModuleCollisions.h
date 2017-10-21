@@ -18,11 +18,11 @@ struct Collider{
 	Collider()
 	{
 		rect = { 0, 0, 0, 0 };
-		type = COLLIDER_OTHERS;
+		type = ColliderType_Others;
 		module = NULL;
 		needDelete = false;
 		damage = 0;
-		damageType = NONE_DAMAGE;
+		damageType = DamageType_None;
 	}
 
 	Collider(SDL_Rect rect, ColliderType type, Module* module)
@@ -32,7 +32,7 @@ struct Collider{
 		this->module = module;
 		needDelete = false;
 		damage = 0;
-		damageType = NONE_DAMAGE;
+		damageType = DamageType_None;
 	}
 
 };

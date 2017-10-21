@@ -62,7 +62,7 @@ UpdateStatus ModuleFadeToBlack::Update()
 		}
 	}
 
-	return UPDATE_CONTINUE;
+	return UpdateStatus_Continue;
 }
 
 // Fade to black. At mid point deactivate one module, then activate the other

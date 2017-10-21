@@ -61,17 +61,17 @@ bool Application::Init()
 
 UpdateStatus Application::Update()
 {
-	UpdateStatus ret = UPDATE_CONTINUE;
+	UpdateStatus ret = UpdateStatus_Continue;
 
-	for (list<Module*>::iterator it = modules.begin(); it != modules.end() && ret == UPDATE_CONTINUE; ++it)
+	for (list<Module*>::iterator it = modules.begin(); it != modules.end() && ret == UpdateStatus_Continue; ++it)
 	if ((*it)->IsEnabled() == true)
 		ret = (*it)->PreUpdate();
 
-	for (list<Module*>::iterator it = modules.begin(); it != modules.end() && ret == UPDATE_CONTINUE; ++it)
+	for (list<Module*>::iterator it = modules.begin(); it != modules.end() && ret == UpdateStatus_Continue; ++it)
 	if ((*it)->IsEnabled() == true)
 		ret = (*it)->Update();
 
-	for (list<Module*>::iterator it = modules.begin(); it != modules.end() && ret == UPDATE_CONTINUE; ++it)
+	for (list<Module*>::iterator it = modules.begin(); it != modules.end() && ret == UpdateStatus_Continue; ++it)
 	if ((*it)->IsEnabled() == true)
 		ret = (*it)->PostUpdate();
 

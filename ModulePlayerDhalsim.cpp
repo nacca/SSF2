@@ -12,16 +12,13 @@
 
 #include <fstream>
 
-#include <iostream>
-using namespace std;
-
 // Basic Module Operations
 
 // Constructors
 
-ModulePlayerDhalsim::ModulePlayerDhalsim(int playerNum, bool start_enabled) :
-	Module(start_enabled),
-	m_PlayerState(PLAYER_IDLE),
+ModulePlayerDhalsim::ModulePlayerDhalsim(int playerNum, bool start_enabled) 
+	: Module(start_enabled),
+	m_PlayerState(PlayerState_Idle),
 	m_AreCollidingPlayers(false),
 	m_Jumping(false),
 	m_Hitted(false),
@@ -32,8 +29,8 @@ ModulePlayerDhalsim::ModulePlayerDhalsim(int playerNum, bool start_enabled) :
 	m_Win(false),
 	m_Dead(false),
 	m_Time0(false),
-	m_StartingCombo(COMBO_NOTHING),
-	m_DamageType(NONE_DAMAGE),
+	m_StartingCombo(ComboTypes_ComboNothing),
+	m_DamageType(DamageType_None),
 	m_DistanceJumped(0),
 	m_JumpAttacked(false),
 	m_AlreadyHitted(false)
@@ -124,18 +121,18 @@ void ModulePlayerDhalsim::SetUpPlayer(int numPlayer)
 		m_Position.x = 150;
 		m_Position.y = 200;
 
-		m_PlayerCollider.type = COLLIDER_BODY_PLAYER_ONE;
-		m_ColliderHead.type = m_ColliderBody.type = m_ColliderLegs.type = COLLIDER_PLAYER_ONE;
-		m_ColliderAttack.type = COLLIDER_ATTACK_PLAYER_ONE;
+		m_PlayerCollider.type = ColliderType_BodyPlayerOne;
+		m_ColliderHead.type = m_ColliderBody.type = m_ColliderLegs.type = ColliderType_PlayerOne;
+		m_ColliderAttack.type = ColliderType_AttackPlayerOne;
 	}
 	else
 	{
 		m_Position.x = 300;
 		m_Position.y = 200;
 
-		m_PlayerCollider.type = COLLIDER_BODY_PLAYER_TWO;
-		m_ColliderHead.type = m_ColliderBody.type = m_ColliderLegs.type = COLLIDER_PLAYER_TWO;
-		m_ColliderAttack.type = COLLIDER_ATTACK_PLAYER_TWO;
+		m_PlayerCollider.type = ColliderType_BodyPlayerTwo;
+		m_ColliderHead.type = m_ColliderBody.type = m_ColliderLegs.type = ColliderType_PlayerTwo;
+		m_ColliderAttack.type = ColliderType_AttackPlayerTwo;
 	}
 	m_PlayerCollider.module = m_ColliderHead.module = m_ColliderBody.module = m_ColliderLegs.module = m_ColliderAttack.module = this;
 }
@@ -156,13 +153,28 @@ bool ModulePlayerDhalsim::Start()
 		m_OtherPlayer = App->player_one;
 	}
 
+	AddColliders();
+	LoadAudioSounds();
+
+	if (m_OtherPlayer->getPosition().x > m_Position.x)
+		m_LookingRight = true;
+	else
+		m_LookingRight = false;
+
+	return true;
+}
+
+void ModulePlayerDhalsim::AddColliders()
+{
 	App->collisions->AddCollider(&m_PlayerCollider);
 	App->collisions->AddCollider(&m_ColliderHead);
 	App->collisions->AddCollider(&m_ColliderBody);
 	App->collisions->AddCollider(&m_ColliderLegs);
 	App->collisions->AddCollider(&m_ColliderAttack);
+}
 
-
+void ModulePlayerDhalsim::LoadAudioSounds()
+{
 	m_AudioIdYogaFire = App->audio->LoadFx("Game/yoga_fire.wav");
 	m_AudioIdYogaFlame = App->audio->LoadFx("Game/yoga_flame.wav");
 	m_AudioIdDead = App->audio->LoadFx("Game/dhalsim_dead.wav");
@@ -172,13 +184,6 @@ bool ModulePlayerDhalsim::Start()
 	m_AudioIdLImpact = App->audio->LoadFx("Game/SF2_impact_1.wav");;
 	m_AudioIdMImpact = App->audio->LoadFx("Game/SF2_impact_2.wav");;
 	m_AudioIdHImpact = App->audio->LoadFx("Game/SF2_impact_3.wav");;
-
-	if (m_OtherPlayer->getPosition().x > m_Position.x)
-		m_LookingRight = true;
-	else
-		m_LookingRight = false;
-
-	return true;
 }
 
 // Unload assets
@@ -197,716 +202,722 @@ UpdateStatus ModulePlayerDhalsim::PreUpdate()
 	bool near = false;
 
 	if (m_OtherPlayer->getPosition().x > m_Position.x)
+	{
 		m_LookingRight = true;
+	}
 	else
+	{
 		m_LookingRight = false;
+	}
 
 	if ((m_OtherPlayer->getPosition().x - m_Position.x) < 50 &&
 		(m_OtherPlayer->getPosition().x - m_Position.x) > -50)
+	{
 		near = true;
+	}
 
 	if (m_Dead)
 	{
-		if (m_PlayerState != PLAYER_KO)
+		if (m_PlayerState != PlayerState_Ko)
 		{
-			m_PlayerState = PLAYER_KO;
+			m_PlayerState = PlayerState_Ko;
 			m_OtherPlayer->SetWin(true);
 
 		}
-		return UPDATE_CONTINUE;
+		return UpdateStatus_Continue;
 	}
 	else if (m_Time0)
 	{
-		m_PlayerState = PLAYER_TIME_OUT;
+		m_PlayerState = PlayerState_TimeOut;
 	}
 	else if (m_Win &&
-		(m_PlayerState == PLAYER_IDLE ||
-		m_PlayerState == PLAYER_CROUCHING ||
-		m_PlayerState == PLAYER_WALKING_FORWARD ||
-		m_PlayerState == PLAYER_WALKING_BACKWARD))
+		(m_PlayerState == PlayerState_Idle ||
+		m_PlayerState == PlayerState_Crouching ||
+		m_PlayerState == PlayerState_WalkingForward ||
+		m_PlayerState == PlayerState_WalkingBackward))
 	{
-		if (m_PlayerState != PLAYER_WIN_1 && m_PlayerState != PLAYER_WIN_2)
+		if (m_PlayerState != PlayerState_Win1 && m_PlayerState != PlayerState_Win2)
 		{
 			if (m_Wins == 0)
 			{
 				++m_Wins;
-				m_PlayerState = PLAYER_WIN_1;
+				m_PlayerState = PlayerState_Win1;
 			}
 			else
 			{
 				++m_Wins;
-				m_PlayerState = PLAYER_WIN_2;
+				m_PlayerState = PlayerState_Win2;
 			}
 		}
-		return UPDATE_CONTINUE;
+		return UpdateStatus_Continue;
 	}
-	else if (m_PlayerState == PLAYER_BLOCKING_HITTED || m_PlayerState == PLAYER_CROUCH_BLOCKING_HITTED);
-	else if (m_LegHitted && m_PlayerState == PLAYER_BLOCKING)
+	else if (m_PlayerState == PlayerState_BlockingHitted || m_PlayerState == PlayerState_CrouchBlockingHitted);
+	else if (m_LegHitted && m_PlayerState == PlayerState_Blocking)
 	{
-		m_PlayerState = PLAYER_HIT;
+		m_PlayerState = PlayerState_Hit;
 	}
-	else if (m_Hitted && m_PlayerState == PLAYER_BLOCKING)
+	else if (m_Hitted && m_PlayerState == PlayerState_Blocking)
 	{
-		m_PlayerState = PLAYER_BLOCKING_HITTED;
+		m_PlayerState = PlayerState_BlockingHitted;
 		block.RestartFrames();
 	}
-	else if (m_Hitted && m_PlayerState == PLAYER_CROUCH_BLOCKING)
+	else if (m_Hitted && m_PlayerState == PlayerState_CrouchBlocking)
 	{
-		m_PlayerState = PLAYER_CROUCH_BLOCKING_HITTED;
+		m_PlayerState = PlayerState_CrouchBlockingHitted;
 		crouch_block.RestartFrames();
 	}
-	else if ((m_Hitted || m_HeadHitted) && (m_PlayerState == PLAYER_JUMPING || m_PlayerState == PLAYER_JUMP_PUNCH || m_PlayerState == PLAYER_JUMP_KICK || m_PlayerState == PLAYER_AIR_HITTED))
+	else if ((m_Hitted || m_HeadHitted) && (m_PlayerState == PlayerState_Jumping || m_PlayerState == PlayerState_JumpPunch || m_PlayerState == PlayerState_JumpKick || m_PlayerState == PlayerState_AirHitted))
 	{
-		m_PlayerState = PLAYER_AIR_HITTED;
+		m_PlayerState = PlayerState_AirHitted;
 	}
-	else if ((m_Hitted || m_HeadHitted) && (m_PlayerState == PLAYER_CROUCHING || m_PlayerState == PLAYER_CROUCH_PUNCH || m_PlayerState == PLAYER_CROUCH_KICK))
+	else if ((m_Hitted || m_HeadHitted) && (m_PlayerState == PlayerState_Crouching || m_PlayerState == PlayerState_CrouchPunch || m_PlayerState == PlayerState_CrouchKick))
 	{
-		m_PlayerState = PLAYER_CROUCH_HIT;
+		m_PlayerState = PlayerState_CrouchHit;
 	}
 	else if (m_HeadHitted)
 	{
-		m_PlayerState = PLAYER_FACE_HIT;
+		m_PlayerState = PlayerState_FaceHit;
 	}
 	else if (m_Hitted)
 	{
-		m_PlayerState = PLAYER_HIT;
+		m_PlayerState = PlayerState_Hit;
 	}
 
 	switch (m_PlayerState)
 	{
 
-	case PLAYER_IDLE:
+	case PlayerState_Idle:
 
-		if (m_StartingCombo == COMBO_YOGA_FIRE)
+		if (m_StartingCombo == ComboTypes_ComboYogaFire)
 		{
 			App->audio->PlayFx(m_AudioIdYogaFire);
-			m_PlayerState = PLAYER_YOGA_FIRE;
+			m_PlayerState = PlayerState_YogaFire;
 		}
-		else if (m_StartingCombo == COMBO_YOGA_FLAME)
+		else if (m_StartingCombo == ComboTypes_ComboYogaFlame)
 		{
 			App->audio->PlayFx(m_AudioIdYogaFlame);
-			m_PlayerState = PLAYER_YOGA_FLAME;
+			m_PlayerState = PlayerState_YogaFlame;
 		}
-		else if (GetPlayerInput(INPUT_RIGHT) &&
-			GetPlayerInput(INPUT_UP))
+		else if (GetPlayerInput(InputType_Right) &&
+			GetPlayerInput(InputType_Up))
 		{
 			m_DistanceJumped = 0;
 			m_GoingUp = true;
-			m_PlayerState = PLAYER_JUMPING;
-			m_DirectionJump = JUMP_RIGHT;
+			m_PlayerState = PlayerState_Jumping;
+			m_DirectionJump = DirectionJumping_Right;
 		}
-		else if (GetPlayerInput(INPUT_LEFT) &&
-			GetPlayerInput(INPUT_UP))
+		else if (GetPlayerInput(InputType_Left) &&
+			GetPlayerInput(InputType_Up))
 		{
 			m_DistanceJumped = 0;
 			m_GoingUp = true;
-			m_PlayerState = PLAYER_JUMPING;
-			m_DirectionJump = JUMP_LEFT;
+			m_PlayerState = PlayerState_Jumping;
+			m_DirectionJump = DirectionJumping_Left;
 		}
-		else if (GetPlayerInput(INPUT_RIGHT) &&
+		else if (GetPlayerInput(InputType_Right) &&
 			m_LookingRight)
 		{
-			m_PlayerState = PLAYER_WALKING_FORWARD;
+			m_PlayerState = PlayerState_WalkingForward;
 		}
-		else if (GetPlayerInput(INPUT_RIGHT) &&
+		else if (GetPlayerInput(InputType_Right) &&
 			m_OtherPlayer->IsAttacking())
 		{
-			m_PlayerState = PLAYER_BLOCKING;
+			m_PlayerState = PlayerState_Blocking;
 		}
-		else if (GetPlayerInput(INPUT_RIGHT))
+		else if (GetPlayerInput(InputType_Right))
 		{
-			m_PlayerState = PLAYER_WALKING_BACKWARD;
+			m_PlayerState = PlayerState_WalkingBackward;
 		}
-		else if (GetPlayerInput(INPUT_RIGHT) &&
+		else if (GetPlayerInput(InputType_Right) &&
 			m_LookingRight && m_OtherPlayer->IsAttacking())
 		{
-			m_PlayerState = PLAYER_BLOCKING;
+			m_PlayerState = PlayerState_Blocking;
 		}
-		else if (GetPlayerInput(INPUT_LEFT) &&
+		else if (GetPlayerInput(InputType_Left) &&
 			m_LookingRight)
 		{
-			m_PlayerState = PLAYER_WALKING_BACKWARD;
+			m_PlayerState = PlayerState_WalkingBackward;
 		}
-		else if (GetPlayerInput(INPUT_LEFT))
+		else if (GetPlayerInput(InputType_Left))
 		{
-			m_PlayerState = PLAYER_WALKING_FORWARD;
+			m_PlayerState = PlayerState_WalkingForward;
 		}
-		else if (GetPlayerInput(INPUT_DOWN))
+		else if (GetPlayerInput(InputType_Down))
 		{
-			m_PlayerState = PLAYER_CROUCHING;
+			m_PlayerState = PlayerState_Crouching;
 		}
-		else if (GetPlayerInput(INPUT_UP))
+		else if (GetPlayerInput(InputType_Up))
 		{
 			m_DistanceJumped = 0;
 			m_GoingUp = true;
-			m_PlayerState = PLAYER_JUMPING;
-			m_DirectionJump = JUMP_STATIC;
+			m_PlayerState = PlayerState_Jumping;
+			m_DirectionJump = DirectionJumping_NoMove;
 		}
-		if (near && m_StartingCombo == COMBO_NOTHING)
+		if (near && m_StartingCombo == ComboTypes_ComboNothing)
 		{
-			if (GetPlayerInput(INPUT_L_PUNCH))
+			if (GetPlayerInput(InputType_LPunch))
 			{
-				m_PlayerState = PLAYER_FORWARD_LOW_PUNCH;
+				m_PlayerState = PlayerState_ForwardLowPunch;
 				App->audio->PlayFx(m_AudioIdLAttack);
 			}
-			else if (GetPlayerInput(INPUT_L_KICK))
+			else if (GetPlayerInput(InputType_LKick))
 			{
-				m_PlayerState = PLAYER_FORWARD_LOW_KICK;
+				m_PlayerState = PlayerState_ForwardLowKick;
 				App->audio->PlayFx(m_AudioIdLAttack);
 			}
-			else if (GetPlayerInput(INPUT_M_PUNCH))
+			else if (GetPlayerInput(InputType_MPunch))
 			{
-				m_PlayerState = PLAYER_FORWARD_MEDIUM_PUNCH;
+				m_PlayerState = PlayerState_ForwardMediumPunch;
 				App->audio->PlayFx(m_AudioIdMAttack);
 			}
-			else if (GetPlayerInput(INPUT_M_KICK))
+			else if (GetPlayerInput(InputType_MKick))
 			{
-				m_PlayerState = PLAYER_FORWARD_MEDIUM_KICK;
+				m_PlayerState = PlayerState_ForwardMediumKick;
 				App->audio->PlayFx(m_AudioIdMAttack);
 			}
-			else if (GetPlayerInput(INPUT_H_PUNCH))
+			else if (GetPlayerInput(InputType_HPunch))
 			{
-				m_PlayerState = PLAYER_FORWARD_HIGH_PUNCH;
+				m_PlayerState = PlayerState_ForwardHighPunch;
 				App->audio->PlayFx(m_AudioIdHAttack);
 			}
-			else if (GetPlayerInput(INPUT_H_KICK))
+			else if (GetPlayerInput(InputType_HKick))
 			{
-				m_PlayerState = PLAYER_FORWARD_HIGH_KICK;
+				m_PlayerState = PlayerState_ForwardHighKick;
 				App->audio->PlayFx(m_AudioIdHAttack);
 			}
 		}
-		else if (m_StartingCombo == COMBO_NOTHING)
+		else if (m_StartingCombo == ComboTypes_ComboNothing)
 		{
-			if (GetPlayerInput(INPUT_L_PUNCH))
+			if (GetPlayerInput(InputType_LPunch))
 			{
-				m_PlayerState = PLAYER_LOW_PUNCH;
+				m_PlayerState = PlayerState_LowPunch;
 				App->audio->PlayFx(m_AudioIdLAttack);
 			}
-			else if (GetPlayerInput(INPUT_L_KICK))
+			else if (GetPlayerInput(InputType_LKick))
 			{
-				m_PlayerState = PLAYER_LOW_KICK;
+				m_PlayerState = PlayerState_LowKick;
 				App->audio->PlayFx(m_AudioIdLAttack);
 			}
-			else if (GetPlayerInput(INPUT_M_PUNCH))
+			else if (GetPlayerInput(InputType_MPunch))
 			{
-				m_PlayerState = PLAYER_MEDIUM_PUNCH;
+				m_PlayerState = PlayerState_MediumPunch;
 				App->audio->PlayFx(m_AudioIdMAttack);
 			}
-			else if (GetPlayerInput(INPUT_M_KICK))
+			else if (GetPlayerInput(InputType_MKick))
 			{
-				m_PlayerState = PLAYER_MEDIUM_KICK;
+				m_PlayerState = PlayerState_MediumKick;
 				App->audio->PlayFx(m_AudioIdMAttack);
 			}
-			else if (GetPlayerInput(INPUT_H_PUNCH))
+			else if (GetPlayerInput(InputType_HPunch))
 			{
-				m_PlayerState = PLAYER_HIGH_PUNCH;
+				m_PlayerState = PlayerState_HighPunch;
 				App->audio->PlayFx(m_AudioIdHAttack);
 			}
-			else if (GetPlayerInput(INPUT_H_KICK))
+			else if (GetPlayerInput(InputType_HKick))
 			{
-				m_PlayerState = PLAYER_HIGH_KICK;
+				m_PlayerState = PlayerState_HighKick;
 				App->audio->PlayFx(m_AudioIdHAttack);
 			}
 		}
 		break;
 
-	case PLAYER_WALKING_FORWARD:
+	case PlayerState_WalkingForward:
 
-		if (m_StartingCombo == COMBO_YOGA_FIRE)
+		if (m_StartingCombo == ComboTypes_ComboYogaFire)
 		{
 			App->audio->PlayFx(m_AudioIdYogaFire);
-			m_PlayerState = PLAYER_YOGA_FIRE;
+			m_PlayerState = PlayerState_YogaFire;
 		}
-		else if (m_StartingCombo == COMBO_YOGA_FLAME)
+		else if (m_StartingCombo == ComboTypes_ComboYogaFlame)
 		{
 			App->audio->PlayFx(m_AudioIdYogaFlame);
-			m_PlayerState = PLAYER_YOGA_FLAME;
+			m_PlayerState = PlayerState_YogaFlame;
 		}
-		else if (m_StartingCombo == AERIAL_COMBO_PUNCH)
+		else if (m_StartingCombo == ComboTypes_AerialComboPunch)
 		{
-			m_PlayerState = PLAYER_YOGA_MUMMY;
+			m_PlayerState = PlayerState_YogaMummy;
 		}
-		else if (GetPlayerInput(INPUT_RIGHT) &&
-			GetPlayerInput(INPUT_UP))
-		{
-			m_DistanceJumped = 0;
-			m_GoingUp = true;
-			m_PlayerState = PLAYER_JUMPING;
-			m_DirectionJump = JUMP_RIGHT;
-		}
-		else if (GetPlayerInput(INPUT_LEFT) &&
-			GetPlayerInput(INPUT_UP))
+		else if (GetPlayerInput(InputType_Right) &&
+			GetPlayerInput(InputType_Up))
 		{
 			m_DistanceJumped = 0;
 			m_GoingUp = true;
-			m_PlayerState = PLAYER_JUMPING;
-			m_DirectionJump = JUMP_LEFT;
+			m_PlayerState = PlayerState_Jumping;
+			m_DirectionJump = DirectionJumping_Right;
 		}
-		else if (GetPlayerInput(INPUT_RIGHT))
+		else if (GetPlayerInput(InputType_Left) &&
+			GetPlayerInput(InputType_Up))
+		{
+			m_DistanceJumped = 0;
+			m_GoingUp = true;
+			m_PlayerState = PlayerState_Jumping;
+			m_DirectionJump = DirectionJumping_Left;
+		}
+		else if (GetPlayerInput(InputType_Right))
 		{
 			if (m_LookingRight)
-				m_PlayerState = PLAYER_WALKING_FORWARD;
+				m_PlayerState = PlayerState_WalkingForward;
 			else if (m_OtherPlayer->IsAttacking())
-				m_PlayerState = PLAYER_BLOCKING;
+				m_PlayerState = PlayerState_Blocking;
 			else
-				m_PlayerState = PLAYER_WALKING_BACKWARD;
+				m_PlayerState = PlayerState_WalkingBackward;
 		}
-		else if (GetPlayerInput(INPUT_LEFT))
+		else if (GetPlayerInput(InputType_Left))
 		{
 			if (!m_LookingRight)
-				m_PlayerState = PLAYER_WALKING_FORWARD;
+				m_PlayerState = PlayerState_WalkingForward;
 			else if (m_OtherPlayer->IsAttacking())
-				m_PlayerState = PLAYER_BLOCKING;
+				m_PlayerState = PlayerState_Blocking;
 			else
-				m_PlayerState = PLAYER_WALKING_BACKWARD;
+				m_PlayerState = PlayerState_WalkingBackward;
 		}
-		else if (GetPlayerInput(INPUT_DOWN))
+		else if (GetPlayerInput(InputType_Down))
 		{
-			m_PlayerState = PLAYER_CROUCHING;
+			m_PlayerState = PlayerState_Crouching;
 		}
 		else
-			m_PlayerState = PLAYER_IDLE;
+			m_PlayerState = PlayerState_Idle;
 
-		if (near && m_StartingCombo == COMBO_NOTHING)
+		if (near && m_StartingCombo == ComboTypes_ComboNothing)
 		{
-			if (GetPlayerInput(INPUT_L_PUNCH))
+			if (GetPlayerInput(InputType_LPunch))
 			{
-				m_PlayerState = PLAYER_FORWARD_LOW_PUNCH;
+				m_PlayerState = PlayerState_ForwardLowPunch;
 				App->audio->PlayFx(m_AudioIdLAttack);
 			}
-			else if (GetPlayerInput(INPUT_L_KICK))
+			else if (GetPlayerInput(InputType_LKick))
 			{
-				m_PlayerState = PLAYER_FORWARD_LOW_KICK;
+				m_PlayerState = PlayerState_ForwardLowKick;
 				App->audio->PlayFx(m_AudioIdLAttack);
 			}
-			else if (GetPlayerInput(INPUT_M_PUNCH))
+			else if (GetPlayerInput(InputType_MPunch))
 			{
-				m_PlayerState = PLAYER_FORWARD_MEDIUM_PUNCH;
+				m_PlayerState = PlayerState_ForwardMediumPunch;
 				App->audio->PlayFx(m_AudioIdMAttack);
 			}
-			else if (GetPlayerInput(INPUT_M_KICK))
+			else if (GetPlayerInput(InputType_MKick))
 			{
-				m_PlayerState = PLAYER_FORWARD_MEDIUM_KICK;
+				m_PlayerState = PlayerState_ForwardMediumKick;
 				App->audio->PlayFx(m_AudioIdMAttack);
 			}
-			else if (GetPlayerInput(INPUT_H_PUNCH))
+			else if (GetPlayerInput(InputType_HPunch))
 			{
-				m_PlayerState = PLAYER_FORWARD_HIGH_PUNCH;
+				m_PlayerState = PlayerState_ForwardHighPunch;
 				App->audio->PlayFx(m_AudioIdHAttack);
 			}
-			else if (GetPlayerInput(INPUT_H_KICK))
+			else if (GetPlayerInput(InputType_HKick))
 			{
-				m_PlayerState = PLAYER_FORWARD_HIGH_KICK;
+				m_PlayerState = PlayerState_ForwardHighKick;
 				App->audio->PlayFx(m_AudioIdHAttack);
 			}
 		}
-		else if (m_StartingCombo == COMBO_NOTHING)
+		else if (m_StartingCombo == ComboTypes_ComboNothing)
 		{
-			if (GetPlayerInput(INPUT_L_PUNCH))
+			if (GetPlayerInput(InputType_LPunch))
 			{
-				m_PlayerState = PLAYER_LOW_PUNCH;
+				m_PlayerState = PlayerState_LowPunch;
 				App->audio->PlayFx(m_AudioIdLAttack);
 			}
-			else if (GetPlayerInput(INPUT_L_KICK))
+			else if (GetPlayerInput(InputType_LKick))
 			{
-				m_PlayerState = PLAYER_LOW_KICK;
+				m_PlayerState = PlayerState_LowKick;
 				App->audio->PlayFx(m_AudioIdLAttack);
 			}
-			else if (GetPlayerInput(INPUT_M_PUNCH))
+			else if (GetPlayerInput(InputType_MPunch))
 			{
-				m_PlayerState = PLAYER_MEDIUM_PUNCH;
+				m_PlayerState = PlayerState_MediumPunch;
 				App->audio->PlayFx(m_AudioIdMAttack);
 			}
-			else if (GetPlayerInput(INPUT_M_KICK))
+			else if (GetPlayerInput(InputType_MKick))
 			{
-				m_PlayerState = PLAYER_MEDIUM_KICK;
+				m_PlayerState = PlayerState_MediumKick;
 				App->audio->PlayFx(m_AudioIdMAttack);
 			}
-			else if (GetPlayerInput(INPUT_H_PUNCH))
+			else if (GetPlayerInput(InputType_HPunch))
 			{
-				m_PlayerState = PLAYER_HIGH_PUNCH;
+				m_PlayerState = PlayerState_HighPunch;
 				App->audio->PlayFx(m_AudioIdHAttack);
 			}
-			else if (GetPlayerInput(INPUT_H_KICK))
+			else if (GetPlayerInput(InputType_HKick))
 			{
-				m_PlayerState = PLAYER_HIGH_KICK;
+				m_PlayerState = PlayerState_HighKick;
 				App->audio->PlayFx(m_AudioIdHAttack);
 			}
 		}
 		break;
 
-	case PLAYER_WALKING_BACKWARD:
+	case PlayerState_WalkingBackward:
 
-		if (m_StartingCombo == COMBO_YOGA_FIRE)
+		if (m_StartingCombo == ComboTypes_ComboYogaFire)
 		{
 			App->audio->PlayFx(m_AudioIdYogaFire);
-			m_PlayerState = PLAYER_YOGA_FIRE;
+			m_PlayerState = PlayerState_YogaFire;
 		}
-		else if (m_StartingCombo == COMBO_YOGA_FLAME)
+		else if (m_StartingCombo == ComboTypes_ComboYogaFlame)
 		{
 			App->audio->PlayFx(m_AudioIdYogaFlame);
-			m_PlayerState = PLAYER_YOGA_FLAME;
+			m_PlayerState = PlayerState_YogaFlame;
 		}
 		else if (m_OtherPlayer->IsAttacking())
 		{
-			m_PlayerState = PLAYER_BLOCKING;
+			m_PlayerState = PlayerState_Blocking;
 			break;
 		}
-		else if (GetPlayerInput(INPUT_RIGHT) &&
-			GetPlayerInput(INPUT_UP))
+		else if (GetPlayerInput(InputType_Right) &&
+			GetPlayerInput(InputType_Up))
 		{
 			m_DistanceJumped = 0;
 			m_GoingUp = true;
-			m_PlayerState = PLAYER_JUMPING;
-			m_DirectionJump = JUMP_RIGHT;
+			m_PlayerState = PlayerState_Jumping;
+			m_DirectionJump = DirectionJumping_Right;
 		}
-		else if (GetPlayerInput(INPUT_LEFT) &&
-			GetPlayerInput(INPUT_UP))
+		else if (GetPlayerInput(InputType_Left) &&
+			GetPlayerInput(InputType_Up))
 		{
 			m_DistanceJumped = 0;
 			m_GoingUp = true;
-			m_PlayerState = PLAYER_JUMPING;
-			m_DirectionJump = JUMP_LEFT;
+			m_PlayerState = PlayerState_Jumping;
+			m_DirectionJump = DirectionJumping_Left;
 		}
-		else if (GetPlayerInput(INPUT_RIGHT))
+		else if (GetPlayerInput(InputType_Right))
 		{
 			if (m_LookingRight)
-				m_PlayerState = PLAYER_WALKING_FORWARD;
+				m_PlayerState = PlayerState_WalkingForward;
 			else
-				m_PlayerState = PLAYER_WALKING_BACKWARD;
+				m_PlayerState = PlayerState_WalkingBackward;
 		}
-		else if (GetPlayerInput(INPUT_LEFT))
+		else if (GetPlayerInput(InputType_Left))
 		{
 			if (m_LookingRight)
-				m_PlayerState = PLAYER_WALKING_BACKWARD;
+				m_PlayerState = PlayerState_WalkingBackward;
 			else
-				m_PlayerState = PLAYER_WALKING_FORWARD;
+				m_PlayerState = PlayerState_WalkingForward;
 		}
-		else if (GetPlayerInput(INPUT_DOWN))
+		else if (GetPlayerInput(InputType_Down))
 		{
-			m_PlayerState = PLAYER_CROUCHING;
+			m_PlayerState = PlayerState_Crouching;
 		}
 		else
 		{
-			m_PlayerState = PLAYER_IDLE;
+			m_PlayerState = PlayerState_Idle;
 		}
-		if (near && m_StartingCombo == COMBO_NOTHING)
+		if (near && m_StartingCombo == ComboTypes_ComboNothing)
 		{
-			if (GetPlayerInput(INPUT_L_PUNCH))
+			if (GetPlayerInput(InputType_LPunch))
 			{
-				m_PlayerState = PLAYER_FORWARD_LOW_PUNCH;
+				m_PlayerState = PlayerState_ForwardLowPunch;
 				App->audio->PlayFx(m_AudioIdLAttack);
 			}
-			else if (GetPlayerInput(INPUT_L_KICK))
+			else if (GetPlayerInput(InputType_LKick))
 			{
-				m_PlayerState = PLAYER_FORWARD_LOW_KICK;
+				m_PlayerState = PlayerState_ForwardLowKick;
 				App->audio->PlayFx(m_AudioIdLAttack);
 			}
-			else if (GetPlayerInput(INPUT_M_PUNCH))
+			else if (GetPlayerInput(InputType_MPunch))
 			{
-				m_PlayerState = PLAYER_FORWARD_MEDIUM_PUNCH;
+				m_PlayerState = PlayerState_ForwardMediumPunch;
 				App->audio->PlayFx(m_AudioIdMAttack);
 			}
-			else if (GetPlayerInput(INPUT_M_KICK))
+			else if (GetPlayerInput(InputType_MKick))
 			{
-				m_PlayerState = PLAYER_FORWARD_MEDIUM_KICK;
+				m_PlayerState = PlayerState_ForwardMediumKick;
 				App->audio->PlayFx(m_AudioIdMAttack);
 			}
-			else if (GetPlayerInput(INPUT_H_PUNCH))
+			else if (GetPlayerInput(InputType_HPunch))
 			{
-				m_PlayerState = PLAYER_FORWARD_HIGH_PUNCH;
+				m_PlayerState = PlayerState_ForwardHighPunch;
 				App->audio->PlayFx(m_AudioIdHAttack);
 			}
-			else if (GetPlayerInput(INPUT_H_KICK))
+			else if (GetPlayerInput(InputType_HKick))
 			{
-				m_PlayerState = PLAYER_FORWARD_HIGH_KICK;
+				m_PlayerState = PlayerState_ForwardHighKick;
 				App->audio->PlayFx(m_AudioIdHAttack);
 			}
 		}
-		else if (m_StartingCombo == COMBO_NOTHING)
+		else if (m_StartingCombo == ComboTypes_ComboNothing)
 		{
-			if (GetPlayerInput(INPUT_L_PUNCH))
+			if (GetPlayerInput(InputType_LPunch))
 			{
-				m_PlayerState = PLAYER_LOW_PUNCH;
+				m_PlayerState = PlayerState_LowPunch;
 				App->audio->PlayFx(m_AudioIdLAttack);
 			}
-			else if (GetPlayerInput(INPUT_L_KICK))
+			else if (GetPlayerInput(InputType_LKick))
 			{
-				m_PlayerState = PLAYER_LOW_KICK;
+				m_PlayerState = PlayerState_LowKick;
 				App->audio->PlayFx(m_AudioIdLAttack);
 			}
-			else if (GetPlayerInput(INPUT_M_PUNCH))
+			else if (GetPlayerInput(InputType_MPunch))
 			{
-				m_PlayerState = PLAYER_MEDIUM_PUNCH;
+				m_PlayerState = PlayerState_MediumPunch;
 				App->audio->PlayFx(m_AudioIdMAttack);
 			}
-			else if (GetPlayerInput(INPUT_M_KICK))
+			else if (GetPlayerInput(InputType_MKick))
 			{
-				m_PlayerState = PLAYER_MEDIUM_KICK;
+				m_PlayerState = PlayerState_MediumKick;
 				App->audio->PlayFx(m_AudioIdMAttack);
 			}
-			else if (GetPlayerInput(INPUT_H_PUNCH))
+			else if (GetPlayerInput(InputType_HPunch))
 			{
-				m_PlayerState = PLAYER_HIGH_PUNCH;
+				m_PlayerState = PlayerState_HighPunch;
 				App->audio->PlayFx(m_AudioIdHAttack);
 			}
-			else if (GetPlayerInput(INPUT_H_KICK))
+			else if (GetPlayerInput(InputType_HKick))
 			{
-				m_PlayerState = PLAYER_HIGH_KICK;
+				m_PlayerState = PlayerState_HighKick;
 				App->audio->PlayFx(m_AudioIdHAttack);
 			}
 		}
 
 		break;
 
-	case PLAYER_JUMPING:
+	case PlayerState_Jumping:
 
 		if (m_DistanceJumped == 0 && !m_GoingUp)
 		{
 			m_AlreadyHitted = false;
-			m_PlayerState = PLAYER_IDLE;
+			m_PlayerState = PlayerState_Idle;
 			m_JumpAttacked = false;
 			jump.RestartFrames();
 		}
-		else if (m_StartingCombo == AERIAL_COMBO_PUNCH && !m_JumpAttacked)
+		else if (m_StartingCombo == ComboTypes_AerialComboPunch && !m_JumpAttacked)
 		{
 			m_AlreadyHitted = false;
 			m_JumpAttacked = true;
-			m_PlayerState = PLAYER_YOGA_MUMMY;
+			m_PlayerState = PlayerState_YogaMummy;
 			if (m_LookingRight)
-				m_DirectionMummy = JUMP_RIGHT;
+				m_DirectionMummy = DirectionJumping_Right;
 			else
-				m_DirectionMummy = JUMP_LEFT;
+				m_DirectionMummy = DirectionJumping_Left;
 		}
-		else if (m_StartingCombo == AERIAL_COMBO_KICK && !m_JumpAttacked)
+		else if (m_StartingCombo == ComboTypes_AerialComboKick && !m_JumpAttacked)
 		{
 			m_AlreadyHitted = false;
 			m_JumpAttacked = true;
-			m_PlayerState = PLAYER_YOGA_SPEAR;
+			m_PlayerState = PlayerState_YogaSpear;
 			if (m_LookingRight)
-				m_DirectionMummy = JUMP_RIGHT;
+				m_DirectionMummy = DirectionJumping_Right;
 			else
-				m_DirectionMummy = JUMP_LEFT;
+				m_DirectionMummy = DirectionJumping_Left;
 		}
 		else
 		{
-			if (((GetPlayerInput(INPUT_L_PUNCH)) ||
-				(GetPlayerInput(INPUT_M_PUNCH)) ||
-				(GetPlayerInput(INPUT_H_PUNCH))) &&
+			if (((GetPlayerInput(InputType_LPunch)) ||
+				(GetPlayerInput(InputType_MPunch)) ||
+				(GetPlayerInput(InputType_HPunch))) &&
 				!m_JumpAttacked)
 			{
 				m_JumpAttacked = true;
-				m_PlayerState = PLAYER_JUMP_PUNCH;
+				m_PlayerState = PlayerState_JumpPunch;
 			}
 
-			else if (((GetPlayerInput(INPUT_L_KICK)) ||
-				(GetPlayerInput(INPUT_M_KICK)) ||
-				(GetPlayerInput(INPUT_H_KICK))) &&
+			else if (((GetPlayerInput(InputType_LKick)) ||
+				(GetPlayerInput(InputType_MKick)) ||
+				(GetPlayerInput(InputType_HKick))) &&
 				!m_JumpAttacked)
 			{
 				m_JumpAttacked = true;
-				m_PlayerState = PLAYER_JUMP_KICK;
+				m_PlayerState = PlayerState_JumpKick;
 			}
 		}
 		break;
 
 
-	case PLAYER_JUMP_PUNCH:
+	case PlayerState_JumpPunch:
 
 		if (m_DistanceJumped == 0)
 		{
 			m_AlreadyHitted = false;
 			m_JumpAttacked = false;
-			m_PlayerState = PLAYER_IDLE;
+			m_PlayerState = PlayerState_Idle;
 			jump.RestartFrames();
 			jump_punch.RestartFrames();
 		}
 		else if (jump_punch.IsEnded())
 		{
 			jump_punch.RestartFrames();
-			m_PlayerState = PLAYER_JUMPING;
+			m_PlayerState = PlayerState_Jumping;
 		}
 		break;
 
-	case PLAYER_JUMP_KICK:
+	case PlayerState_JumpKick:
 		if (m_DistanceJumped == 0)
 		{
 			m_AlreadyHitted = false;
 			m_JumpAttacked = false;
-			m_PlayerState = PLAYER_IDLE;
+			m_PlayerState = PlayerState_Idle;
 			jump.RestartFrames();
 			jump_kick.RestartFrames();
 		}
 		else if (jump_kick.IsEnded())
 		{
 			jump_kick.RestartFrames();
-			m_PlayerState = PLAYER_JUMPING;
+			m_PlayerState = PlayerState_Jumping;
 		}
 		break;
 
 
-	case PLAYER_CROUCHING:
+	case PlayerState_Crouching:
 
-		if ((GetPlayerInput(INPUT_RIGHT))
+		if ((GetPlayerInput(InputType_Right))
 			&& m_OtherPlayer->IsAttacking() && !m_LookingRight)
-			m_PlayerState = PLAYER_CROUCH_BLOCKING;
-		else if ((GetPlayerInput(INPUT_LEFT))
+			m_PlayerState = PlayerState_CrouchBlocking;
+		else if ((GetPlayerInput(InputType_Left))
 			&& m_OtherPlayer->IsAttacking() && m_LookingRight)
-			m_PlayerState = PLAYER_CROUCH_BLOCKING;
-		else if ((GetPlayerInput(INPUT_L_PUNCH)) ||
-			(GetPlayerInput(INPUT_M_PUNCH)) ||
-			(GetPlayerInput(INPUT_H_PUNCH)))
-			m_PlayerState = PLAYER_CROUCH_PUNCH;
+			m_PlayerState = PlayerState_CrouchBlocking;
+		else if ((GetPlayerInput(InputType_LPunch)) ||
+			(GetPlayerInput(InputType_MPunch)) ||
+			(GetPlayerInput(InputType_HPunch)))
+			m_PlayerState = PlayerState_CrouchPunch;
 
-		else if ((GetPlayerInput(INPUT_L_KICK)) ||
-			(GetPlayerInput(INPUT_M_KICK)) ||
-			(GetPlayerInput(INPUT_H_KICK)))
-			m_PlayerState = PLAYER_CROUCH_KICK;
+		else if ((GetPlayerInput(InputType_LKick)) ||
+			(GetPlayerInput(InputType_MKick)) ||
+			(GetPlayerInput(InputType_HKick)))
+			m_PlayerState = PlayerState_CrouchKick;
 
-		else if (!(GetPlayerInput(INPUT_DOWN)))
+		else if (!(GetPlayerInput(InputType_Down)))
 		{
-			m_PlayerState = PLAYER_IDLE;
+			m_PlayerState = PlayerState_Idle;
 			crouching.RestartFrames();
 		}
 		break;
 
-	case PLAYER_LOW_PUNCH:
+	case PlayerState_LowPunch:
 
 		if (L_punch.IsEnded())
 		{
 			L_punch.RestartFrames();
-			m_PlayerState = PLAYER_IDLE;
+			m_PlayerState = PlayerState_Idle;
 		}
 		break;
 
-	case PLAYER_LOW_KICK:
+	case PlayerState_LowKick:
 
 		if (L_kick.IsEnded())
 		{
 			L_kick.RestartFrames();
-			m_PlayerState = PLAYER_IDLE;
+			m_PlayerState = PlayerState_Idle;
 		}
 		break;
 
-	case PLAYER_MEDIUM_PUNCH:
+	case PlayerState_MediumPunch:
 
 		if (M_punch.IsEnded())
 		{
 			M_punch.RestartFrames();
-			m_PlayerState = PLAYER_IDLE;
+			m_PlayerState = PlayerState_Idle;
 		}
 		break;
 
-	case PLAYER_MEDIUM_KICK:
+	case PlayerState_MediumKick:
 
 		if (M_kick.IsEnded())
 		{
 			M_kick.RestartFrames();
-			m_PlayerState = PLAYER_IDLE;
+			m_PlayerState = PlayerState_Idle;
 		}
 		break;
 
-	case PLAYER_HIGH_PUNCH:
+	case PlayerState_HighPunch:
 
 		if (H_punch.IsEnded())
 		{
 			H_punch.RestartFrames();
-			m_PlayerState = PLAYER_IDLE;
+			m_PlayerState = PlayerState_Idle;
 		}
 		break;
 
-	case PLAYER_HIGH_KICK:
+	case PlayerState_HighKick:
 
 		if (H_kick.IsEnded())
 		{
 			H_kick.RestartFrames();
-			m_PlayerState = PLAYER_IDLE;
+			m_PlayerState = PlayerState_Idle;
 		}
 		break;
 
-	case PLAYER_CROUCH_PUNCH:
+	case PlayerState_CrouchPunch:
 
 		if (crouch_punch.IsEnded())
 		{
 			crouch_punch.RestartFrames();
-			m_PlayerState = PLAYER_CROUCHING;
+			m_PlayerState = PlayerState_Crouching;
 		}
 		break;
 
-	case PLAYER_CROUCH_KICK:
+	case PlayerState_CrouchKick:
 
 		if (crouch_kick.IsEnded())
 		{
 			crouch_kick.RestartFrames();
-			m_PlayerState = PLAYER_CROUCHING;
+			m_PlayerState = PlayerState_Crouching;
 		}
 		break;
 
-	case PLAYER_FORWARD_LOW_PUNCH:
+	case PlayerState_ForwardLowPunch:
 
 		if (F_L_punch.IsEnded())
 		{
 			F_L_punch.RestartFrames();
-			m_PlayerState = PLAYER_IDLE;
+			m_PlayerState = PlayerState_Idle;
 		}
 		break;
 
-	case PLAYER_FORWARD_LOW_KICK:
+	case PlayerState_ForwardLowKick:
 
 		if (F_L_kick.IsEnded())
 		{
 			F_L_kick.RestartFrames();
-			m_PlayerState = PLAYER_IDLE;
+			m_PlayerState = PlayerState_Idle;
 		}
 		break;
 
-	case PLAYER_FORWARD_MEDIUM_PUNCH:
+	case PlayerState_ForwardMediumPunch:
 
 		if (F_M_punch.IsEnded())
 		{
 			F_M_punch.RestartFrames();
-			m_PlayerState = PLAYER_IDLE;
+			m_PlayerState = PlayerState_Idle;
 		}
 		break;
 
-	case PLAYER_FORWARD_MEDIUM_KICK:
+	case PlayerState_ForwardMediumKick:
 
 		if (F_M_kick.IsEnded())
 		{
 			F_M_kick.RestartFrames();
-			m_PlayerState = PLAYER_IDLE;
+			m_PlayerState = PlayerState_Idle;
 		}
 		break;
 
-	case PLAYER_FORWARD_HIGH_PUNCH:
+	case PlayerState_ForwardHighPunch:
 
 		if (F_H_punch.IsEnded())
 		{
 			F_H_punch.RestartFrames();
-			m_PlayerState = PLAYER_IDLE;
+			m_PlayerState = PlayerState_Idle;
 		}
 		break;
 
-	case PLAYER_FORWARD_HIGH_KICK:
+	case PlayerState_ForwardHighKick:
 
 		if (F_H_kick.IsEnded())
 		{
 			F_H_kick.RestartFrames();
-			m_PlayerState = PLAYER_IDLE;
+			m_PlayerState = PlayerState_Idle;
 		}
 		break;
 
-	case PLAYER_HIT:
+	case PlayerState_Hit:
 
 		if (hit.IsEnded())
 		{
 			hit.RestartFrames();
 			if (m_DistanceJumped > 0){
 				m_GoingUp = false;
-				m_PlayerState = PLAYER_JUMPING;
+				m_PlayerState = PlayerState_Jumping;
 			}
 			else
-				m_PlayerState = PLAYER_IDLE;
+				m_PlayerState = PlayerState_Idle;
 			m_Hitted = false;
 			m_HeadHitted = false;
 			m_LegHitted = false;
@@ -914,12 +925,12 @@ UpdateStatus ModulePlayerDhalsim::PreUpdate()
 		}
 		break;
 
-	case PLAYER_CROUCH_HIT:
+	case PlayerState_CrouchHit:
 
 		if (crouch_hit.IsEnded())
 		{
 			crouch_hit.RestartFrames();
-			m_PlayerState = PLAYER_CROUCHING;
+			m_PlayerState = PlayerState_Crouching;
 			m_Hitted = false;
 			m_HeadHitted = false;
 			m_LegHitted = false;
@@ -927,12 +938,12 @@ UpdateStatus ModulePlayerDhalsim::PreUpdate()
 		}
 		break;
 
-	case PLAYER_FACE_HIT:
+	case PlayerState_FaceHit:
 
 		if (face_hit.IsEnded())
 		{
 			face_hit.RestartFrames();
-			m_PlayerState = PLAYER_IDLE;
+			m_PlayerState = PlayerState_Idle;
 			m_Hitted = false;
 			m_HeadHitted = false;
 			m_LegHitted = false;
@@ -940,7 +951,7 @@ UpdateStatus ModulePlayerDhalsim::PreUpdate()
 		}
 		break;
 
-	case PLAYER_YOGA_FIRE:
+	case PlayerState_YogaFire:
 		if (yoga_fire.GetCurrentFrameNumber() == 3 && SDL_GetTicks() - m_LastShotTimer > 500)
 		{
 			if (m_LookingRight)
@@ -959,114 +970,114 @@ UpdateStatus ModulePlayerDhalsim::PreUpdate()
 		if (yoga_fire.IsEnded())
 		{
 			yoga_fire.RestartFrames();
-			m_PlayerState = PLAYER_IDLE;
+			m_PlayerState = PlayerState_Idle;
 		}
 		break;
 
-	case PLAYER_YOGA_FLAME:
+	case PlayerState_YogaFlame:
 
 		if (yoga_flame.IsEnded())
 		{
 			yoga_flame.RestartFrames();
-			m_PlayerState = PLAYER_IDLE;
+			m_PlayerState = PlayerState_Idle;
 
 		}
 		break;
 
-	case PLAYER_YOGA_MUMMY:
+	case PlayerState_YogaMummy:
 
 		m_GoingUp = false;
 		if (m_DistanceJumped == 0)
 		{
 			m_AlreadyHitted = false;
 			yoga_mummy.RestartFrames();
-			m_PlayerState = PLAYER_IDLE;
+			m_PlayerState = PlayerState_Idle;
 			m_JumpAttacked = false;
 		}
 		else if (yoga_mummy.IsEnded() && m_DistanceJumped > 0)
 		{
 			yoga_mummy.RestartFrames();
-			m_PlayerState = PLAYER_JUMPING;
+			m_PlayerState = PlayerState_Jumping;
 			m_JumpAttacked = true;
 		}
 		else if (yoga_mummy.IsEnded())
 		{
 			yoga_mummy.RestartFrames();
-			m_PlayerState = PLAYER_IDLE;
+			m_PlayerState = PlayerState_Idle;
 			m_JumpAttacked = false;
 		}
 		break;
 
-	case PLAYER_YOGA_SPEAR:
+	case PlayerState_YogaSpear:
 
 		m_GoingUp = false;
 		if (m_DistanceJumped == 0)
 		{
 			m_AlreadyHitted = false;
 			yoga_spear.RestartFrames();
-			m_PlayerState = PLAYER_IDLE;
+			m_PlayerState = PlayerState_Idle;
 			m_JumpAttacked = false;
 		}
 		else if (yoga_spear.IsEnded() && m_DistanceJumped > 0)
 		{
 			yoga_spear.RestartFrames();
-			m_PlayerState = PLAYER_JUMPING;
+			m_PlayerState = PlayerState_Jumping;
 			m_JumpAttacked = true;
 		}
 		else if (yoga_spear.IsEnded())
 		{
 			yoga_spear.RestartFrames();
-			m_PlayerState = PLAYER_IDLE;
+			m_PlayerState = PlayerState_Idle;
 			m_JumpAttacked = false;
 		}
 		break;
 
-	case PLAYER_BLOCKING:
+	case PlayerState_Blocking:
 		if (!m_OtherPlayer->IsAttacking() ||
-			(m_LookingRight && !(GetPlayerInput(INPUT_LEFT))) ||
-			(!m_LookingRight && !(GetPlayerInput(INPUT_RIGHT))))
+			(m_LookingRight && !(GetPlayerInput(InputType_Left))) ||
+			(!m_LookingRight && !(GetPlayerInput(InputType_Right))))
 		{
 			block.RestartFrames();
-			m_PlayerState = PLAYER_IDLE;
+			m_PlayerState = PlayerState_Idle;
 		}
 		else if (m_OtherPlayer->IsAttacking() &&
-			(GetPlayerInput(INPUT_DOWN)))
+			(GetPlayerInput(InputType_Down)))
 		{
 			block.RestartFrames();
-			m_PlayerState = PLAYER_CROUCH_BLOCKING;
+			m_PlayerState = PlayerState_CrouchBlocking;
 		}
 		else if (block.IsEnded())
 			block.RestartFrames();
 		break;
 
-	case PLAYER_CROUCH_BLOCKING:
+	case PlayerState_CrouchBlocking:
 		if ((!m_OtherPlayer->IsAttacking() ||
-			(m_LookingRight && !(GetPlayerInput(INPUT_LEFT))) ||
-			(!m_LookingRight && !(GetPlayerInput(INPUT_RIGHT))))
-			&& (GetPlayerInput(INPUT_DOWN)))
+			(m_LookingRight && !(GetPlayerInput(InputType_Left))) ||
+			(!m_LookingRight && !(GetPlayerInput(InputType_Right))))
+			&& (GetPlayerInput(InputType_Down)))
 		{
 			crouch_block.RestartFrames();
-			m_PlayerState = PLAYER_CROUCHING;
+			m_PlayerState = PlayerState_Crouching;
 		}
-		else if (!(GetPlayerInput(INPUT_DOWN)) && (!m_OtherPlayer->IsAttacking() ||
-			(m_LookingRight && !(GetPlayerInput(INPUT_LEFT))) ||
-			(!m_LookingRight && !(GetPlayerInput(INPUT_RIGHT)))))
+		else if (!(GetPlayerInput(InputType_Down)) && (!m_OtherPlayer->IsAttacking() ||
+			(m_LookingRight && !(GetPlayerInput(InputType_Left))) ||
+			(!m_LookingRight && !(GetPlayerInput(InputType_Right)))))
 		{
 			crouch_block.RestartFrames();
-			m_PlayerState = PLAYER_IDLE;
+			m_PlayerState = PlayerState_Idle;
 		}
-		else if (m_OtherPlayer->IsAttacking() && !(GetPlayerInput(INPUT_DOWN)) &&
-			((m_LookingRight && (GetPlayerInput(INPUT_LEFT))) ||
-			(!m_LookingRight && (GetPlayerInput(INPUT_RIGHT)))))
+		else if (m_OtherPlayer->IsAttacking() && !(GetPlayerInput(InputType_Down)) &&
+			((m_LookingRight && (GetPlayerInput(InputType_Left))) ||
+			(!m_LookingRight && (GetPlayerInput(InputType_Right)))))
 		{
 			crouch_block.RestartFrames();
-			m_PlayerState = PLAYER_BLOCKING;
+			m_PlayerState = PlayerState_Blocking;
 		}
 		else if (crouch_block.IsEnded())
 			crouch_block.RestartFrames();
 		break;
 
-	case PLAYER_BLOCKING_HITTED:
+	case PlayerState_BlockingHitted:
 		if (block.IsEnded())
 		{
 			m_Hitted = false;
@@ -1074,11 +1085,11 @@ UpdateStatus ModulePlayerDhalsim::PreUpdate()
 			m_LegHitted = false;
 			m_AlreadyHitted = false;
 			block.RestartFrames();
-			m_PlayerState = PLAYER_BLOCKING;
+			m_PlayerState = PlayerState_Blocking;
 		}
 		break;
 
-	case PLAYER_CROUCH_BLOCKING_HITTED:
+	case PlayerState_CrouchBlockingHitted:
 		if (crouch_block.IsEnded())
 		{
 			m_Hitted = false;
@@ -1086,11 +1097,11 @@ UpdateStatus ModulePlayerDhalsim::PreUpdate()
 			m_LegHitted = false;
 			m_AlreadyHitted = false;
 			crouch_block.RestartFrames();
-			m_PlayerState = PLAYER_CROUCH_BLOCKING;
+			m_PlayerState = PlayerState_CrouchBlocking;
 		}
 		break;
 
-	case PLAYER_AIR_HITTED:
+	case PlayerState_AirHitted:
 		if (air_hit.IsEnded())
 		{
 			m_Hitted = false;
@@ -1098,14 +1109,14 @@ UpdateStatus ModulePlayerDhalsim::PreUpdate()
 			m_LegHitted = false;
 			air_hit.RestartFrames();
 			m_GoingUp = false;
-			m_PlayerState = PLAYER_JUMPING;
+			m_PlayerState = PlayerState_Jumping;
 		}
 		break;
 	}
 
-	m_StartingCombo = COMBO_NOTHING;
+	m_StartingCombo = ComboTypes_ComboNothing;
 
-	return UPDATE_CONTINUE;
+	return UpdateStatus_Continue;
 }
 
 // Update
@@ -1118,20 +1129,20 @@ UpdateStatus ModulePlayerDhalsim::Update()
 	if (m_OtherPlayer->playerInCameraLimit() &&
 		((App->renderer->ScreenLeftLimit() && m_OtherPlayer->GetLookingRight()) ||
 		(App->renderer->ScreenRightLimit() && !m_OtherPlayer->GetLookingRight())) &&
-		((m_OtherPlayer->GetPlayerState() == PLAYER_AIR_HITTED) ||
-		(m_OtherPlayer->GetPlayerState() == PLAYER_CROUCH_HIT) ||
-		(m_OtherPlayer->GetPlayerState() == PLAYER_HIT) ||
-		(m_OtherPlayer->GetPlayerState() == PLAYER_FACE_HIT) ||
-		(m_OtherPlayer->GetPlayerState() == PLAYER_BLOCKING_HITTED) ||
-		(m_OtherPlayer->GetPlayerState() == PLAYER_CROUCH_BLOCKING_HITTED)) &&
-		(m_PlayerState != PLAYER_JUMP_KICK) && (m_PlayerState != PLAYER_JUMP_PUNCH) && 
-		(m_PlayerState != PLAYER_JUMPING) && (m_PlayerState != PLAYER_AIR_HITTED))
+		((m_OtherPlayer->GetPlayerState() == PlayerState_AirHitted) ||
+		(m_OtherPlayer->GetPlayerState() == PlayerState_CrouchHit) ||
+		(m_OtherPlayer->GetPlayerState() == PlayerState_Hit) ||
+		(m_OtherPlayer->GetPlayerState() == PlayerState_FaceHit) ||
+		(m_OtherPlayer->GetPlayerState() == PlayerState_BlockingHitted) ||
+		(m_OtherPlayer->GetPlayerState() == PlayerState_CrouchBlockingHitted)) &&
+		(m_PlayerState != PlayerState_JumpKick) && (m_PlayerState != PlayerState_JumpPunch) && 
+		(m_PlayerState != PlayerState_Jumping) && (m_PlayerState != PlayerState_AirHitted))
 	{
-		if (m_LookingRight && (m_OtherPlayer->GetPlayerState() == PLAYER_AIR_HITTED))
+		if (m_LookingRight && (m_OtherPlayer->GetPlayerState() == PlayerState_AirHitted))
 			MovePlayer(-3);
 		else if (m_LookingRight)
 			MovePlayer(-1);
-		else if (m_OtherPlayer->GetPlayerState() == PLAYER_AIR_HITTED)
+		else if (m_OtherPlayer->GetPlayerState() == PlayerState_AirHitted)
 			MovePlayer(3);
 		else
 			MovePlayer(1);
@@ -1139,14 +1150,14 @@ UpdateStatus ModulePlayerDhalsim::Update()
 
 	switch (m_PlayerState)
 	{
-	case PLAYER_IDLE:
+	case PlayerState_Idle:
 		aux = idle.GetCurrentFrame();
 		pivot = idle.GetCurrentPivot();
 		cps = idle.GetCurrentCollider();
 		idle.NextFrame();
 		break;
 
-	case PLAYER_WALKING_FORWARD:
+	case PlayerState_WalkingForward:
 		if (!m_AreCollidingPlayers)
 		{
 			if (m_LookingRight)
@@ -1160,7 +1171,7 @@ UpdateStatus ModulePlayerDhalsim::Update()
 		forward.NextFrame();
 		break;
 
-	case PLAYER_WALKING_BACKWARD:
+	case PlayerState_WalkingBackward:
 		if (m_LookingRight)
 			MovePlayer(-1);
 		else
@@ -1171,14 +1182,14 @@ UpdateStatus ModulePlayerDhalsim::Update()
 		backward.NextFrame();
 		break;
 
-	case PLAYER_CROUCHING:
+	case PlayerState_Crouching:
 		aux = crouching.GetCurrentFrame();
 		pivot = crouching.GetCurrentPivot();
 		cps = crouching.GetCurrentCollider();
 		crouching.NextFrame();
 		break;
 
-	case PLAYER_JUMPING:
+	case PlayerState_Jumping:
 		if (m_GoingUp && m_DistanceJumped < 105)
 		{
 			m_DistanceJumped += 3;
@@ -1190,11 +1201,11 @@ UpdateStatus ModulePlayerDhalsim::Update()
 			m_DistanceJumped -= 3;
 		}
 
-		if (m_DirectionJump == JUMP_RIGHT)
+		if (m_DirectionJump == DirectionJumping_Right)
 		{
 			MovePlayer(1);
 		}
-		else if (m_DirectionJump == JUMP_LEFT)
+		else if (m_DirectionJump == DirectionJumping_Left)
 		{
 			MovePlayer(-1);
 		}
@@ -1215,124 +1226,124 @@ UpdateStatus ModulePlayerDhalsim::Update()
 		break;
 
 
-	case PLAYER_LOW_PUNCH:
+	case PlayerState_LowPunch:
 		aux = L_punch.GetCurrentFrame();
 		pivot = L_punch.GetCurrentPivot();
 		cps = L_punch.GetCurrentCollider();
 		L_punch.NextFrame();
-		m_ColliderAttack.damageType = L_ATTACK;
+		m_ColliderAttack.damageType = DamageType_LAttack;
 		m_ColliderAttack.damage = 12;
 		break;
 
-	case PLAYER_LOW_KICK:
+	case PlayerState_LowKick:
 		aux = L_kick.GetCurrentFrame();
 		pivot = L_kick.GetCurrentPivot();
 		cps = L_kick.GetCurrentCollider();
 		L_kick.NextFrame();
-		m_ColliderAttack.damageType = L_ATTACK;
+		m_ColliderAttack.damageType = DamageType_LAttack;
 		m_ColliderAttack.damage = 12;
 		break;
 
-	case PLAYER_MEDIUM_PUNCH:
+	case PlayerState_MediumPunch:
 		aux = M_punch.GetCurrentFrame();
 		pivot = M_punch.GetCurrentPivot();
 		cps = M_punch.GetCurrentCollider();
 		M_punch.NextFrame();
-		m_ColliderAttack.damageType = M_ATTACK;
+		m_ColliderAttack.damageType = DamageType_MAttack;
 		m_ColliderAttack.damage = 16;
 		break;
 
-	case PLAYER_MEDIUM_KICK:
+	case PlayerState_MediumKick:
 		aux = M_kick.GetCurrentFrame();
 		pivot = M_kick.GetCurrentPivot();
 		cps = M_kick.GetCurrentCollider();
 		M_kick.NextFrame();
-		m_ColliderAttack.damageType = M_ATTACK;
+		m_ColliderAttack.damageType = DamageType_MAttack;
 		m_ColliderAttack.damage = 16;
 		break;
 
-	case PLAYER_HIGH_PUNCH:
+	case PlayerState_HighPunch:
 		aux = H_punch.GetCurrentFrame();
 		pivot = H_punch.GetCurrentPivot();
 		cps = H_punch.GetCurrentCollider();
 		H_punch.NextFrame();
-		m_ColliderAttack.damageType = H_ATTACK;
+		m_ColliderAttack.damageType = DamageType_HAttack;
 		m_ColliderAttack.damage = 20;
 		break;
 
-	case PLAYER_HIGH_KICK:
+	case PlayerState_HighKick:
 		aux = H_kick.GetCurrentFrame();
 		pivot = H_kick.GetCurrentPivot();
 		cps = H_kick.GetCurrentCollider();
 		H_kick.NextFrame();
-		m_ColliderAttack.damageType = H_ATTACK;
+		m_ColliderAttack.damageType = DamageType_HAttack;
 		m_ColliderAttack.damage = 20;
 		break;
 
-	case PLAYER_FORWARD_LOW_PUNCH:
+	case PlayerState_ForwardLowPunch:
 		aux = F_L_punch.GetCurrentFrame();
 		pivot = F_L_punch.GetCurrentPivot();
 		cps = F_L_punch.GetCurrentCollider();
 		F_L_punch.NextFrame();
-		m_ColliderAttack.damageType = L_ATTACK;
+		m_ColliderAttack.damageType = DamageType_LAttack;
 		m_ColliderAttack.damage = 14;
 		break;
 
-	case PLAYER_FORWARD_LOW_KICK:
+	case PlayerState_ForwardLowKick:
 		aux = F_L_kick.GetCurrentFrame();
 		pivot = F_L_kick.GetCurrentPivot();
 		cps = F_L_kick.GetCurrentCollider();
 		F_L_kick.NextFrame();
-		m_ColliderAttack.damageType = L_ATTACK;
+		m_ColliderAttack.damageType = DamageType_LAttack;
 		m_ColliderAttack.damage = 14;
 		break;
 
-	case PLAYER_FORWARD_MEDIUM_PUNCH:
+	case PlayerState_ForwardMediumPunch:
 		aux = F_M_punch.GetCurrentFrame();
 		pivot = F_M_punch.GetCurrentPivot();
 		cps = F_M_punch.GetCurrentCollider();
 		F_M_punch.NextFrame();
-		m_ColliderAttack.damageType = M_ATTACK;
+		m_ColliderAttack.damageType = DamageType_MAttack;
 		m_ColliderAttack.damage = 18;
 		break;
 
-	case PLAYER_FORWARD_MEDIUM_KICK:
+	case PlayerState_ForwardMediumKick:
 		aux = F_M_kick.GetCurrentFrame();
 		pivot = F_M_kick.GetCurrentPivot();
 		cps = F_M_kick.GetCurrentCollider();
 		F_M_kick.NextFrame();
-		m_ColliderAttack.damageType = M_ATTACK;
+		m_ColliderAttack.damageType = DamageType_MAttack;
 		m_ColliderAttack.damage = 18;
 		break;
 
-	case PLAYER_FORWARD_HIGH_PUNCH:
+	case PlayerState_ForwardHighPunch:
 		aux = F_H_punch.GetCurrentFrame();
 		pivot = F_H_punch.GetCurrentPivot();
 		cps = F_H_punch.GetCurrentCollider();
 		F_H_punch.NextFrame();
-		m_ColliderAttack.damageType = H_ATTACK;
+		m_ColliderAttack.damageType = DamageType_HAttack;
 		m_ColliderAttack.damage = 22;
 		break;
 
-	case PLAYER_FORWARD_HIGH_KICK:
+	case PlayerState_ForwardHighKick:
 		aux = F_H_kick.GetCurrentFrame();
 		pivot = F_H_kick.GetCurrentPivot();
 		cps = F_H_kick.GetCurrentCollider();
 		F_H_kick.NextFrame();
-		m_ColliderAttack.damageType = H_ATTACK;
+		m_ColliderAttack.damageType = DamageType_HAttack;
 		m_ColliderAttack.damage = 22;
 		break;
 
-	case PLAYER_CROUCH_PUNCH:
+	case PlayerState_CrouchPunch:
 		aux = crouch_punch.GetCurrentFrame();
 		pivot = crouch_punch.GetCurrentPivot();
 		cps = crouch_punch.GetCurrentCollider();
 		crouch_punch.NextFrame();
-		m_ColliderAttack.damageType = M_ATTACK;
+		m_ColliderAttack.damageType = DamageType_MAttack;
 		m_ColliderAttack.damage = 16;
 		break;
 
-	case PLAYER_CROUCH_KICK:
+	case PlayerState_CrouchKick:
 		if (m_LookingRight)
 		{
 			MovePlayer(2);
@@ -1345,11 +1356,11 @@ UpdateStatus ModulePlayerDhalsim::Update()
 		pivot = crouch_kick.GetCurrentPivot();
 		cps = crouch_kick.GetCurrentCollider();
 		crouch_kick.NextFrame();
-		m_ColliderAttack.damageType = M_ATTACK;
+		m_ColliderAttack.damageType = DamageType_MAttack;
 		m_ColliderAttack.damage = 16;
 		break;
 
-	case PLAYER_JUMP_PUNCH:
+	case PlayerState_JumpPunch:
 		if (m_GoingUp && m_DistanceJumped < 105)
 		{
 			m_DistanceJumped += 3;
@@ -1361,11 +1372,11 @@ UpdateStatus ModulePlayerDhalsim::Update()
 			m_DistanceJumped -= 3;
 		}
 
-		if (m_DirectionJump == JUMP_RIGHT)
+		if (m_DirectionJump == DirectionJumping_Right)
 		{
 			MovePlayer(1);
 		}
-		else if (m_DirectionJump == JUMP_LEFT)
+		else if (m_DirectionJump == DirectionJumping_Left)
 		{
 			MovePlayer(-1);
 		}
@@ -1374,12 +1385,12 @@ UpdateStatus ModulePlayerDhalsim::Update()
 		pivot = jump_punch.GetCurrentPivot();
 		cps = jump_punch.GetCurrentCollider();
 		jump_punch.NextFrame();
-		m_ColliderAttack.damageType = M_ATTACK;
+		m_ColliderAttack.damageType = DamageType_MAttack;
 		m_ColliderAttack.damage = 18;
 		break;
 
 
-	case PLAYER_JUMP_KICK:
+	case PlayerState_JumpKick:
 		if (m_GoingUp && m_DistanceJumped < 105)
 		{
 			m_DistanceJumped += 3;
@@ -1391,11 +1402,11 @@ UpdateStatus ModulePlayerDhalsim::Update()
 			m_DistanceJumped -= 3;
 		}
 
-		if (m_DirectionJump == JUMP_RIGHT)
+		if (m_DirectionJump == DirectionJumping_Right)
 		{
 			MovePlayer(1);
 		}
-		else if (m_DirectionJump == JUMP_LEFT)
+		else if (m_DirectionJump == DirectionJumping_Left)
 		{
 			MovePlayer(-1);
 		}
@@ -1404,11 +1415,11 @@ UpdateStatus ModulePlayerDhalsim::Update()
 		pivot = jump_kick.GetCurrentPivot();
 		cps = jump_kick.GetCurrentCollider();
 		jump_kick.NextFrame();
-		m_ColliderAttack.damageType = M_ATTACK;
+		m_ColliderAttack.damageType = DamageType_MAttack;
 		m_ColliderAttack.damage = 18;
 		break;
 
-	case PLAYER_HIT:
+	case PlayerState_Hit:
 		if (!m_LookingRight)
 		{
 			MovePlayer(1);
@@ -1423,7 +1434,7 @@ UpdateStatus ModulePlayerDhalsim::Update()
 		hit.NextFrame();
 		break;
 
-	case PLAYER_CROUCH_HIT:
+	case PlayerState_CrouchHit:
 		if (!m_LookingRight)
 		{
 			MovePlayer(1);
@@ -1438,7 +1449,7 @@ UpdateStatus ModulePlayerDhalsim::Update()
 		crouch_hit.NextFrame();
 		break;
 
-	case PLAYER_FACE_HIT:
+	case PlayerState_FaceHit:
 		if (!m_LookingRight)
 		{
 			MovePlayer(1);
@@ -1453,7 +1464,7 @@ UpdateStatus ModulePlayerDhalsim::Update()
 		face_hit.NextFrame();
 		break;
 
-	case PLAYER_KO:
+	case PlayerState_Ko:
 		if (m_DistanceJumped > 0)
 		{
 			m_DistanceJumped -= 3;
@@ -1471,7 +1482,7 @@ UpdateStatus ModulePlayerDhalsim::Update()
 
 		break;
 
-	case PLAYER_WIN_1:
+	case PlayerState_Win1:
 		if (m_DistanceJumped > 0)
 		{
 			m_DistanceJumped -= 3;
@@ -1482,7 +1493,7 @@ UpdateStatus ModulePlayerDhalsim::Update()
 		victory1.NextFrame();
 		break;
 
-	case PLAYER_WIN_2:
+	case PlayerState_Win2:
 		if (m_DistanceJumped > 0)
 		{
 			m_DistanceJumped -= 3;
@@ -1493,7 +1504,7 @@ UpdateStatus ModulePlayerDhalsim::Update()
 		victory2.NextFrame();
 		break;
 
-	case PLAYER_TIME_OUT:
+	case PlayerState_TimeOut:
 		if (m_DistanceJumped > 0)
 		{
 			m_DistanceJumped -= 3;
@@ -1504,30 +1515,30 @@ UpdateStatus ModulePlayerDhalsim::Update()
 		time_out.NextFrame();
 		break;
 
-	case PLAYER_YOGA_FIRE:
+	case PlayerState_YogaFire:
 		aux = yoga_fire.GetCurrentFrame();
 		pivot = yoga_fire.GetCurrentPivot();
 		cps = yoga_fire.GetCurrentCollider();
 		yoga_fire.NextFrame();
 		break;
 
-	case PLAYER_YOGA_FLAME:
+	case PlayerState_YogaFlame:
 		aux = yoga_flame.GetCurrentFrame();
 		pivot = yoga_flame.GetCurrentPivot();
 		cps = yoga_flame.GetCurrentCollider();
 		yoga_flame.NextFrame();
-		m_ColliderAttack.damageType = M_ATTACK;
+		m_ColliderAttack.damageType = DamageType_MAttack;
 		m_ColliderAttack.damage = 28;
 		break;
 
-	case PLAYER_YOGA_MUMMY:
+	case PlayerState_YogaMummy:
 
 		m_DistanceJumped -= 3;
-		if (m_DirectionMummy == JUMP_RIGHT)
+		if (m_DirectionMummy == DirectionJumping_Right)
 		{
 			MovePlayer(2);
 		}
-		else if (m_DirectionMummy == JUMP_LEFT)
+		else if (m_DirectionMummy == DirectionJumping_Left)
 		{
 			MovePlayer(-2);
 		}
@@ -1536,18 +1547,18 @@ UpdateStatus ModulePlayerDhalsim::Update()
 		pivot = yoga_mummy.GetCurrentPivot();
 		cps = yoga_mummy.GetCurrentCollider();
 		yoga_mummy.NextFrame();
-		m_ColliderAttack.damageType = M_ATTACK;
+		m_ColliderAttack.damageType = DamageType_MAttack;
 		m_ColliderAttack.damage = 18;
 		break;
 
-	case PLAYER_YOGA_SPEAR:
+	case PlayerState_YogaSpear:
 
 		m_DistanceJumped -= 3;
-		if (m_DirectionMummy == JUMP_RIGHT)
+		if (m_DirectionMummy == DirectionJumping_Right)
 		{
 			MovePlayer(2);
 		}
-		else if (m_DirectionMummy == JUMP_LEFT)
+		else if (m_DirectionMummy == DirectionJumping_Left)
 		{
 			MovePlayer(-2);
 		}
@@ -1556,25 +1567,25 @@ UpdateStatus ModulePlayerDhalsim::Update()
 		pivot = yoga_spear.GetCurrentPivot();
 		cps = yoga_spear.GetCurrentCollider();
 		yoga_spear.NextFrame();
-		m_ColliderAttack.damageType = M_ATTACK;
+		m_ColliderAttack.damageType = DamageType_MAttack;
 		m_ColliderAttack.damage = 18;
 		break;
 
-	case PLAYER_BLOCKING:
+	case PlayerState_Blocking:
 		aux = block.GetCurrentFrame();
 		pivot = block.GetCurrentPivot();
 		cps = block.GetCurrentCollider();
 		block.NextFrame();
 		break;
 
-	case PLAYER_CROUCH_BLOCKING:
+	case PlayerState_CrouchBlocking:
 		aux = crouch_block.GetCurrentFrame();
 		pivot = crouch_block.GetCurrentPivot();
 		cps = crouch_block.GetCurrentCollider();
 		crouch_block.NextFrame();
 		break;
 
-	case PLAYER_BLOCKING_HITTED:
+	case PlayerState_BlockingHitted:
 		if (!m_LookingRight)
 		{
 			MovePlayer(2);
@@ -1589,7 +1600,7 @@ UpdateStatus ModulePlayerDhalsim::Update()
 		block.NextFrame();
 		break;
 
-	case PLAYER_CROUCH_BLOCKING_HITTED:
+	case PlayerState_CrouchBlockingHitted:
 		if (!m_LookingRight)
 		{
 			MovePlayer(1);
@@ -1604,16 +1615,16 @@ UpdateStatus ModulePlayerDhalsim::Update()
 		crouch_block.NextFrame();
 		break;
 
-	case PLAYER_AIR_HITTED:
+	case PlayerState_AirHitted:
 		if (!m_LookingRight)
 		{
 			MovePlayer(2);
-			m_DirectionJump = JUMP_RIGHT;
+			m_DirectionJump = DirectionJumping_Right;
 		}
 		else
 		{
 			MovePlayer(-2);
-			m_DirectionJump = JUMP_LEFT;
+			m_DirectionJump = DirectionJumping_Left;
 		}
 		m_DistanceJumped += 3;
 		m_GoingUp = true;
@@ -1660,32 +1671,32 @@ UpdateStatus ModulePlayerDhalsim::Update()
 		App->renderer->Blit(m_Graphics, m_Position.x - aux.w + pivot, m_Position.y - aux.h - m_DistanceJumped, &(aux), 1.0f, SDL_FLIP_HORIZONTAL);
 	}
 	
-	return UPDATE_CONTINUE;
+	return UpdateStatus_Continue;
 }
 
 // PostUpdate
 UpdateStatus ModulePlayerDhalsim::PostUpdate()
 {
 	m_AreCollidingPlayers = false;
-	return UPDATE_CONTINUE;
+	return UpdateStatus_Continue;
 }
 
 // On Collision
 void ModulePlayerDhalsim::OnCollision(Collider* c1, Collider* c2)
 {
 	if (!m_Win && !m_Dead && !m_Time0){
-		if (c1->type == COLLIDER_BODY_PLAYER_ONE && c2->type == COLLIDER_BODY_PLAYER_TWO)
+		if (c1->type == ColliderType_BodyPlayerOne && c2->type == ColliderType_BodyPlayerTwo)
 			m_AreCollidingPlayers = true;
-		else if (c1->type == COLLIDER_BODY_PLAYER_TWO && c2->type == COLLIDER_BODY_PLAYER_ONE)
+		else if (c1->type == ColliderType_BodyPlayerTwo && c2->type == ColliderType_BodyPlayerOne)
 			m_AreCollidingPlayers = true;
-		else if (c1->type == COLLIDER_PLAYER_ONE && c2->type == COLLIDER_ATTACK_PLAYER_TWO && c2->rect.w * c2->rect.h != 0 && !m_AlreadyHitted)
+		else if (c1->type == ColliderType_PlayerOne && c2->type == ColliderType_AttackPlayerTwo && c2->rect.w * c2->rect.h != 0 && !m_AlreadyHitted)
 		{
-			if (!m_Hitted && m_PlayerState != PLAYER_BLOCKING && m_PlayerState != PLAYER_CROUCH_BLOCKING && m_PlayerState != PLAYER_BLOCKING_HITTED && m_PlayerState != PLAYER_CROUCH_BLOCKING_HITTED)
+			if (!m_Hitted && m_PlayerState != PlayerState_Blocking && m_PlayerState != PlayerState_CrouchBlocking && m_PlayerState != PlayerState_BlockingHitted && m_PlayerState != PlayerState_CrouchBlockingHitted)
 			{
 				m_Life -= c2->damage;
 				m_AlreadyHitted = true;
 			}
-			else if ((m_OtherPlayer->GetPlayerState() == PLAYER_CROUCH_PUNCH || m_OtherPlayer->GetPlayerState() == PLAYER_CROUCH_KICK) && m_PlayerState != PLAYER_CROUCH_BLOCKING && m_PlayerState != PLAYER_CROUCH_BLOCKING_HITTED)
+			else if ((m_OtherPlayer->GetPlayerState() == PlayerState_CrouchPunch || m_OtherPlayer->GetPlayerState() == PlayerState_CrouchKick) && m_PlayerState != PlayerState_CrouchBlocking && m_PlayerState != PlayerState_CrouchBlockingHitted)
 			{
 				m_Life -= c2->damage;
 				m_AlreadyHitted = true;
@@ -1701,11 +1712,11 @@ void ModulePlayerDhalsim::OnCollision(Collider* c1, Collider* c2)
 			}
 			else if (!m_Hitted)
 			{
-				if (c2->damageType == L_ATTACK)
+				if (c2->damageType == DamageType_LAttack)
 					App->audio->PlayFx(m_AudioIdLImpact);
-				else if (c2->damageType == M_ATTACK)
+				else if (c2->damageType == DamageType_MAttack)
 					App->audio->PlayFx(m_AudioIdMImpact);
-				else if (c2->damageType == H_ATTACK)
+				else if (c2->damageType == DamageType_HAttack)
 					App->audio->PlayFx(m_AudioIdHImpact);
 			}
 
@@ -1713,14 +1724,14 @@ void ModulePlayerDhalsim::OnCollision(Collider* c1, Collider* c2)
 			if (c1 == &m_ColliderHead)
 				m_HeadHitted = true;
 		}
-		else if (c1->type == COLLIDER_PLAYER_TWO && c2->type == COLLIDER_ATTACK_PLAYER_ONE  && c2->rect.w * c2->rect.h != 0 && !m_AlreadyHitted)
+		else if (c1->type == ColliderType_PlayerTwo && c2->type == ColliderType_AttackPlayerOne  && c2->rect.w * c2->rect.h != 0 && !m_AlreadyHitted)
 		{
-			if (!m_Hitted && m_PlayerState != PLAYER_BLOCKING && m_PlayerState != PLAYER_CROUCH_BLOCKING && m_PlayerState != PLAYER_BLOCKING_HITTED && m_PlayerState != PLAYER_CROUCH_BLOCKING_HITTED)
+			if (!m_Hitted && m_PlayerState != PlayerState_Blocking && m_PlayerState != PlayerState_CrouchBlocking && m_PlayerState != PlayerState_BlockingHitted && m_PlayerState != PlayerState_CrouchBlockingHitted)
 			{
 				m_Life -= c2->damage;
 				m_AlreadyHitted = true;
 			}
-			else if ((m_OtherPlayer->GetPlayerState() == PLAYER_CROUCH_PUNCH || m_OtherPlayer->GetPlayerState() == PLAYER_CROUCH_KICK) && m_PlayerState != PLAYER_CROUCH_BLOCKING && m_PlayerState != PLAYER_CROUCH_BLOCKING_HITTED)
+			else if ((m_OtherPlayer->GetPlayerState() == PlayerState_CrouchPunch || m_OtherPlayer->GetPlayerState() == PlayerState_CrouchKick) && m_PlayerState != PlayerState_CrouchBlocking && m_PlayerState != PlayerState_CrouchBlockingHitted)
 			{
 				m_Life -= c2->damage;
 				m_AlreadyHitted = true;
@@ -1737,11 +1748,11 @@ void ModulePlayerDhalsim::OnCollision(Collider* c1, Collider* c2)
 			}
 			else if (!m_Hitted)
 			{
-				if (c2->damageType == L_ATTACK)
+				if (c2->damageType == DamageType_LAttack)
 					App->audio->PlayFx(m_AudioIdLImpact);
-				else if (c2->damageType == M_ATTACK)
+				else if (c2->damageType == DamageType_MAttack)
 					App->audio->PlayFx(m_AudioIdMImpact);
-				else if (c2->damageType == H_ATTACK)
+				else if (c2->damageType == DamageType_HAttack)
 					App->audio->PlayFx(m_AudioIdHImpact);
 			}
 
@@ -1750,9 +1761,9 @@ void ModulePlayerDhalsim::OnCollision(Collider* c1, Collider* c2)
 			if (c1 == &m_ColliderHead)
 				m_HeadHitted = true;
 		}
-		else if ((c1->type == COLLIDER_PLAYER_ONE || c1->type == COLLIDER_ATTACK_PLAYER_ONE) && c2->type == COLLIDER_PARTICLES && c2->rect.w * c2->rect.h != 0)
+		else if ((c1->type == ColliderType_PlayerOne || c1->type == ColliderType_AttackPlayerOne) && c2->type == ColliderType_Particles && c2->rect.w * c2->rect.h != 0)
 		{
-			if (!m_Hitted && m_PlayerState != PLAYER_BLOCKING && m_PlayerState != PLAYER_CROUCH_BLOCKING && m_PlayerState != PLAYER_BLOCKING_HITTED && m_PlayerState != PLAYER_CROUCH_BLOCKING_HITTED)
+			if (!m_Hitted && m_PlayerState != PlayerState_Blocking && m_PlayerState != PlayerState_CrouchBlocking && m_PlayerState != PlayerState_BlockingHitted && m_PlayerState != PlayerState_CrouchBlockingHitted)
 			{
 				m_Life -= 18;
 				App->audio->PlayFx(m_AudioIdLImpact);
@@ -1770,9 +1781,9 @@ void ModulePlayerDhalsim::OnCollision(Collider* c1, Collider* c2)
 			if (c1 == &m_ColliderHead)
 				m_HeadHitted = true;
 		}
-		else if ((c1->type == COLLIDER_PLAYER_TWO || c1->type == COLLIDER_ATTACK_PLAYER_TWO) && c2->type == COLLIDER_PARTICLES && c2->rect.w * c2->rect.h != 0)
+		else if ((c1->type == ColliderType_PlayerTwo || c1->type == ColliderType_AttackPlayerTwo) && c2->type == ColliderType_Particles && c2->rect.w * c2->rect.h != 0)
 		{
-			if (!m_Hitted && m_PlayerState != PLAYER_BLOCKING && m_PlayerState != PLAYER_CROUCH_BLOCKING && m_PlayerState != PLAYER_BLOCKING_HITTED && m_PlayerState != PLAYER_CROUCH_BLOCKING_HITTED)
+			if (!m_Hitted && m_PlayerState != PlayerState_Blocking && m_PlayerState != PlayerState_CrouchBlocking && m_PlayerState != PlayerState_BlockingHitted && m_PlayerState != PlayerState_CrouchBlockingHitted)
 			{
 				m_Life -= 18;
 				App->audio->PlayFx(m_AudioIdLImpact);
@@ -1870,7 +1881,7 @@ void ModulePlayerDhalsim::restartPlayer(bool everything)
 	if (everything)
 		m_Wins = 0;
 
-	m_PlayerState = PLAYER_IDLE;
+	m_PlayerState = PlayerState_Idle;
 	m_AreCollidingPlayers = false;
 	m_Jumping = false;
 	m_Hitted = false;
@@ -1879,7 +1890,7 @@ void ModulePlayerDhalsim::restartPlayer(bool everything)
 	m_Win = false;
 	m_Dead = false;
 	m_Time0 = false;
-	m_StartingCombo = COMBO_NOTHING;
+	m_StartingCombo = ComboTypes_ComboNothing;
 
 	ko.RestartFrames();
 	victory1.RestartFrames();
@@ -1900,26 +1911,26 @@ iPoint ModulePlayerDhalsim::getPosition() const
 
 bool ModulePlayerDhalsim::IsAttacking() const
 {
-	if (m_PlayerState == PLAYER_LOW_PUNCH ||
-		m_PlayerState == PLAYER_LOW_KICK ||
-		m_PlayerState == PLAYER_MEDIUM_PUNCH ||
-		m_PlayerState == PLAYER_MEDIUM_KICK ||
-		m_PlayerState == PLAYER_HIGH_PUNCH ||
-		m_PlayerState == PLAYER_HIGH_KICK ||
-		m_PlayerState == PLAYER_CROUCH_PUNCH ||
-		m_PlayerState == PLAYER_CROUCH_KICK ||
-		m_PlayerState == PLAYER_JUMP_PUNCH ||
-		m_PlayerState == PLAYER_JUMP_KICK ||
-		m_PlayerState == PLAYER_FORWARD_LOW_PUNCH ||
-		m_PlayerState == PLAYER_FORWARD_LOW_KICK ||
-		m_PlayerState == PLAYER_FORWARD_MEDIUM_PUNCH ||
-		m_PlayerState == PLAYER_FORWARD_MEDIUM_KICK ||
-		m_PlayerState == PLAYER_FORWARD_HIGH_PUNCH ||
-		m_PlayerState == PLAYER_FORWARD_HIGH_KICK ||
-		m_PlayerState == PLAYER_YOGA_FIRE ||
-		m_PlayerState == PLAYER_YOGA_FLAME ||
-		m_PlayerState == PLAYER_YOGA_MUMMY ||
-		m_PlayerState == PLAYER_YOGA_SPEAR)
+	if (m_PlayerState == PlayerState_LowPunch ||
+		m_PlayerState == PlayerState_LowKick ||
+		m_PlayerState == PlayerState_MediumPunch ||
+		m_PlayerState == PlayerState_MediumKick ||
+		m_PlayerState == PlayerState_HighPunch ||
+		m_PlayerState == PlayerState_HighKick ||
+		m_PlayerState == PlayerState_CrouchPunch ||
+		m_PlayerState == PlayerState_CrouchKick ||
+		m_PlayerState == PlayerState_JumpPunch ||
+		m_PlayerState == PlayerState_JumpKick ||
+		m_PlayerState == PlayerState_ForwardLowPunch ||
+		m_PlayerState == PlayerState_ForwardLowKick ||
+		m_PlayerState == PlayerState_ForwardMediumPunch ||
+		m_PlayerState == PlayerState_ForwardMediumKick ||
+		m_PlayerState == PlayerState_ForwardHighPunch ||
+		m_PlayerState == PlayerState_ForwardHighKick ||
+		m_PlayerState == PlayerState_YogaFire ||
+		m_PlayerState == PlayerState_YogaFlame ||
+		m_PlayerState == PlayerState_YogaMummy ||
+		m_PlayerState == PlayerState_YogaSpear)
 	{
 		return true;
 	}
@@ -1951,34 +1962,34 @@ bool ModulePlayerDhalsim::GetPlayerInput(InputType actionKey)
 	{
 		switch (actionKey)
 		{
-		case INPUT_UP:
+		case InputType_Up:
 			return App->input->GetKey(SDL_SCANCODE_I) == KEY_REPEAT;
 			break;
-		case INPUT_DOWN:
+		case InputType_Down:
 			return App->input->GetKey(SDL_SCANCODE_K) == KEY_REPEAT;
 			break;
-		case INPUT_LEFT:
+		case InputType_Left:
 			return App->input->GetKey(SDL_SCANCODE_J) == KEY_REPEAT;
 			break;
-		case INPUT_RIGHT:
+		case InputType_Right:
 			return App->input->GetKey(SDL_SCANCODE_L) == KEY_REPEAT;
 			break;
-		case INPUT_L_PUNCH:
+		case InputType_LPunch:
 			return App->input->GetKey(SDL_SCANCODE_A) == KEY_DOWN;
 			break;
-		case INPUT_L_KICK:
+		case InputType_LKick:
 			return App->input->GetKey(SDL_SCANCODE_Q) == KEY_DOWN;
 			break;
-		case INPUT_M_PUNCH:
+		case InputType_MPunch:
 			return App->input->GetKey(SDL_SCANCODE_S) == KEY_DOWN;
 			break;
-		case INPUT_M_KICK:
+		case InputType_MKick:
 			return App->input->GetKey(SDL_SCANCODE_W) == KEY_DOWN;
 			break;
-		case INPUT_H_PUNCH:
+		case InputType_HPunch:
 			return App->input->GetKey(SDL_SCANCODE_D) == KEY_DOWN;
 			break;
-		case INPUT_H_KICK:
+		case InputType_HKick:
 			return App->input->GetKey(SDL_SCANCODE_E) == KEY_DOWN;
 			break;
 		}
@@ -1987,34 +1998,34 @@ bool ModulePlayerDhalsim::GetPlayerInput(InputType actionKey)
 	{
 		switch (actionKey)
 		{
-		case INPUT_UP:
+		case InputType_Up:
 			return (App->input->GetButton(SDL_CONTROLLER_AXIS_LEFTX) == KEY_REPEAT || App->input->yDir == -1 || App->input->GetKey(SDL_SCANCODE_UP) == KEY_REPEAT);
 			break;
-		case INPUT_DOWN:
+		case InputType_Down:
 			return (App->input->GetButton(SDL_CONTROLLER_AXIS_LEFTY) == KEY_REPEAT || App->input->yDir == 1 || App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_REPEAT);
 			break;
-		case INPUT_LEFT:
+		case InputType_Left:
 			return (App->input->GetButton(SDL_CONTROLLER_AXIS_RIGHTX) == KEY_REPEAT || App->input->xDir == -1 || App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_REPEAT);
 			break;
-		case INPUT_RIGHT:
+		case InputType_Right:
 			return (App->input->GetButton(SDL_CONTROLLER_AXIS_RIGHTY) == KEY_REPEAT || App->input->xDir == 1 || App->input->GetKey(SDL_SCANCODE_RIGHT) == KEY_REPEAT);
 			break;
-		case INPUT_L_PUNCH:
+		case InputType_LPunch:
 			return (App->input->GetButton(12) == KEY_DOWN) || (App->input->GetKey(SDL_SCANCODE_KP_4) == KEY_DOWN);
 			break;
-		case INPUT_L_KICK:
+		case InputType_LKick:
 			return (App->input->GetButton(10) == KEY_DOWN) || (App->input->GetKey(SDL_SCANCODE_KP_7) == KEY_DOWN);
 			break;
-		case INPUT_M_PUNCH:
+		case InputType_MPunch:
 			return (App->input->GetButton(11) == KEY_DOWN) || (App->input->GetKey(SDL_SCANCODE_KP_5) == KEY_DOWN);
 			break;
-		case INPUT_M_KICK:
+		case InputType_MKick:
 			return (App->input->GetButton(13) == KEY_DOWN) || (App->input->GetKey(SDL_SCANCODE_KP_8) == KEY_DOWN);
 			break;
-		case INPUT_H_PUNCH:
+		case InputType_HPunch:
 			return (App->input->GetButton(8) == KEY_DOWN) || (App->input->GetKey(SDL_SCANCODE_KP_6) == KEY_DOWN);
 			break;
-		case INPUT_H_KICK:
+		case InputType_HKick:
 			return (App->input->GetButton(9) == KEY_DOWN) || (App->input->GetKey(SDL_SCANCODE_KP_9) == KEY_DOWN);
 			break;
 		}

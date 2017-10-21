@@ -206,9 +206,9 @@ UpdateStatus ModuleInput::PreUpdate()
 	}
 
 	if(GetWindowEvent(EventWindow::WE_QUIT) == true || GetKey(SDL_SCANCODE_ESCAPE) == KEY_DOWN)
-		return UPDATE_STOP;
+		return UpdateStatus_Stop;
 
-	return UPDATE_CONTINUE;
+	return UpdateStatus_Continue;
 }
 
 // Called before quitting

@@ -9,101 +9,101 @@ void log(const char file[], int line, const char* format, ...);
 
 enum ComboTypes
 {
-	COMBO_YOGA_FIRE,
-	COMBO_YOGA_FLAME,
-	AERIAL_COMBO,
-	AERIAL_COMBO_PUNCH,
-	AERIAL_COMBO_KICK,
-	COMBO_NOTHING
+	ComboTypes_ComboYogaFire,
+	ComboTypes_ComboYogaFlame,
+	ComboTypes_AerialCombo,
+	ComboTypes_AerialComboPunch,
+	ComboTypes_AerialComboKick,
+	ComboTypes_ComboNothing
 };
 
 enum ColliderType
 {
-	COLLIDER_PLAYER_ONE,
-	COLLIDER_BODY_PLAYER_ONE,
-	COLLIDER_ATTACK_PLAYER_ONE,
-	COLLIDER_PLAYER_TWO,
-	COLLIDER_BODY_PLAYER_TWO,
-	COLLIDER_ATTACK_PLAYER_TWO,
-	COLLIDER_PARTICLES,
-	COLLIDER_OTHERS
+	ColliderType_PlayerOne,
+	ColliderType_BodyPlayerOne,
+	ColliderType_AttackPlayerOne,
+	ColliderType_PlayerTwo,
+	ColliderType_BodyPlayerTwo,
+	ColliderType_AttackPlayerTwo,
+	ColliderType_Particles,
+	ColliderType_Others
 };
 
 enum UpdateStatus
 {
-	UPDATE_CONTINUE = 1,
-	UPDATE_STOP,
-	UPDATE_ERROR
+	UpdateStatus_Continue = 1,
+	UpdateStatus_Stop,
+	UpdateStatus_Error
 };
 
 enum DirectionJumping
 {
-	JUMP_STATIC,
-	JUMP_LEFT,
-	JUMP_RIGHT
+	DirectionJumping_NoMove,
+	DirectionJumping_Left,
+	DirectionJumping_Right
 };
 
 enum PlayerState
 {
-	PLAYER_IDLE,
-	PLAYER_WALKING_FORWARD,
-	PLAYER_WALKING_BACKWARD,
-	PLAYER_JUMPING,
-	PLAYER_CROUCHING,
-	PLAYER_HIT,
-	PLAYER_FACE_HIT,
-	PLAYER_CROUCH_HIT,
-	PLAYER_KO,
-	PLAYER_TIME_OUT,
-	PLAYER_WIN_1,
-	PLAYER_WIN_2,
-	PLAYER_LOW_PUNCH,
-	PLAYER_LOW_KICK,
-	PLAYER_MEDIUM_PUNCH,
-	PLAYER_MEDIUM_KICK,
-	PLAYER_HIGH_PUNCH,
-	PLAYER_HIGH_KICK,
-	PLAYER_CROUCH_PUNCH,
-	PLAYER_CROUCH_KICK,
-	PLAYER_JUMP_PUNCH,
-	PLAYER_JUMP_KICK,
-	PLAYER_FORWARD_LOW_PUNCH,
-	PLAYER_FORWARD_LOW_KICK,
-	PLAYER_FORWARD_MEDIUM_PUNCH,
-	PLAYER_FORWARD_MEDIUM_KICK,
-	PLAYER_FORWARD_HIGH_PUNCH,
-	PLAYER_FORWARD_HIGH_KICK,
-	PLAYER_YOGA_FIRE,
-	PLAYER_YOGA_FLAME,
-	PLAYER_YOGA_MUMMY,
-	PLAYER_YOGA_SPEAR,
-	PLAYER_BLOCKING,
-	PLAYER_CROUCH_BLOCKING,
-	PLAYER_BLOCKING_HITTED,
-	PLAYER_CROUCH_BLOCKING_HITTED,
-	PLAYER_AIR_HITTED
+	PlayerState_Idle,
+	PlayerState_WalkingForward,
+	PlayerState_WalkingBackward,
+	PlayerState_Jumping,
+	PlayerState_Crouching,
+	PlayerState_Hit,
+	PlayerState_FaceHit,
+	PlayerState_CrouchHit,
+	PlayerState_Ko,
+	PlayerState_TimeOut,
+	PlayerState_Win1,
+	PlayerState_Win2,
+	PlayerState_LowPunch,
+	PlayerState_LowKick,
+	PlayerState_MediumPunch,
+	PlayerState_MediumKick,
+	PlayerState_HighPunch,
+	PlayerState_HighKick,
+	PlayerState_CrouchPunch,
+	PlayerState_CrouchKick,
+	PlayerState_JumpPunch,
+	PlayerState_JumpKick,
+	PlayerState_ForwardLowPunch,
+	PlayerState_ForwardLowKick,
+	PlayerState_ForwardMediumPunch,
+	PlayerState_ForwardMediumKick,
+	PlayerState_ForwardHighPunch,
+	PlayerState_ForwardHighKick,
+	PlayerState_YogaFire,
+	PlayerState_YogaFlame,
+	PlayerState_YogaMummy,
+	PlayerState_YogaSpear,
+	PlayerState_Blocking,
+	PlayerState_CrouchBlocking,
+	PlayerState_BlockingHitted,
+	PlayerState_CrouchBlockingHitted,
+	PlayerState_AirHitted
 };
 
 enum DamageType
 {
-	L_ATTACK,
-	M_ATTACK,
-	H_ATTACK,
-	NONE_DAMAGE
+	DamageType_LAttack,
+	DamageType_MAttack,
+	DamageType_HAttack,
+	DamageType_None
 };
 
 enum InputType
 {
-	INPUT_UP,
-	INPUT_DOWN,
-	INPUT_LEFT,
-	INPUT_RIGHT,
-	INPUT_L_PUNCH,
-	INPUT_L_KICK,
-	INPUT_M_PUNCH,
-	INPUT_M_KICK,
-	INPUT_H_PUNCH,
-	INPUT_H_KICK
+	InputType_Up,
+	InputType_Down,
+	InputType_Left,
+	InputType_Right,
+	InputType_LPunch,
+	InputType_LKick,
+	InputType_MPunch,
+	InputType_MKick,
+	InputType_HPunch,
+	InputType_HKick
 };
 
 // Deletes a buffer

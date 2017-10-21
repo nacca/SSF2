@@ -58,14 +58,14 @@ UpdateStatus ModuleRender::PreUpdate()
 
 	camera.y = (int)((double)max_y_distance * (double)SCREEN_SIZE / 8.0f);
 
-	return UPDATE_CONTINUE;
+	return UpdateStatus_Continue;
 }
 
 // PostUpdate
 UpdateStatus ModuleRender::PostUpdate()
 {
 	SDL_RenderPresent(renderer);
-	return UPDATE_CONTINUE;
+	return UpdateStatus_Continue;
 }
 
 // Called before quitting

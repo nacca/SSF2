@@ -56,7 +56,7 @@ UpdateStatus ModuleParticleSystem::Update()
 		}
 	}
 
-	return UPDATE_CONTINUE;
+	return UpdateStatus_Continue;
 }
 
 UpdateStatus ModuleParticleSystem::PostUpdate()
@@ -73,13 +73,13 @@ UpdateStatus ModuleParticleSystem::PostUpdate()
 			++it;
 	}
 
-	return UPDATE_CONTINUE;
+	return UpdateStatus_Continue;
 }
 
 bool ModuleParticleSystem::newParticle(iPoint pos, SDL_Texture* graphics, ParticleAnimation particleAnimation, ParticleAnimation particleDestruction, int speed)
 {
 	SDL_Rect rec_collider = { pos.x + particleAnimation.GetCurrentCollider().x, pos.y + particleAnimation.GetCurrentCollider().y, particleAnimation.GetCurrentCollider().w, particleAnimation.GetCurrentCollider().h };
-	Collider* collider = new Collider( rec_collider, COLLIDER_PARTICLES, this );
+	Collider* collider = new Collider( rec_collider, ColliderType_Particles, this );
 	Particle* particle = new Particle{ pos, collider, graphics, particleAnimation, particleDestruction, speed, false, 0 };
 	App->collisions->AddCollider(collider);
 	particleList.push_back(particle);

@@ -49,17 +49,17 @@ public:
 
 	virtual UpdateStatus PreUpdate()
 	{
-		return UPDATE_CONTINUE;
+		return UpdateStatus_Continue;
 	}
 
 	virtual UpdateStatus Update()
 	{
-		return UPDATE_CONTINUE;
+		return UpdateStatus_Continue;
 	}
 
 	virtual UpdateStatus PostUpdate()
 	{
-		return UPDATE_CONTINUE;
+		return UpdateStatus_Continue;
 	}
 
 	virtual bool CleanUp() 

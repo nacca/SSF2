@@ -53,13 +53,13 @@ int main(int argc, char ** argv)
 		{
 			int update_return = App->Update();
 
-			if (update_return == UPDATE_ERROR)
+			if (update_return == UpdateStatus_Error)
 			{
 				LOG("Application Update exits with error -----");
 				state = MAIN_EXIT;
 			}
 
-			if (update_return == UPDATE_STOP)
+			if (update_return == UpdateStatus_Stop)
 				state = MAIN_FINISH;
 		}
 			break;
