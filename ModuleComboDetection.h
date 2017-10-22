@@ -4,35 +4,40 @@
 #include "Module.h"
 #include <vector>
 
-enum previous_states{
-	COMBO_DOWN,
-	COMBO_DOWN_FRONT,
-	COMBO_FRONT,
-	COMBO_DOWN_BACK,
-	COMBO_BACK,
-	NOTHING
+enum PreviousComboState
+{
+	PreviousComboState_Down,
+	PreviousComboState_DownFront,
+	PreviousComboState_Front,
+	PreviousComboState_DownBack,
+	PreviousComboState_Back,
+	PreviousComboState_Nothing
 };
+
+class ModulePlayerDhalsim;
 
 class ModuleComboDetection :
 	public Module
 {
 public:
-	ModuleComboDetection(bool start_enabled = true);
+	ModuleComboDetection(PlayerID playerID, bool start_enabled = true);
 	~ModuleComboDetection();
 
+	bool Start();
 	UpdateStatus PreUpdate();
 
 private:
-	previous_states previous_state_player_one;
-	int countdown_previous_state_player_one;
-	int countdown_first_state_player_one;
-	ComboTypes type_of_combo_player_one;
-	previous_states previous_state_player_two;
-	int countdown_previous_state_player_two;
-	int countdown_first_state_player_two;
-	ComboTypes type_of_combo_player_two;
-	bool combo_air_start_player_one;
-	bool combo_air_start_player_two;
+	void UpdateCounters();
+	void UpdateComboState();
+
+	PlayerID m_PlayerID;
+	ModulePlayerDhalsim* m_ModulePlayerDhalsim;
+
+	PreviousComboState m_PreviousState;
+	int m_PreviousStateCountdown;
+	int m_FirstStateCountdown;
+	ComboTypes m_TypeOfCombo;
+	bool m_IsAirCombo;
 };
 
 #endif

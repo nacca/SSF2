@@ -218,18 +218,18 @@ UpdateStatus ModuleSceneBison::Update()
 		if (App->player_one->GetLife() > App->player_two->GetLife())
 		{
 			App->player_one->SetWin(true);
-			App->player_two->SetTime_0(true);
+			App->player_two->SetTime0(true);
 			RestartScene(App->player_one->GetWins() + 1);
 		}
 		else if (App->player_one->GetLife() < App->player_two->GetLife())
 		{
 			App->player_two->SetWin(true);
-			App->player_one->SetTime_0(true);
+			App->player_one->SetTime0(true);
 			RestartScene(App->player_two->GetWins() + 1);
 		}
 		else {
-			App->player_one->SetTime_0(true);
-			App->player_two->SetTime_0(true);
+			App->player_one->SetTime0(true);
+			App->player_two->SetTime0(true);
 			RestartScene(0);
 		}
 	}

@@ -22,11 +22,11 @@ Application::Application()
 	modules.push_back(collisions = new ModuleCollisions());
 	modules.push_back(fade = new ModuleFadeToBlack());
 
-	modules.push_back(combo = new ModuleComboDetection());
+// 	modules.push_back(combo = new ModuleComboDetection());
 	modules.push_back(scene_bison = new ModuleSceneBison(false));
 	modules.push_back(particles = new ModuleParticleSystem());
-	modules.push_back(player_one = new ModulePlayerDhalsim(1, false));
-	modules.push_back(player_two = new ModulePlayerDhalsim(2, false));
+	modules.push_back(player_one = new ModulePlayerDhalsim(PlayerID_One, false));
+	modules.push_back(player_two = new ModulePlayerDhalsim(PlayerID_Two, false));
 
 	modules.push_back(renderer = new ModuleRender());
 

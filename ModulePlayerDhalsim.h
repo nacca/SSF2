@@ -8,13 +8,16 @@
 #include "Point.h"
 #include "ModuleCollisions.h"
 #include <json/json.h>
+#include "ModuleComboDetection.h"
+
+#include <memory>
 
 struct SDL_Texture;
 
 class ModulePlayerDhalsim : public Module
 {
 public:
-	ModulePlayerDhalsim(int playerNum, bool start_enabled = true);
+	ModulePlayerDhalsim(PlayerID playerID, bool start_enabled = true);
 	virtual ~ModulePlayerDhalsim();
 
 	virtual bool Start();
@@ -30,7 +33,7 @@ public:
 
 	virtual void restartPlayer(bool everything);
 	void MovePlayer(int distance);
-	bool playerInCameraLimit() const;
+	bool IsPlayerInCameraLimit() const;
 
 	virtual bool GetPlayerInput(InputType actionKey);
 
@@ -41,19 +44,19 @@ public:
 	void SetLife(int life);
 	void DecreseLife(int life);
 
-	bool GetWin() const;
+	bool IsWin() const;
 	void SetWin(bool win);
 
-	bool GetDead() const;
+	bool IsDead() const;
 	void SetDead(bool dead);
 
-	bool GetTime_0() const;
-	void SetTime_0(bool time_0);
+	bool IsTime0() const;
+	void SetTime0(bool time_0);
 
-	bool GetJumping() const;
+	bool IsJumping() const;
 	void SetJumping(bool jumping);
 
-	bool GetLookingRight() const;
+	bool IsLookingRight() const;
 	void SetLookingRight(bool lookingRight);
 
 	int GetDistanceJumped() const;
@@ -67,7 +70,7 @@ public:
 
 private:
 	void SetUpAnimations();
-	void SetUpPlayer(int numPlayer);
+	void SetUpPlayer();
 
 	void SetSDLRectFromData(SDL_Rect& sdl_rect, const Json::Value& jsonValue);
 	void SetPlayerAnimationDataFromJSON(Animation& animation, Json::Value& jsonValue);
@@ -168,8 +171,9 @@ protected:
 	PlayerState m_PlayerState;
 	ComboTypes m_StartingCombo;
 
-	int m_NumPlayer;
+	PlayerID m_PlayerID;
 
+	ModuleComboDetection* m_ModuleComboDetection;
 };
 
 #endif //Dhalsim

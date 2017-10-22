@@ -15,7 +15,7 @@ class ModuleSceneBison;
 class ModuleParticleSystem;
 class ModuleCollisions;
 class ModulePlayerDhalsim;
-class ModuleComboDetection;
+// class ModuleComboDetection;
 
 class Application
 {
@@ -40,7 +40,7 @@ public:
 	ModuleCollisions* collisions;
 	ModulePlayerDhalsim* player_one;
 	ModulePlayerDhalsim* player_two;
-	ModuleComboDetection* combo;
+// 	ModuleComboDetection* combo;
 
 private:
 	std::list<Module*> modules;

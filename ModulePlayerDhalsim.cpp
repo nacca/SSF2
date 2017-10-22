@@ -9,6 +9,7 @@
 #include "ModuleParticleSystem.h"
 #include "ModuleSceneBison.h"
 #include "ModuleAudio.h"
+#include "ModuleComboDetection.h"
 
 #include <fstream>
 
@@ -16,7 +17,7 @@
 
 // Constructors
 
-ModulePlayerDhalsim::ModulePlayerDhalsim(int playerNum, bool start_enabled) 
+ModulePlayerDhalsim::ModulePlayerDhalsim(PlayerID playerID, bool start_enabled)
 	: Module(start_enabled),
 	m_PlayerState(PlayerState_Idle),
 	m_AreCollidingPlayers(false),
@@ -35,17 +36,20 @@ ModulePlayerDhalsim::ModulePlayerDhalsim(int playerNum, bool start_enabled)
 	m_JumpAttacked(false),
 	m_AlreadyHitted(false)
 {
-	m_NumPlayer = playerNum;
+	m_PlayerID = playerID;
 
 	SetUpAnimations();
-	SetUpPlayer(m_NumPlayer);
+	SetUpPlayer();
 
 	m_LastShotTimer = SDL_GetTicks();
+
+	m_ModuleComboDetection = new ModuleComboDetection(m_PlayerID);
 }
 
 // Destructor
 ModulePlayerDhalsim::~ModulePlayerDhalsim()
 {
+	delete m_ModuleComboDetection;
 }
 
 void ModulePlayerDhalsim::SetUpAnimations()
@@ -114,9 +118,9 @@ void ModulePlayerDhalsim::SetUpAnimations()
 	SetParticleAnimationDataFromJSON(m_DestroyParticle, root["destroy-particle"][0]);
 }
 
-void ModulePlayerDhalsim::SetUpPlayer(int numPlayer)
+void ModulePlayerDhalsim::SetUpPlayer()
 {
-	if (numPlayer == 1)
+	if (m_PlayerID == PlayerID_One)
 	{
 		m_Position.x = 150;
 		m_Position.y = 200;
@@ -142,7 +146,7 @@ bool ModulePlayerDhalsim::Start()
 {
 	LOG("Loading Dhalsim");
 
-	if (m_NumPlayer == 1)
+	if (m_PlayerID == PlayerID_One)
 	{
 		m_Graphics = App->textures->Load("Game/dhalsim.png");
 		m_OtherPlayer = App->player_two;
@@ -157,9 +161,18 @@ bool ModulePlayerDhalsim::Start()
 	LoadAudioSounds();
 
 	if (m_OtherPlayer->getPosition().x > m_Position.x)
+	{
 		m_LookingRight = true;
+	}
 	else
+	{
 		m_LookingRight = false;
+	}
+
+	if (m_ModuleComboDetection)
+	{
+		m_ModuleComboDetection->Start();
+	}
 
 	return true;
 }
@@ -200,6 +213,11 @@ bool ModulePlayerDhalsim::CleanUp()
 UpdateStatus ModulePlayerDhalsim::PreUpdate()
 {
 	bool near = false;
+
+	if (m_ModuleComboDetection)
+	{
+		m_ModuleComboDetection->PreUpdate();
+	}
 
 	if (m_OtherPlayer->getPosition().x > m_Position.x)
 	{
@@ -1126,9 +1144,9 @@ UpdateStatus ModulePlayerDhalsim::Update()
 	int pivot;
 	Collider_player_structure cps;
 
-	if (m_OtherPlayer->playerInCameraLimit() &&
-		((App->renderer->ScreenLeftLimit() && m_OtherPlayer->GetLookingRight()) ||
-		(App->renderer->ScreenRightLimit() && !m_OtherPlayer->GetLookingRight())) &&
+	if (m_OtherPlayer->IsPlayerInCameraLimit() &&
+		((App->renderer->ScreenLeftLimit() && m_OtherPlayer->IsLookingRight()) ||
+		(App->renderer->ScreenRightLimit() && !m_OtherPlayer->IsLookingRight())) &&
 		((m_OtherPlayer->GetPlayerState() == PlayerState_AirHitted) ||
 		(m_OtherPlayer->GetPlayerState() == PlayerState_CrouchHit) ||
 		(m_OtherPlayer->GetPlayerState() == PlayerState_Hit) ||
@@ -1805,7 +1823,7 @@ void ModulePlayerDhalsim::OnCollision(Collider* c1, Collider* c2)
 }
 
 // Returns true if the player is the limit of the camera
-bool ModulePlayerDhalsim::playerInCameraLimit() const
+bool ModulePlayerDhalsim::IsPlayerInCameraLimit() const
 {
 	if (App->renderer->camera.x <= -((m_PlayerCollider.rect.x - m_PlayerCollider.rect.w)*SCREEN_SIZE))
 		return true;
@@ -1821,7 +1839,7 @@ void ModulePlayerDhalsim::MovePlayer(int distance)
 	{
 		if (!App->renderer->ScreenRightLimit())
 		{
-			if (!m_OtherPlayer->playerInCameraLimit())
+			if (!m_OtherPlayer->IsPlayerInCameraLimit())
 			{
 				m_Position.x += distance;
 				if (App->renderer->camera.x - App->renderer->camera.w >= -((m_PlayerCollider.rect.x + m_PlayerCollider.rect.w*2)*SCREEN_SIZE))
@@ -1843,7 +1861,7 @@ void ModulePlayerDhalsim::MovePlayer(int distance)
 	{
 		if (!App->renderer->ScreenLeftLimit())
 		{
-			if (!m_OtherPlayer->playerInCameraLimit())
+			if (!m_OtherPlayer->IsPlayerInCameraLimit())
 			{
 				m_Position.x += distance;
 				if (App->renderer->camera.x <= -(m_PlayerCollider.rect.x*SCREEN_SIZE) + (m_PlayerCollider.rect.w*SCREEN_SIZE))
@@ -1867,7 +1885,7 @@ void ModulePlayerDhalsim::MovePlayer(int distance)
 void ModulePlayerDhalsim::restartPlayer(bool everything)
 {
 
-	if (m_NumPlayer == 1)
+	if (m_PlayerID == PlayerID_One)
 	{
 		m_Position.x = 150;
 		m_Position.y = 200;
@@ -1958,7 +1976,7 @@ bool ModulePlayerDhalsim::IsAttacking() const
 
 bool ModulePlayerDhalsim::GetPlayerInput(InputType actionKey)
 {
-	if (m_NumPlayer == 1)
+	if (m_PlayerID == PlayerID_One)
 	{
 		switch (actionKey)
 		{
@@ -2115,7 +2133,7 @@ void ModulePlayerDhalsim::DecreseLife(int life)
 	m_Life -= life;
 }
 
-bool ModulePlayerDhalsim::GetWin() const
+bool ModulePlayerDhalsim::IsWin() const
 {
 	return m_Win;
 }
@@ -2125,7 +2143,7 @@ void ModulePlayerDhalsim::SetWin(bool win)
 	m_Win = win;
 }
 
-bool ModulePlayerDhalsim::GetDead() const
+bool ModulePlayerDhalsim::IsDead() const
 {
 	return m_Dead;
 }
@@ -2135,17 +2153,17 @@ void ModulePlayerDhalsim::SetDead(bool dead)
 	m_Dead = dead;
 }
 
-bool ModulePlayerDhalsim::GetTime_0() const
+bool ModulePlayerDhalsim::IsTime0() const
 {
 	return m_Time0;
 }
 
-void ModulePlayerDhalsim::SetTime_0(bool time_0)
+void ModulePlayerDhalsim::SetTime0(bool time_0)
 {
 	m_Time0 = time_0;
 }
 
-bool ModulePlayerDhalsim::GetJumping() const
+bool ModulePlayerDhalsim::IsJumping() const
 {
 	return m_Jumping;
 }
@@ -2155,7 +2173,7 @@ void ModulePlayerDhalsim::SetJumping(bool jumping)
 	m_Jumping = jumping;
 }
 
-bool ModulePlayerDhalsim::GetLookingRight() const
+bool ModulePlayerDhalsim::IsLookingRight() const
 {
 	return m_LookingRight;
 }

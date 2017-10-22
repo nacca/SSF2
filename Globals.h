@@ -7,6 +7,12 @@
 
 void log(const char file[], int line, const char* format, ...);
 
+enum PlayerID
+{
+	PlayerID_One,
+	PlayerID_Two
+};
+
 enum ComboTypes
 {
 	ComboTypes_ComboYogaFire,
