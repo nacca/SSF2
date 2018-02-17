@@ -112,6 +112,13 @@ enum InputType
 	InputType_HKick
 };
 
+enum LookingDirection
+{
+	LookingDirection_Right,
+	LookingDirection_Left,
+	LookingDirection_Invalid
+};
+
 // Deletes a buffer
 #define RELEASE( x ) \
     {\

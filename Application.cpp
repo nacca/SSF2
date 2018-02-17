@@ -9,7 +9,6 @@
 #include "ModuleParticleSystem.h"
 #include "ModuleCollisions.h"
 #include "ModulePlayerDhalsim.h"
-#include "ModuleComboDetection.h"
 
 Application::Application()
 {
@@ -22,7 +21,6 @@ Application::Application()
 	modules.push_back(collisions = new ModuleCollisions());
 	modules.push_back(fade = new ModuleFadeToBlack());
 
-// 	modules.push_back(combo = new ModuleComboDetection());
 	modules.push_back(scene_bison = new ModuleSceneBison(false));
 	modules.push_back(particles = new ModuleParticleSystem());
 	modules.push_back(player_one = new ModulePlayerDhalsim(PlayerID_One, false));

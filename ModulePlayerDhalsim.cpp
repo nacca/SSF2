@@ -9,7 +9,6 @@
 #include "ModuleParticleSystem.h"
 #include "ModuleSceneBison.h"
 #include "ModuleAudio.h"
-#include "ModuleComboDetection.h"
 
 #include <fstream>
 
@@ -21,7 +20,6 @@ ModulePlayerDhalsim::ModulePlayerDhalsim(PlayerID playerID, bool start_enabled)
 	: Module(start_enabled),
 	m_PlayerState(PlayerState_Idle),
 	m_AreCollidingPlayers(false),
-	m_Jumping(false),
 	m_Hitted(false),
 	m_HeadHitted(false),
 	m_LegHitted(false),
@@ -159,15 +157,7 @@ bool ModulePlayerDhalsim::Start()
 
 	AddColliders();
 	LoadAudioSounds();
-
-	if (m_OtherPlayer->getPosition().x > m_Position.x)
-	{
-		m_LookingRight = true;
-	}
-	else
-	{
-		m_LookingRight = false;
-	}
+	DecideLookingPosition();
 
 	if (m_ModuleComboDetection)
 	{
@@ -199,6 +189,18 @@ void ModulePlayerDhalsim::LoadAudioSounds()
 	m_AudioIdHImpact = App->audio->LoadFx("Game/SF2_impact_3.wav");;
 }
 
+void ModulePlayerDhalsim::DecideLookingPosition()
+{
+	if (m_OtherPlayer->GetPosition().x > m_Position.x)
+	{
+		m_LookingDirection = LookingDirection_Right;
+	}
+	else
+	{
+		m_LookingDirection = LookingDirection_Left;
+	}
+}
+
 // Unload assets
 bool ModulePlayerDhalsim::CleanUp()
 {
@@ -219,17 +221,10 @@ UpdateStatus ModulePlayerDhalsim::PreUpdate()
 		m_ModuleComboDetection->PreUpdate();
 	}
 
-	if (m_OtherPlayer->getPosition().x > m_Position.x)
-	{
-		m_LookingRight = true;
-	}
-	else
-	{
-		m_LookingRight = false;
-	}
+	DecideLookingPosition();
 
-	if ((m_OtherPlayer->getPosition().x - m_Position.x) < 50 &&
-		(m_OtherPlayer->getPosition().x - m_Position.x) > -50)
+	if ((m_OtherPlayer->GetPosition().x - m_Position.x) < 50 &&
+		(m_OtherPlayer->GetPosition().x - m_Position.x) > -50)
 	{
 		near = true;
 	}
@@ -333,7 +328,7 @@ UpdateStatus ModulePlayerDhalsim::PreUpdate()
 			m_DirectionJump = DirectionJumping_Left;
 		}
 		else if (GetPlayerInput(InputType_Right) &&
-			m_LookingRight)
+			IsLookingRight())
 		{
 			m_PlayerState = PlayerState_WalkingForward;
 		}
@@ -347,12 +342,12 @@ UpdateStatus ModulePlayerDhalsim::PreUpdate()
 			m_PlayerState = PlayerState_WalkingBackward;
 		}
 		else if (GetPlayerInput(InputType_Right) &&
-			m_LookingRight && m_OtherPlayer->IsAttacking())
+			IsLookingRight() && m_OtherPlayer->IsAttacking())
 		{
 			m_PlayerState = PlayerState_Blocking;
 		}
 		else if (GetPlayerInput(InputType_Left) &&
-			m_LookingRight)
+			IsLookingRight())
 		{
 			m_PlayerState = PlayerState_WalkingBackward;
 		}
@@ -473,7 +468,7 @@ UpdateStatus ModulePlayerDhalsim::PreUpdate()
 		}
 		else if (GetPlayerInput(InputType_Right))
 		{
-			if (m_LookingRight)
+			if (IsLookingRight())
 				m_PlayerState = PlayerState_WalkingForward;
 			else if (m_OtherPlayer->IsAttacking())
 				m_PlayerState = PlayerState_Blocking;
@@ -482,7 +477,7 @@ UpdateStatus ModulePlayerDhalsim::PreUpdate()
 		}
 		else if (GetPlayerInput(InputType_Left))
 		{
-			if (!m_LookingRight)
+			if (IsLookingLeft())
 				m_PlayerState = PlayerState_WalkingForward;
 			else if (m_OtherPlayer->IsAttacking())
 				m_PlayerState = PlayerState_Blocking;
@@ -599,14 +594,14 @@ UpdateStatus ModulePlayerDhalsim::PreUpdate()
 		}
 		else if (GetPlayerInput(InputType_Right))
 		{
-			if (m_LookingRight)
+			if (IsLookingRight())
 				m_PlayerState = PlayerState_WalkingForward;
 			else
 				m_PlayerState = PlayerState_WalkingBackward;
 		}
 		else if (GetPlayerInput(InputType_Left))
 		{
-			if (m_LookingRight)
+			if (IsLookingRight())
 				m_PlayerState = PlayerState_WalkingBackward;
 			else
 				m_PlayerState = PlayerState_WalkingForward;
@@ -702,7 +697,7 @@ UpdateStatus ModulePlayerDhalsim::PreUpdate()
 			m_AlreadyHitted = false;
 			m_JumpAttacked = true;
 			m_PlayerState = PlayerState_YogaMummy;
-			if (m_LookingRight)
+			if (IsLookingRight())
 				m_DirectionMummy = DirectionJumping_Right;
 			else
 				m_DirectionMummy = DirectionJumping_Left;
@@ -712,7 +707,7 @@ UpdateStatus ModulePlayerDhalsim::PreUpdate()
 			m_AlreadyHitted = false;
 			m_JumpAttacked = true;
 			m_PlayerState = PlayerState_YogaSpear;
-			if (m_LookingRight)
+			if (IsLookingRight())
 				m_DirectionMummy = DirectionJumping_Right;
 			else
 				m_DirectionMummy = DirectionJumping_Left;
@@ -777,10 +772,10 @@ UpdateStatus ModulePlayerDhalsim::PreUpdate()
 	case PlayerState_Crouching:
 
 		if ((GetPlayerInput(InputType_Right))
-			&& m_OtherPlayer->IsAttacking() && !m_LookingRight)
+			&& m_OtherPlayer->IsAttacking() && IsLookingLeft())
 			m_PlayerState = PlayerState_CrouchBlocking;
 		else if ((GetPlayerInput(InputType_Left))
-			&& m_OtherPlayer->IsAttacking() && m_LookingRight)
+			&& m_OtherPlayer->IsAttacking() && IsLookingRight())
 			m_PlayerState = PlayerState_CrouchBlocking;
 		else if ((GetPlayerInput(InputType_LPunch)) ||
 			(GetPlayerInput(InputType_MPunch)) ||
@@ -972,7 +967,7 @@ UpdateStatus ModulePlayerDhalsim::PreUpdate()
 	case PlayerState_YogaFire:
 		if (yoga_fire.GetCurrentFrameNumber() == 3 && SDL_GetTicks() - m_LastShotTimer > 500)
 		{
-			if (m_LookingRight)
+			if (IsLookingRight())
 			{
 				iPoint particlePosition(m_Position.x + 42 + 14, m_Position.y - 54 + 10);
 				App->particles->newParticle(particlePosition, m_Graphics, m_Particle, m_DestroyParticle, 2);
@@ -1052,8 +1047,8 @@ UpdateStatus ModulePlayerDhalsim::PreUpdate()
 
 	case PlayerState_Blocking:
 		if (!m_OtherPlayer->IsAttacking() ||
-			(m_LookingRight && !(GetPlayerInput(InputType_Left))) ||
-			(!m_LookingRight && !(GetPlayerInput(InputType_Right))))
+			(IsLookingRight() && !(GetPlayerInput(InputType_Left))) ||
+			(IsLookingLeft() && !(GetPlayerInput(InputType_Right))))
 		{
 			block.RestartFrames();
 			m_PlayerState = PlayerState_Idle;
@@ -1070,23 +1065,23 @@ UpdateStatus ModulePlayerDhalsim::PreUpdate()
 
 	case PlayerState_CrouchBlocking:
 		if ((!m_OtherPlayer->IsAttacking() ||
-			(m_LookingRight && !(GetPlayerInput(InputType_Left))) ||
-			(!m_LookingRight && !(GetPlayerInput(InputType_Right))))
+			(IsLookingRight() && !(GetPlayerInput(InputType_Left))) ||
+			(IsLookingLeft() && !(GetPlayerInput(InputType_Right))))
 			&& (GetPlayerInput(InputType_Down)))
 		{
 			crouch_block.RestartFrames();
 			m_PlayerState = PlayerState_Crouching;
 		}
 		else if (!(GetPlayerInput(InputType_Down)) && (!m_OtherPlayer->IsAttacking() ||
-			(m_LookingRight && !(GetPlayerInput(InputType_Left))) ||
-			(!m_LookingRight && !(GetPlayerInput(InputType_Right)))))
+			(IsLookingRight() && !(GetPlayerInput(InputType_Left))) ||
+			(IsLookingLeft() && !(GetPlayerInput(InputType_Right)))))
 		{
 			crouch_block.RestartFrames();
 			m_PlayerState = PlayerState_Idle;
 		}
 		else if (m_OtherPlayer->IsAttacking() && !(GetPlayerInput(InputType_Down)) &&
-			((m_LookingRight && (GetPlayerInput(InputType_Left))) ||
-			(!m_LookingRight && (GetPlayerInput(InputType_Right)))))
+			((IsLookingRight() && (GetPlayerInput(InputType_Left))) ||
+			(IsLookingLeft() && (GetPlayerInput(InputType_Right)))))
 		{
 			crouch_block.RestartFrames();
 			m_PlayerState = PlayerState_Blocking;
@@ -1145,8 +1140,8 @@ UpdateStatus ModulePlayerDhalsim::Update()
 	Collider_player_structure cps;
 
 	if (m_OtherPlayer->IsPlayerInCameraLimit() &&
-		((App->renderer->ScreenLeftLimit() && m_OtherPlayer->IsLookingRight()) ||
-		(App->renderer->ScreenRightLimit() && !m_OtherPlayer->IsLookingRight())) &&
+		((App->renderer->ScreenLeftLimit() && m_OtherPlayer->GetLookingDirection() == LookingDirection_Right) ||
+		(App->renderer->ScreenRightLimit() && m_OtherPlayer->GetLookingDirection() == LookingDirection_Left)) &&
 		((m_OtherPlayer->GetPlayerState() == PlayerState_AirHitted) ||
 		(m_OtherPlayer->GetPlayerState() == PlayerState_CrouchHit) ||
 		(m_OtherPlayer->GetPlayerState() == PlayerState_Hit) ||
@@ -1156,9 +1151,9 @@ UpdateStatus ModulePlayerDhalsim::Update()
 		(m_PlayerState != PlayerState_JumpKick) && (m_PlayerState != PlayerState_JumpPunch) && 
 		(m_PlayerState != PlayerState_Jumping) && (m_PlayerState != PlayerState_AirHitted))
 	{
-		if (m_LookingRight && (m_OtherPlayer->GetPlayerState() == PlayerState_AirHitted))
+		if (IsLookingRight() && (m_OtherPlayer->GetPlayerState() == PlayerState_AirHitted))
 			MovePlayer(-3);
-		else if (m_LookingRight)
+		else if (IsLookingRight())
 			MovePlayer(-1);
 		else if (m_OtherPlayer->GetPlayerState() == PlayerState_AirHitted)
 			MovePlayer(3);
@@ -1178,7 +1173,7 @@ UpdateStatus ModulePlayerDhalsim::Update()
 	case PlayerState_WalkingForward:
 		if (!m_AreCollidingPlayers)
 		{
-			if (m_LookingRight)
+			if (IsLookingRight())
 				MovePlayer(2);
 			else
 				MovePlayer(-2);
@@ -1190,7 +1185,7 @@ UpdateStatus ModulePlayerDhalsim::Update()
 		break;
 
 	case PlayerState_WalkingBackward:
-		if (m_LookingRight)
+		if (IsLookingRight())
 			MovePlayer(-1);
 		else
 			MovePlayer(1);
@@ -1362,7 +1357,7 @@ UpdateStatus ModulePlayerDhalsim::Update()
 		break;
 
 	case PlayerState_CrouchKick:
-		if (m_LookingRight)
+		if (IsLookingRight())
 		{
 			MovePlayer(2);
 		}
@@ -1438,7 +1433,7 @@ UpdateStatus ModulePlayerDhalsim::Update()
 		break;
 
 	case PlayerState_Hit:
-		if (!m_LookingRight)
+		if (IsLookingLeft())
 		{
 			MovePlayer(1);
 		}
@@ -1453,7 +1448,7 @@ UpdateStatus ModulePlayerDhalsim::Update()
 		break;
 
 	case PlayerState_CrouchHit:
-		if (!m_LookingRight)
+		if (IsLookingLeft())
 		{
 			MovePlayer(1);
 		}
@@ -1468,7 +1463,7 @@ UpdateStatus ModulePlayerDhalsim::Update()
 		break;
 
 	case PlayerState_FaceHit:
-		if (!m_LookingRight)
+		if (IsLookingLeft())
 		{
 			MovePlayer(1);
 		}
@@ -1488,7 +1483,7 @@ UpdateStatus ModulePlayerDhalsim::Update()
 			m_DistanceJumped -= 3;
 		}
 		if (!ko.IsEnded()) {
-			if (m_LookingRight)
+			if (IsLookingRight())
 				MovePlayer(-1);
 			else
 				MovePlayer(1);
@@ -1604,7 +1599,7 @@ UpdateStatus ModulePlayerDhalsim::Update()
 		break;
 
 	case PlayerState_BlockingHitted:
-		if (!m_LookingRight)
+		if (IsLookingLeft())
 		{
 			MovePlayer(2);
 		}
@@ -1619,7 +1614,7 @@ UpdateStatus ModulePlayerDhalsim::Update()
 		break;
 
 	case PlayerState_CrouchBlockingHitted:
-		if (!m_LookingRight)
+		if (IsLookingLeft())
 		{
 			MovePlayer(1);
 		}
@@ -1634,7 +1629,7 @@ UpdateStatus ModulePlayerDhalsim::Update()
 		break;
 
 	case PlayerState_AirHitted:
-		if (!m_LookingRight)
+		if (IsLookingLeft())
 		{
 			MovePlayer(2);
 			m_DirectionJump = DirectionJumping_Right;
@@ -1660,7 +1655,7 @@ UpdateStatus ModulePlayerDhalsim::Update()
 	m_ColliderLegs.rect = cps.Collider_legs;
 	m_ColliderAttack.rect = cps.Collider_attack;
 
-	if (m_LookingRight)
+	if (IsLookingRight())
 	{
 		m_PlayerCollider.rect.x += m_Position.x;
 		m_PlayerCollider.rect.y += m_Position.y - m_DistanceJumped;
@@ -1832,7 +1827,7 @@ bool ModulePlayerDhalsim::IsPlayerInCameraLimit() const
 	return false;
 }
 
-// Moves horizontaly the player, it can move the camera
+// Moves horizontally the player, it can move the camera
 void ModulePlayerDhalsim::MovePlayer(int distance)
 {
 	if (distance > 0)
@@ -1901,7 +1896,6 @@ void ModulePlayerDhalsim::restartPlayer(bool everything)
 
 	m_PlayerState = PlayerState_Idle;
 	m_AreCollidingPlayers = false;
-	m_Jumping = false;
 	m_Hitted = false;
 	m_HeadHitted = false;
 	m_Life = 200;
@@ -1922,7 +1916,7 @@ void ModulePlayerDhalsim::restartPlayer(bool everything)
 
 // Get and Set variables
 
-iPoint ModulePlayerDhalsim::getPosition() const
+iPoint ModulePlayerDhalsim::GetPosition() const
 {
 	return m_Position;
 }
@@ -1954,7 +1948,7 @@ bool ModulePlayerDhalsim::IsAttacking() const
 	}
 	else if (App->particles->GetNumberParticles() > 0)
 	{
-		if (m_OtherPlayer->m_LookingRight)
+		if (m_OtherPlayer->GetLookingDirection() == LookingDirection_Right)
 		{
 			for (int i = 0; i < App->particles->GetNumberParticles(); ++i)
 			{
@@ -1974,7 +1968,7 @@ bool ModulePlayerDhalsim::IsAttacking() const
 	return false;
 }
 
-bool ModulePlayerDhalsim::GetPlayerInput(InputType actionKey)
+bool ModulePlayerDhalsim::GetPlayerInput(InputType actionKey) const
 {
 	if (m_PlayerID == PlayerID_One)
 	{
@@ -2107,7 +2101,6 @@ void ModulePlayerDhalsim::SetParticleAnimationDataFromJSON(ParticleAnimation& pa
 	}
 }
 
-
 int ModulePlayerDhalsim::GetWins() const
 {
 	return m_Wins;
@@ -2165,22 +2158,62 @@ void ModulePlayerDhalsim::SetTime0(bool time_0)
 
 bool ModulePlayerDhalsim::IsJumping() const
 {
-	return m_Jumping;
+	// TODO: only considering if the player is jumping normally (not combos, not hits)
+	return m_PlayerState == PlayerState_Jumping;
 }
 
-void ModulePlayerDhalsim::SetJumping(bool jumping)
+bool ModulePlayerDhalsim::IsMovingBack() const
 {
-	m_Jumping = jumping;
+	bool isMovingBack = false;
+	isMovingBack = isMovingBack || (GetPlayerInput(InputType_Left) && IsLookingRight());
+	isMovingBack = isMovingBack || (GetPlayerInput(InputType_Right) && IsLookingLeft());
+	return isMovingBack;
+}
+
+bool ModulePlayerDhalsim::IsMovingForward() const
+{
+	bool isMovingForward = false;
+	isMovingForward = isMovingForward || (GetPlayerInput(InputType_Right) && IsLookingRight());
+	isMovingForward = isMovingForward || (GetPlayerInput(InputType_Left) && IsLookingLeft());
+	return isMovingForward;
+}
+
+bool ModulePlayerDhalsim::IsPunchInput() const
+{
+	bool isPunchInput = false;
+	isPunchInput = isPunchInput || GetPlayerInput(InputType_LPunch);
+	isPunchInput = isPunchInput || GetPlayerInput(InputType_MPunch);
+	isPunchInput = isPunchInput || GetPlayerInput(InputType_HPunch);
+	return isPunchInput;
+}
+
+bool ModulePlayerDhalsim::IsKickInput() const
+{
+	bool isKickInput = false;
+	isKickInput = isKickInput || GetPlayerInput(InputType_LKick);
+	isKickInput = isKickInput || GetPlayerInput(InputType_MKick);
+	isKickInput = isKickInput || GetPlayerInput(InputType_HKick);
+	return isKickInput;
+}
+
+LookingDirection ModulePlayerDhalsim::GetLookingDirection() const
+{
+	return m_LookingDirection;
 }
 
 bool ModulePlayerDhalsim::IsLookingRight() const
 {
-	return m_LookingRight;
+	return m_LookingDirection == LookingDirection_Right;
 }
 
-void ModulePlayerDhalsim::SetLookingRight(bool lookingRight)
+bool ModulePlayerDhalsim::IsLookingLeft() const
 {
-	m_LookingRight = lookingRight;
+	return m_LookingDirection == LookingDirection_Left;
+}
+
+void ModulePlayerDhalsim::SetLookingRight(LookingDirection lookingDirection)
+{
+	m_LookingDirection = lookingDirection;
 }
 
 PlayerState ModulePlayerDhalsim::GetPlayerState() const

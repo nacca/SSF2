@@ -28,14 +28,14 @@ public:
 
 	bool IsAttacking() const;
 
-	iPoint getPosition() const;
+	iPoint GetPosition() const;
 	void OnCollision(Collider* c1, Collider* c2);
 
 	virtual void restartPlayer(bool everything);
 	void MovePlayer(int distance);
 	bool IsPlayerInCameraLimit() const;
 
-	virtual bool GetPlayerInput(InputType actionKey);
+	virtual bool GetPlayerInput(InputType actionKey) const;
 
 	int GetWins() const;
 	void SetWins(int wins);
@@ -54,10 +54,17 @@ public:
 	void SetTime0(bool time_0);
 
 	bool IsJumping() const;
-	void SetJumping(bool jumping);
 
+	bool IsMovingBack() const;
+	bool IsMovingForward() const;
+
+	bool IsPunchInput() const;
+	bool IsKickInput() const;
+
+	LookingDirection GetLookingDirection() const;
+	void SetLookingRight(LookingDirection lookingDirection);
 	bool IsLookingRight() const;
-	void SetLookingRight(bool lookingRight);
+	bool IsLookingLeft() const;
 
 	int GetDistanceJumped() const;
 
@@ -80,6 +87,7 @@ private:
 
 	void AddColliders();
 	void LoadAudioSounds();
+	void DecideLookingPosition();
 
 protected:
 	SDL_Texture* m_Graphics = nullptr;
@@ -165,8 +173,8 @@ protected:
 	bool m_Win;
 	bool m_Dead;
 	bool m_Time0;
-	bool m_Jumping;
-	bool m_LookingRight;
+
+	LookingDirection m_LookingDirection;
 
 	PlayerState m_PlayerState;
 	ComboTypes m_StartingCombo;

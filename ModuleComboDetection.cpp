@@ -52,150 +52,126 @@ void ModuleComboDetection::UpdateComboState()
 {
 	switch (m_PreviousState)
 	{
-	case PreviousComboState_Nothing:
-		if (m_ModulePlayerDhalsim->GetPlayerInput(InputType_Down))
+		case PreviousComboState_Nothing:
 		{
-			if (m_ModulePlayerDhalsim->GetPlayerState() == PlayerState_Jumping)
+			m_IsAirCombo = m_ModulePlayerDhalsim->IsJumping();
+			const bool startPreviousStateCountdown = true;
+			const bool startFirstStateCountdown = true;
+
+			if (m_ModulePlayerDhalsim->GetPlayerInput(InputType_Down))
 			{
-				m_IsAirCombo = true;
+				// Change magic numbers
+				SetStartingComboParameters(PreviousComboState_Down, ComboTypes_ComboYogaFire);
 			}
-			m_PreviousState = PreviousComboState_Down;
-			m_TypeOfCombo = ComboTypes_ComboYogaFire;
-			m_PreviousStateCountdown = 15;
-			m_FirstStateCountdown = 75;
-		}
-		if ((m_ModulePlayerDhalsim->GetPlayerInput(InputType_Down)) &&
-			(m_ModulePlayerDhalsim->GetPlayerState() == PlayerState_Jumping) &&
-			(m_ModulePlayerDhalsim->GetPlayerInput(InputType_Left) && m_ModulePlayerDhalsim->IsLookingRight()) ||
-			(m_ModulePlayerDhalsim->GetPlayerInput(InputType_Right) && !m_ModulePlayerDhalsim->IsLookingRight()))
-		{
-			if (m_ModulePlayerDhalsim->GetPlayerState() == PlayerState_Jumping)
-				m_IsAirCombo = true;				m_PreviousState = PreviousComboState_DownBack;
-			m_TypeOfCombo = ComboTypes_AerialCombo;
-			m_PreviousStateCountdown = 15;
-			m_FirstStateCountdown = 75;
-		}
-		if ((m_ModulePlayerDhalsim->GetPlayerInput(InputType_Left) && m_ModulePlayerDhalsim->IsLookingRight()) ||
-			(m_ModulePlayerDhalsim->GetPlayerInput(InputType_Right) && !m_ModulePlayerDhalsim->IsLookingRight()))
-		{
-			if (m_ModulePlayerDhalsim->GetPlayerState() == PlayerState_Jumping)
-				m_IsAirCombo = true;				m_PreviousState = PreviousComboState_Back;
-			m_TypeOfCombo = ComboTypes_ComboYogaFlame;
-			m_PreviousStateCountdown = 15;
-			m_FirstStateCountdown = 75;
-		}
-		break;
 
-	case PreviousComboState_Back:
-		if (m_PreviousStateCountdown <= 0 || m_FirstStateCountdown <= 0)
-		{
-			m_PreviousState = PreviousComboState_Nothing;
-		}
-		else if ((m_ModulePlayerDhalsim->GetPlayerInput(InputType_Down)) &&
-			(((m_ModulePlayerDhalsim->GetPlayerInput(InputType_Right)) && !m_ModulePlayerDhalsim->IsLookingRight()) ||
-			((m_ModulePlayerDhalsim->GetPlayerInput(InputType_Left)) && m_ModulePlayerDhalsim->IsLookingRight())))
-		{
-			m_PreviousState = PreviousComboState_DownBack;
-			m_PreviousStateCountdown = 15;
-		}
-		else if (((m_ModulePlayerDhalsim->GetPlayerInput(InputType_Right)) && !m_ModulePlayerDhalsim->IsLookingRight()) ||
-			((m_ModulePlayerDhalsim->GetPlayerInput(InputType_Left)) && m_ModulePlayerDhalsim->IsLookingRight()))
-		{
-			m_PreviousStateCountdown = 15;
-		}
-		break;
+			if (m_ModulePlayerDhalsim->GetPlayerInput(InputType_Down) && m_ModulePlayerDhalsim->IsJumping() && m_ModulePlayerDhalsim->IsMovingBack())
+			{
+				SetStartingComboParameters(PreviousComboState_DownBack, ComboTypes_AerialCombo);
+			}
 
-	case PreviousComboState_DownBack:
-		if (m_PreviousStateCountdown <= 0 || m_FirstStateCountdown <= 0)
-		{
-			m_PreviousState = PreviousComboState_Nothing;
-		}
-		else if ((m_ModulePlayerDhalsim->GetPlayerInput(InputType_Down)) &&
-			(((m_ModulePlayerDhalsim->GetPlayerInput(InputType_Right)) && !m_ModulePlayerDhalsim->IsLookingRight()) ||
-			((m_ModulePlayerDhalsim->GetPlayerInput(InputType_Left)) && m_ModulePlayerDhalsim->IsLookingRight())))
-		{
-			m_PreviousStateCountdown = 15;
-		}
-		else if ((m_ModulePlayerDhalsim->GetPlayerInput(InputType_Down)))
-		{
-			m_PreviousState = PreviousComboState_Down;
-			m_PreviousStateCountdown = 15;
-		}
-		break;
+			if (m_ModulePlayerDhalsim->IsMovingBack())
+			{
+				SetStartingComboParameters(PreviousComboState_Back, ComboTypes_ComboYogaFlame);
+			}
 
-	case PreviousComboState_Down:
-		if (m_PreviousStateCountdown <= 0 || m_FirstStateCountdown <= 0)
-		{
-			m_PreviousState = PreviousComboState_Nothing;
+			break;
 		}
-		else if ((m_ModulePlayerDhalsim->GetPlayerInput(InputType_Down)) &&
-			(((m_ModulePlayerDhalsim->GetPlayerInput(InputType_Right)) && m_ModulePlayerDhalsim->IsLookingRight()) ||
-			((m_ModulePlayerDhalsim->GetPlayerInput(InputType_Left)) && !m_ModulePlayerDhalsim->IsLookingRight())))
-		{
-			m_PreviousState = PreviousComboState_DownFront;
-			m_PreviousStateCountdown = 15;
-		}
-		else if (m_ModulePlayerDhalsim->GetPlayerInput(InputType_Down))
-		{
-			m_PreviousStateCountdown = 15;
-			m_FirstStateCountdown = 75;
-		}
-		break;
 
-	case PreviousComboState_DownFront:
-		if (m_PreviousStateCountdown <= 0 || m_FirstStateCountdown <= 0)
+		case PreviousComboState_Back:
 		{
-			m_PreviousState = PreviousComboState_Nothing;
+			if (IsCountdownReached())
+			{
+				RestartCombo();
+			}
+			else if (m_ModulePlayerDhalsim->GetPlayerInput(InputType_Down) && m_ModulePlayerDhalsim->IsMovingBack())
+			{
+				m_PreviousState = PreviousComboState_DownBack;
+				StartPreviousStateCountdown();
+			}
+			else if (m_ModulePlayerDhalsim->IsMovingBack())
+			{
+				StartPreviousStateCountdown();
+			}
+
+			break;
 		}
-		else if (m_IsAirCombo && (m_ModulePlayerDhalsim->GetPlayerState() == PlayerState_Jumping) &&
-			(m_ModulePlayerDhalsim->GetDistanceJumped() > 20) &&
-			((App->player_two->GetPlayerInput(InputType_LPunch)) ||
-			(App->player_two->GetPlayerInput(InputType_MPunch)) ||
-			(App->player_two->GetPlayerInput(InputType_HPunch))))
+
+		case PreviousComboState_DownBack:
 		{
-			m_IsAirCombo = false;
-			m_PreviousState = PreviousComboState_Nothing;
-			m_ModulePlayerDhalsim->SetStartingCombo(ComboTypes_AerialComboPunch);
-			m_PreviousStateCountdown = 0;
-			m_FirstStateCountdown = 0;
+			if (IsCountdownReached())
+			{
+				RestartCombo();
+			}
+			else if (m_ModulePlayerDhalsim->GetPlayerInput(InputType_Down) && m_ModulePlayerDhalsim->IsMovingBack())
+			{
+				StartPreviousStateCountdown();
+			}
+			else if ((m_ModulePlayerDhalsim->GetPlayerInput(InputType_Down)))
+			{
+				m_PreviousState = PreviousComboState_Down;
+				StartPreviousStateCountdown();
+			}
+			break;
 		}
-		else if (m_IsAirCombo && (m_ModulePlayerDhalsim->GetPlayerState() == PlayerState_Jumping) &&
-			(m_ModulePlayerDhalsim->GetDistanceJumped() > 20) &&
-			((App->player_two->GetPlayerInput(InputType_LPunch)) ||
-			(App->player_two->GetPlayerInput(InputType_MPunch)) ||
-			(App->player_two->GetPlayerInput(InputType_HPunch))))
+
+		case PreviousComboState_Down:
 		{
-			m_IsAirCombo = false;
-			m_PreviousState = PreviousComboState_Nothing;
-			m_ModulePlayerDhalsim->SetStartingCombo(ComboTypes_AerialComboKick);
-			m_PreviousStateCountdown = 0;
-			m_FirstStateCountdown = 0;
+			if (IsCountdownReached())
+			{
+				RestartCombo();
+			}
+			else if (m_ModulePlayerDhalsim->GetPlayerInput(InputType_Down) && m_ModulePlayerDhalsim->IsMovingForward())
+			{
+				m_PreviousState = PreviousComboState_DownFront;
+				StartPreviousStateCountdown();
+			}
+			else if (m_ModulePlayerDhalsim->GetPlayerInput(InputType_Down))
+			{
+				StartPreviousStateCountdown();
+				StartFirstStateCountdown();
+			}
+			break;
+
 		}
-		else if ((m_ModulePlayerDhalsim->GetPlayerInput(InputType_Down)) &&
-			(((m_ModulePlayerDhalsim->GetPlayerInput(InputType_Right)) && m_ModulePlayerDhalsim->IsLookingRight()) ||
-			((m_ModulePlayerDhalsim->GetPlayerInput(InputType_Left)) && !m_ModulePlayerDhalsim->IsLookingRight())))
+
+		case PreviousComboState_DownFront:
 		{
-			m_PreviousStateCountdown = 15;
+			if (IsCountdownReached())
+			{
+				RestartCombo();
+			}
+			else if (IsAerialComboPossible() && m_ModulePlayerDhalsim->IsPunchInput())
+			{
+				m_ModulePlayerDhalsim->SetStartingCombo(ComboTypes_AerialComboPunch);
+				RestartCombo();
+			}
+			else if (IsAerialComboPossible() && m_ModulePlayerDhalsim->IsKickInput())
+			{
+				m_ModulePlayerDhalsim->SetStartingCombo(ComboTypes_AerialComboKick);
+				RestartCombo();
+			}
+			else if (m_ModulePlayerDhalsim->GetPlayerInput(InputType_Down) && m_ModulePlayerDhalsim->IsMovingForward())
+			{
+				StartPreviousStateCountdown();
+			}
+			else if (m_ModulePlayerDhalsim->IsMovingForward())
+			{
+				m_PreviousState = PreviousComboState_Front;
+				StartPreviousStateCountdown();
+			}
+			break;
 		}
-		else if (((m_ModulePlayerDhalsim->GetPlayerInput(InputType_Right)) && m_ModulePlayerDhalsim->IsLookingRight()) ||
-			((m_ModulePlayerDhalsim->GetPlayerInput(InputType_Left)) && !m_ModulePlayerDhalsim->IsLookingRight()))
-		{
-			m_PreviousState = PreviousComboState_Front;
-			m_PreviousStateCountdown = 15;
-		}
-		break;
+
 
 	case PreviousComboState_Front:
 
-		if (m_PreviousStateCountdown <= 0 || m_FirstStateCountdown <= 0)
+		if (IsCountdownReached())
 		{
-			m_PreviousState = PreviousComboState_Nothing;
+			RestartCombo();
 		}
-		else if ((m_ModulePlayerDhalsim->GetPlayerInput(InputType_LPunch)) ||
-			(m_ModulePlayerDhalsim->GetPlayerInput(InputType_MPunch)) ||
-			(m_ModulePlayerDhalsim->GetPlayerInput(InputType_HPunch)))
+		else if (m_ModulePlayerDhalsim->IsPunchInput())
 		{
-			if ((m_ModulePlayerDhalsim->GetDistanceJumped() > 20) && m_IsAirCombo && m_ModulePlayerDhalsim->GetPlayerState() == PlayerState_Jumping)
+			if (IsAerialComboPossible())
 			{
 				m_ModulePlayerDhalsim->SetStartingCombo(ComboTypes_AerialComboPunch);
 			}
@@ -207,29 +183,63 @@ void ModuleComboDetection::UpdateComboState()
 			{
 				m_ModulePlayerDhalsim->SetStartingCombo(ComboTypes_ComboYogaFlame);
 			}
-			m_IsAirCombo = false;
-			m_PreviousState = PreviousComboState_Nothing;
-			m_PreviousStateCountdown = 0;
-			m_FirstStateCountdown = 0;
+
+			RestartCombo();
 		}
-		else if ((m_ModulePlayerDhalsim->GetPlayerInput(InputType_LKick)) ||
-			(m_ModulePlayerDhalsim->GetPlayerInput(InputType_MKick)) ||
-			(m_ModulePlayerDhalsim->GetPlayerInput(InputType_HKick)))
+		else if (m_ModulePlayerDhalsim->IsKickInput())
 		{
-			if ((m_ModulePlayerDhalsim->GetDistanceJumped() > 20) && m_IsAirCombo && m_ModulePlayerDhalsim->GetPlayerState() == PlayerState_Jumping)
+			if (IsAerialComboPossible())
 			{
 				m_ModulePlayerDhalsim->SetStartingCombo(ComboTypes_AerialComboKick);
 			}
-			m_IsAirCombo = false;
-			m_PreviousState = PreviousComboState_Nothing;
-			m_PreviousStateCountdown = 0;
-			m_FirstStateCountdown = 0;
+
+			RestartCombo();
 		}
-		else if (((m_ModulePlayerDhalsim->GetPlayerInput(InputType_Right)) && m_ModulePlayerDhalsim->IsLookingRight()) ||
-			((m_ModulePlayerDhalsim->GetPlayerInput(InputType_Left)) && !m_ModulePlayerDhalsim->IsLookingRight()))
+		else if (m_ModulePlayerDhalsim->IsMovingForward())
 		{
-			m_PreviousStateCountdown = 15;
+			StartPreviousStateCountdown();
 		}
 		break;
 	}
+}
+
+void ModuleComboDetection::SetStartingComboParameters(PreviousComboState previousState, ComboTypes typeOfCombo)
+{
+	m_PreviousState = previousState;
+	m_TypeOfCombo = typeOfCombo;
+
+	StartFirstStateCountdown();
+	StartPreviousStateCountdown();
+}
+
+bool ModuleComboDetection::IsCountdownReached() const
+{
+	return m_PreviousStateCountdown <= 0 || m_FirstStateCountdown <= 0;
+}
+
+bool ModuleComboDetection::IsAerialComboPossible() const
+{
+	bool isAerialComboPossible = true;
+	isAerialComboPossible = isAerialComboPossible && m_IsAirCombo;
+	isAerialComboPossible = isAerialComboPossible && m_ModulePlayerDhalsim->IsJumping();
+	isAerialComboPossible = isAerialComboPossible && m_ModulePlayerDhalsim->GetDistanceJumped() > 20; //TODO: expose magic number
+	return isAerialComboPossible;
+}
+
+void ModuleComboDetection::StartFirstStateCountdown()
+{
+	m_FirstStateCountdown = COMBO_STARTING_COUNTDOWNT;
+}
+
+void ModuleComboDetection::StartPreviousStateCountdown()
+{
+	m_PreviousStateCountdown = COMBO_NEW_COUNTDOWN;
+}
+
+void ModuleComboDetection::RestartCombo()
+{
+	m_IsAirCombo = false;
+	m_PreviousState = PreviousComboState_Nothing;
+	m_FirstStateCountdown = 0;
+	m_PreviousStateCountdown = 0;
 }

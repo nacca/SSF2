@@ -4,6 +4,9 @@
 #include "Module.h"
 #include <vector>
 
+#define COMBO_NEW_COUNTDOWN 15
+#define COMBO_STARTING_COUNTDOWNT 75
+
 enum PreviousComboState
 {
 	PreviousComboState_Down,
@@ -29,6 +32,14 @@ public:
 private:
 	void UpdateCounters();
 	void UpdateComboState();
+
+	bool IsCountdownReached() const;
+	bool IsAerialComboPossible() const;
+
+	void SetStartingComboParameters(PreviousComboState previousState, ComboTypes typeOfCombo);
+	void StartPreviousStateCountdown();
+	void StartFirstStateCountdown();
+	void RestartCombo();
 
 	PlayerID m_PlayerID;
 	ModulePlayerDhalsim* m_ModulePlayerDhalsim;
