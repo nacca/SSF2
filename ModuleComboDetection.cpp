@@ -53,153 +53,166 @@ void ModuleComboDetection::UpdateComboState()
 	switch (m_PreviousState)
 	{
 		case PreviousComboState_Nothing:
-		{
-			m_IsAirCombo = m_ModulePlayerDhalsim->IsJumping();
-			const bool startPreviousStateCountdown = true;
-			const bool startFirstStateCountdown = true;
-
-			if (m_ModulePlayerDhalsim->GetPlayerInput(InputType_Down))
-			{
-				// Change magic numbers
-				SetStartingComboParameters(PreviousComboState_Down, ComboTypes_ComboYogaFire);
-			}
-
-			if (m_ModulePlayerDhalsim->GetPlayerInput(InputType_Down) && m_ModulePlayerDhalsim->IsJumping() && m_ModulePlayerDhalsim->IsMovingBack())
-			{
-				SetStartingComboParameters(PreviousComboState_DownBack, ComboTypes_AerialCombo);
-			}
-
-			if (m_ModulePlayerDhalsim->IsMovingBack())
-			{
-				SetStartingComboParameters(PreviousComboState_Back, ComboTypes_ComboYogaFlame);
-			}
-
+			UpdateComboStateNothing();
 			break;
-		}
 
 		case PreviousComboState_Back:
-		{
-			if (IsCountdownReached())
-			{
-				RestartCombo();
-			}
-			else if (m_ModulePlayerDhalsim->GetPlayerInput(InputType_Down) && m_ModulePlayerDhalsim->IsMovingBack())
-			{
-				m_PreviousState = PreviousComboState_DownBack;
-				StartPreviousStateCountdown();
-			}
-			else if (m_ModulePlayerDhalsim->IsMovingBack())
-			{
-				StartPreviousStateCountdown();
-			}
-
+			UpdateComboStateBack();
 			break;
-		}
 
 		case PreviousComboState_DownBack:
-		{
-			if (IsCountdownReached())
-			{
-				RestartCombo();
-			}
-			else if (m_ModulePlayerDhalsim->GetPlayerInput(InputType_Down) && m_ModulePlayerDhalsim->IsMovingBack())
-			{
-				StartPreviousStateCountdown();
-			}
-			else if ((m_ModulePlayerDhalsim->GetPlayerInput(InputType_Down)))
-			{
-				m_PreviousState = PreviousComboState_Down;
-				StartPreviousStateCountdown();
-			}
+			UpdateComboStateDownBack();
 			break;
-		}
 
 		case PreviousComboState_Down:
-		{
-			if (IsCountdownReached())
-			{
-				RestartCombo();
-			}
-			else if (m_ModulePlayerDhalsim->GetPlayerInput(InputType_Down) && m_ModulePlayerDhalsim->IsMovingForward())
-			{
-				m_PreviousState = PreviousComboState_DownFront;
-				StartPreviousStateCountdown();
-			}
-			else if (m_ModulePlayerDhalsim->GetPlayerInput(InputType_Down))
-			{
-				StartPreviousStateCountdown();
-				StartFirstStateCountdown();
-			}
+			UpdateComboStateDown();
 			break;
-
-		}
 
 		case PreviousComboState_DownFront:
-		{
-			if (IsCountdownReached())
-			{
-				RestartCombo();
-			}
-			else if (IsAerialComboPossible() && m_ModulePlayerDhalsim->IsPunchInput())
-			{
-				m_ModulePlayerDhalsim->SetStartingCombo(ComboTypes_AerialComboPunch);
-				RestartCombo();
-			}
-			else if (IsAerialComboPossible() && m_ModulePlayerDhalsim->IsKickInput())
-			{
-				m_ModulePlayerDhalsim->SetStartingCombo(ComboTypes_AerialComboKick);
-				RestartCombo();
-			}
-			else if (m_ModulePlayerDhalsim->GetPlayerInput(InputType_Down) && m_ModulePlayerDhalsim->IsMovingForward())
-			{
-				StartPreviousStateCountdown();
-			}
-			else if (m_ModulePlayerDhalsim->IsMovingForward())
-			{
-				m_PreviousState = PreviousComboState_Front;
-				StartPreviousStateCountdown();
-			}
+			UpdateComboStateDownFront();
 			break;
-		}
 
+		case PreviousComboState_Front:
+			UpdateComboStateFront();
+			break;
+	}
+}
 
-	case PreviousComboState_Front:
+void ModuleComboDetection::UpdateComboStateNothing()
+{
+	m_IsAirCombo = m_ModulePlayerDhalsim->IsJumping();
 
-		if (IsCountdownReached())
+	if (m_ModulePlayerDhalsim->GetPlayerInput(InputType_Down))
+	{
+		// Change magic numbers
+		SetStartingComboParameters(PreviousComboState_Down, ComboTypes_ComboYogaFire);
+	}
+
+	if (m_ModulePlayerDhalsim->GetPlayerInput(InputType_Down) && m_ModulePlayerDhalsim->IsJumping() && m_ModulePlayerDhalsim->IsMovingBack())
+	{
+		SetStartingComboParameters(PreviousComboState_DownBack, ComboTypes_AerialCombo);
+	}
+
+	if (m_ModulePlayerDhalsim->IsMovingBack())
+	{
+		SetStartingComboParameters(PreviousComboState_Back, ComboTypes_ComboYogaFlame);
+	}
+}
+
+void ModuleComboDetection::UpdateComboStateBack()
+{
+	if (IsCountdownReached())
+	{
+		RestartCombo();
+	}
+	else if (m_ModulePlayerDhalsim->GetPlayerInput(InputType_Down) && m_ModulePlayerDhalsim->IsMovingBack())
+	{
+		m_PreviousState = PreviousComboState_DownBack;
+		StartPreviousStateCountdown();
+	}
+	else if (m_ModulePlayerDhalsim->IsMovingBack())
+	{
+		StartPreviousStateCountdown();
+	}
+}
+
+void ModuleComboDetection::UpdateComboStateDownBack()
+{
+	if (IsCountdownReached())
+	{
+		RestartCombo();
+	}
+	else if (m_ModulePlayerDhalsim->GetPlayerInput(InputType_Down) && m_ModulePlayerDhalsim->IsMovingBack())
+	{
+		StartPreviousStateCountdown();
+	}
+	else if ((m_ModulePlayerDhalsim->GetPlayerInput(InputType_Down)))
+	{
+		m_PreviousState = PreviousComboState_Down;
+		StartPreviousStateCountdown();
+	}
+}
+
+void ModuleComboDetection::UpdateComboStateDown()
+{
+	if (IsCountdownReached())
+	{
+		RestartCombo();
+	}
+	else if (m_ModulePlayerDhalsim->GetPlayerInput(InputType_Down) && m_ModulePlayerDhalsim->IsMovingForward())
+	{
+		m_PreviousState = PreviousComboState_DownFront;
+		StartPreviousStateCountdown();
+	}
+	else if (m_ModulePlayerDhalsim->GetPlayerInput(InputType_Down))
+	{
+		StartPreviousStateCountdown();
+		StartFirstStateCountdown();
+	}
+}
+
+void ModuleComboDetection::UpdateComboStateDownFront()
+{
+	if (IsCountdownReached())
+	{
+		RestartCombo();
+	}
+	else if (IsAerialComboPossible() && m_ModulePlayerDhalsim->IsPunchInput())
+	{
+		m_ModulePlayerDhalsim->SetStartingCombo(ComboTypes_AerialComboPunch);
+		RestartCombo();
+	}
+	else if (IsAerialComboPossible() && m_ModulePlayerDhalsim->IsKickInput())
+	{
+		m_ModulePlayerDhalsim->SetStartingCombo(ComboTypes_AerialComboKick);
+		RestartCombo();
+	}
+	else if (m_ModulePlayerDhalsim->GetPlayerInput(InputType_Down) && m_ModulePlayerDhalsim->IsMovingForward())
+	{
+		StartPreviousStateCountdown();
+	}
+	else if (m_ModulePlayerDhalsim->IsMovingForward())
+	{
+		m_PreviousState = PreviousComboState_Front;
+		StartPreviousStateCountdown();
+	}
+}
+
+void ModuleComboDetection::UpdateComboStateFront()
+{
+	if (IsCountdownReached())
+	{
+		RestartCombo();
+	}
+	else if (m_ModulePlayerDhalsim->IsPunchInput())
+	{
+		if (IsAerialComboPossible())
 		{
-			RestartCombo();
+			m_ModulePlayerDhalsim->SetStartingCombo(ComboTypes_AerialComboPunch);
 		}
-		else if (m_ModulePlayerDhalsim->IsPunchInput())
+		else if (m_TypeOfCombo == ComboTypes_ComboYogaFire)
 		{
-			if (IsAerialComboPossible())
-			{
-				m_ModulePlayerDhalsim->SetStartingCombo(ComboTypes_AerialComboPunch);
-			}
-			else if (m_TypeOfCombo == ComboTypes_ComboYogaFire)
-			{
-				m_ModulePlayerDhalsim->SetStartingCombo(ComboTypes_ComboYogaFire);
-			}
-			else if (m_TypeOfCombo == ComboTypes_ComboYogaFlame)
-			{
-				m_ModulePlayerDhalsim->SetStartingCombo(ComboTypes_ComboYogaFlame);
-			}
+			m_ModulePlayerDhalsim->SetStartingCombo(ComboTypes_ComboYogaFire);
+		}
+		else if (m_TypeOfCombo == ComboTypes_ComboYogaFlame)
+		{
+			m_ModulePlayerDhalsim->SetStartingCombo(ComboTypes_ComboYogaFlame);
+		}
 
-			RestartCombo();
-		}
-		else if (m_ModulePlayerDhalsim->IsKickInput())
+		RestartCombo();
+	}
+	else if (m_ModulePlayerDhalsim->IsKickInput())
+	{
+		if (IsAerialComboPossible())
 		{
-			if (IsAerialComboPossible())
-			{
-				m_ModulePlayerDhalsim->SetStartingCombo(ComboTypes_AerialComboKick);
-			}
+			m_ModulePlayerDhalsim->SetStartingCombo(ComboTypes_AerialComboKick);
+		}
 
-			RestartCombo();
-		}
-		else if (m_ModulePlayerDhalsim->IsMovingForward())
-		{
-			StartPreviousStateCountdown();
-		}
-		break;
+		RestartCombo();
+	}
+	else if (m_ModulePlayerDhalsim->IsMovingForward())
+	{
+		StartPreviousStateCountdown();
 	}
 }
 

@@ -33,6 +33,13 @@ private:
 	void UpdateCounters();
 	void UpdateComboState();
 
+	void UpdateComboStateNothing();
+	void UpdateComboStateBack();
+	void UpdateComboStateDownBack();
+	void UpdateComboStateDown();
+	void UpdateComboStateDownFront();
+	void UpdateComboStateFront();
+
 	bool IsCountdownReached() const;
 	bool IsAerialComboPossible() const;
 
@@ -40,6 +47,7 @@ private:
 	void StartPreviousStateCountdown();
 	void StartFirstStateCountdown();
 	void RestartCombo();
+
 
 	PlayerID m_PlayerID;
 	ModulePlayerDhalsim* m_ModulePlayerDhalsim;
