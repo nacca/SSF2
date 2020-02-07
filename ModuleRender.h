@@ -8,7 +8,6 @@
 struct SDL_Texture;
 struct SDL_Renderer;
 struct SDL_Rect;
-//typedef enum SDL_RendererFlip;
 
 class ModuleRender : public Module
 {
