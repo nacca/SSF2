@@ -2,7 +2,7 @@
 #include "ModuleInput.h"
 #include "ModuleComboDetection.h"
 #include "ModulePlayerDhalsim.h"
-#include "SDL/include/SDL.h"
+#include "SDL.h"
 
 ModuleComboDetection::ModuleComboDetection(PlayerID playerID, bool start_enabled)
 	: Module(start_enabled),

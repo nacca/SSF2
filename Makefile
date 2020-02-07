@@ -1,2 +1,10 @@
 compile:
-	g++ Main.cpp -o Main -lSDL2 -lSDL2_image -lSDL2_mixer `pkg-config --cflags --libs sdl2`
+	g++ *.cpp -o SSF2 -ljsoncpp `sdl2-config --cflags --libs` -lSDL2_image -lSDL2_mixer `pkg-config --cflags --libs sdl2`
+
+dep:
+	sudo apt install g++ libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev libjsoncpp-dev
+run:
+	./SSF2
+
+clean:
+	rm -f *.o SSF2

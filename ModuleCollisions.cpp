@@ -1,7 +1,7 @@
 #include "ModuleCollisions.h"
 #include "Application.h"
 #include "ModuleRender.h"
-#include "SDL\include\SDL.h"
+#include "SDL.h"
 #include <queue>
 #include "ModuleInput.h"
 #include <iostream>

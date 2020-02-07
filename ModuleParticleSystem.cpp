@@ -4,7 +4,7 @@
 #include "ModuleInput.h"
 #include "ModuleRender.h"
 #include "ModuleTextures.h"
-#include "SDL/include/SDL.h"
+#include "SDL.h"
 #include "ModuleCollisions.h"
 #include <queue>
 #include "ParticleAnimation.h"

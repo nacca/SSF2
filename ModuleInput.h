@@ -4,9 +4,9 @@
 #include "Module.h"
 #include "Point.h"
 
-#include "SDL\include\SDL_joystick.h"
+#include "SDL_joystick.h"
 
-#include "SDL/include/SDL_scancode.h"
+#include "SDL_scancode.h"
 
 #define NUM_MOUSE_BUTTONS 5
 #define NUM_JOYSTICK_BUTTONS 14

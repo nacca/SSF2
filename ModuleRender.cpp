@@ -3,7 +3,7 @@
 #include "ModuleRender.h"
 #include "ModuleWindow.h"
 #include "ModuleInput.h"
-#include "SDL/include/SDL.h"
+#include "SDL.h"
 #include "ModulePlayerDhalsim.h"
 
 // Constructor

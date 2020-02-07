@@ -3,7 +3,7 @@
 
 #include "Module.h"
 #include "Globals.h"
-#include "SDL_image\include\SDL_image.h"
+#include "SDL_image.h"
 
 struct SDL_Texture;
 struct SDL_Renderer;

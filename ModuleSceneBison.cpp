@@ -5,7 +5,7 @@
 #include "ModuleTextures.h"
 #include "ModuleInput.h"
 #include "ModuleAudio.h"
-#include "SDL/include/SDL.h"
+#include "SDL.h"
 #include "ModulePlayerDhalsim.h"
 
 // Creator
