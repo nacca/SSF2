@@ -36,7 +36,8 @@ ModuleComboDetection::Start ()
   return true;
 }
 
-UpdateStatus ModuleComboDetection::PreUpdate ()
+UpdateStatus
+ModuleComboDetection::PreUpdate ()
 {
   UpdateCounters ();
   UpdateComboState ();

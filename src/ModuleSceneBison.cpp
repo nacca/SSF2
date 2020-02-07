@@ -246,9 +246,9 @@ ModuleSceneBison::Start ()
 {
   LOG ("Loading bison scene");
 
-  graphics = App->textures->Load ("Game/bison_stage_v2.png");
-  miscellaneous = App->textures->Load ("Game/miscellaneous_v2.png");
-  restartTexture = App->textures->Load ("Game/restartFont.png");
+  graphics = App->textures->Load ("resources/bison_stage_v2.png");
+  miscellaneous = App->textures->Load ("resources/miscellaneous_v2.png");
+  restartTexture = App->textures->Load ("resources/restartFont.png");
 
   if (!App->player_one->Enable ())
     return false;
@@ -258,7 +258,7 @@ ModuleSceneBison::Start ()
 
   initialTime = SDL_GetTicks ();
 
-  App->audio->PlayMusic ("Game/bison.wav");
+  App->audio->PlayMusic ("resources/bison.wav");
 
   return true;
 }
@@ -281,7 +281,8 @@ ModuleSceneBison::CleanUp ()
 }
 
 // Update: draw background
-UpdateStatus ModuleSceneBison::Update ()
+UpdateStatus
+ModuleSceneBison::Update ()
 {
   // Draw
   App->renderer->Blit (graphics, -28, 159, &ground, 1.0f);	// Ground
@@ -313,7 +314,7 @@ UpdateStatus ModuleSceneBison::Update ()
   App->renderer->Blit (miscellaneous, 30, 34, &life, 0.0f);	//
   SDL_SetRenderDrawColor (App->renderer->renderer, 255, 255, 0, 255);
   SDL_Rect
-  rec_aux = { 32, 37, (int) (App->player_one->GetLife () * 89 / 200), 8 };
+    rec_aux = { 32, 37, (int) (App->player_one->GetLife () * 89 / 200), 8 };
   App->renderer->DrawStaticRect (&rec_aux);
   rec_aux = { 137, 37, (int) (App->player_two->GetLife () * 89 / 200), 8 };
   App->renderer->DrawStaticRect (&rec_aux);
@@ -328,10 +329,8 @@ UpdateStatus ModuleSceneBison::Update ()
   App->renderer->DrawStaticRect (&rec_aux);
 
   //Time manager
-  SDL_Rect
-    numberRect;
-  int
-    timeNow = (int) SDL_GetTicks ();
+  SDL_Rect numberRect;
+  int timeNow = (int) SDL_GetTicks ();
   timeNow -= initialTime;
   timeNow /= 1000;
   timeNow = 99 - timeNow;
@@ -390,8 +389,7 @@ UpdateStatus ModuleSceneBison::Update ()
 
   // Draw black rectangles at the top and at the bottom of the screen
   SDL_SetRenderDrawColor (App->renderer->renderer, 0, 0, 0, 255);
-  SDL_Rect
-  black_rectangles = { 0, 0, 256, 22 };
+  SDL_Rect black_rectangles = { 0, 0, 256, 22 };
   App->renderer->DrawStaticRect (&black_rectangles);
   black_rectangles = { 0, 214, 256, 10 };
   App->renderer->DrawStaticRect (&black_rectangles);
@@ -400,7 +398,8 @@ UpdateStatus ModuleSceneBison::Update ()
 }
 
 // Manages the black fades to restart screens
-UpdateStatus ModuleSceneBison::PostUpdate ()
+UpdateStatus
+ModuleSceneBison::PostUpdate ()
 {
   if (restarting)
     {
@@ -444,7 +443,7 @@ UpdateStatus ModuleSceneBison::PostUpdate ()
 	  actualizeFirstTime = true;
 	}
       SDL_Rect
-      fade_black_rectangle = { 0, 0, 256 * SCREEN_SIZE, 224 * SCREEN_SIZE };
+	fade_black_rectangle = { 0, 0, 256 * SCREEN_SIZE, 224 * SCREEN_SIZE };
       App->renderer->DrawRect (&fade_black_rectangle);
     }
   else if (end)
@@ -462,7 +461,7 @@ UpdateStatus ModuleSceneBison::PostUpdate ()
 	{
 	  SDL_SetRenderDrawColor (App->renderer->renderer, 0, 0, 0, 255);
 	  SDL_Rect
-	  fade_black_rectangle =
+	    fade_black_rectangle =
 	    { 0, 0, 256 * SCREEN_SIZE, 224 * SCREEN_SIZE };
 	  App->renderer->DrawRect (&fade_black_rectangle);
 	  App->renderer->Blit (restartTexture, 50, 100, &restartFont, 0.0f);

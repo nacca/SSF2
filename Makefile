@@ -1,5 +1,12 @@
+INC := `sdl2-config --cflags`
+INC += -Iinclude
+
+LIB := `sdl2-config --libs`
+LIB += -lSDL2_image -lSDL2_mixer
+LIB += -ljsoncpp
+
 compile:
-	g++ *.cpp -o SSF2 -ljsoncpp `sdl2-config --cflags --libs` -lSDL2_image -lSDL2_mixer `pkg-config --cflags --libs sdl2`
+	g++ include/*.h src/*.cpp $(INC) $(LIB) -o SSF2   
 
 dep:
 	sudo apt install g++ libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev libjsoncpp-dev indent
@@ -9,7 +16,8 @@ run:
 
 format:
 
-	find . -name '*.cpp' -exec indent {} \;
+	find src/ -name '*.cpp' -exec indent {} \;
+	find include/ -name '*.h' -exec indent {} \;
 
 clean:
-	rm -f *.o SSF2 *~
+	rm -f **/*.o **/*~ SSF2 

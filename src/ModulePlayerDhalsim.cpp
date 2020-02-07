@@ -57,7 +57,7 @@ ModulePlayerDhalsim::SetUpAnimations ()
   Json::Value root;
 
   std::filebuf fb;
-  if (fb.open ("Game/dhalsim_data.json", std::ios::in))
+  if (fb.open ("resources/dhalsim_data.json", std::ios::in))
     {
       std::istream is (&fb);
       is >> root;
@@ -154,12 +154,12 @@ ModulePlayerDhalsim::Start ()
 
   if (m_PlayerID == PlayerID_One)
     {
-      m_Graphics = App->textures->Load ("Game/dhalsim.png");
+      m_Graphics = App->textures->Load ("resources/dhalsim.png");
       m_OtherPlayer = App->player_two;
     }
   else
     {
-      m_Graphics = App->textures->Load ("Game/dhalsim_recolor.png");
+      m_Graphics = App->textures->Load ("resources/dhalsim_recolor.png");
       m_OtherPlayer = App->player_one;
     }
 
@@ -188,15 +188,15 @@ ModulePlayerDhalsim::AddColliders ()
 void
 ModulePlayerDhalsim::LoadAudioSounds ()
 {
-  m_AudioIdYogaFire = App->audio->LoadFx ("Game/yoga_fire.wav");
-  m_AudioIdYogaFlame = App->audio->LoadFx ("Game/yoga_flame.wav");
-  m_AudioIdDead = App->audio->LoadFx ("Game/dhalsim_dead.wav");
-  m_AudioIdLAttack = App->audio->LoadFx ("Game/SF2_hit_1.wav");;
-  m_AudioIdMAttack = App->audio->LoadFx ("Game/SF2_hit_2.wav");;
-  m_AudioIdHAttack = App->audio->LoadFx ("Game/SF2_hit_3.wav");;
-  m_AudioIdLImpact = App->audio->LoadFx ("Game/SF2_impact_1.wav");;
-  m_AudioIdMImpact = App->audio->LoadFx ("Game/SF2_impact_2.wav");;
-  m_AudioIdHImpact = App->audio->LoadFx ("Game/SF2_impact_3.wav");;
+  m_AudioIdYogaFire = App->audio->LoadFx ("resources/yoga_fire.wav");
+  m_AudioIdYogaFlame = App->audio->LoadFx ("resources/yoga_flame.wav");
+  m_AudioIdDead = App->audio->LoadFx ("resources/dhalsim_dead.wav");
+  m_AudioIdLAttack = App->audio->LoadFx ("resources/SF2_hit_1.wav");;
+  m_AudioIdMAttack = App->audio->LoadFx ("resources/SF2_hit_2.wav");;
+  m_AudioIdHAttack = App->audio->LoadFx ("resources/SF2_hit_3.wav");;
+  m_AudioIdLImpact = App->audio->LoadFx ("resources/SF2_impact_1.wav");;
+  m_AudioIdMImpact = App->audio->LoadFx ("resources/SF2_impact_2.wav");;
+  m_AudioIdHImpact = App->audio->LoadFx ("resources/SF2_impact_3.wav");;
 }
 
 void
@@ -224,10 +224,10 @@ ModulePlayerDhalsim::CleanUp ()
 }
 
 // PreUpdate
-UpdateStatus ModulePlayerDhalsim::PreUpdate ()
+UpdateStatus
+ModulePlayerDhalsim::PreUpdate ()
 {
-  bool
-    near = false;
+  bool near = false;
 
   if (m_ModuleComboDetection)
     {
@@ -992,16 +992,16 @@ UpdateStatus ModulePlayerDhalsim::PreUpdate ()
 	  if (IsLookingRight ())
 	    {
 	      iPoint
-	      particlePosition (m_Position.x + 42 + 14,
-				m_Position.y - 54 + 10);
+		particlePosition (m_Position.x + 42 + 14,
+				  m_Position.y - 54 + 10);
 	      App->particles->newParticle (particlePosition, m_Graphics,
 					   m_Particle, m_DestroyParticle, 2);
 	    }
 	  else
 	    {
 	      iPoint
-	      particlePosition (m_Position.x - 42 - 14,
-				m_Position.y - 54 + 10);
+		particlePosition (m_Position.x - 42 - 14,
+				  m_Position.y - 54 + 10);
 	      App->particles->newParticle (particlePosition, m_Graphics,
 					   m_Particle, m_DestroyParticle, -2);
 	    }
@@ -1166,14 +1166,12 @@ UpdateStatus ModulePlayerDhalsim::PreUpdate ()
 }
 
 // Update
-UpdateStatus ModulePlayerDhalsim::Update ()
+UpdateStatus
+ModulePlayerDhalsim::Update ()
 {
-  SDL_Rect
-    aux;
-  int
-    pivot;
-  Collider_player_structure
-    cps;
+  SDL_Rect aux;
+  int pivot;
+  Collider_player_structure cps;
 
   if (m_OtherPlayer->IsPlayerInCameraLimit () &&
       ((App->renderer->ScreenLeftLimit ()
@@ -1740,7 +1738,8 @@ UpdateStatus ModulePlayerDhalsim::Update ()
 }
 
 // PostUpdate
-UpdateStatus ModulePlayerDhalsim::PostUpdate ()
+UpdateStatus
+ModulePlayerDhalsim::PostUpdate ()
 {
   m_AreCollidingPlayers = false;
   return UpdateStatus_Continue;
@@ -2024,7 +2023,8 @@ ModulePlayerDhalsim::restartPlayer (bool everything)
 
 // Get and Set variables
 
-iPoint ModulePlayerDhalsim::GetPosition ()const
+iPoint
+ModulePlayerDhalsim::GetPosition () const
 {
   return m_Position;
 }
@@ -2219,8 +2219,8 @@ ModulePlayerDhalsim::SetPlayerAnimationDataFromJSON (Animation & animation,
 void
 ModulePlayerDhalsim::SetParticleAnimationDataFromJSON (ParticleAnimation &
 						       particleAnimation,
-						       Json::
-						       Value & jsonValue)
+						       Json::Value &
+						       jsonValue)
 {
   int numberOfFrames = jsonValue.get ("numberOfFrames", "0").asInt ();
 
@@ -2359,7 +2359,8 @@ ModulePlayerDhalsim::IsKickInput () const
   return isKickInput;
 }
 
-LookingDirection ModulePlayerDhalsim::GetLookingDirection ()const
+LookingDirection
+ModulePlayerDhalsim::GetLookingDirection () const
 {
   return m_LookingDirection;
 }
@@ -2382,7 +2383,8 @@ ModulePlayerDhalsim::SetLookingRight (LookingDirection lookingDirection)
   m_LookingDirection = lookingDirection;
 }
 
-PlayerState ModulePlayerDhalsim::GetPlayerState ()const
+PlayerState
+ModulePlayerDhalsim::GetPlayerState () const
 {
   return m_PlayerState;
 }
@@ -2393,7 +2395,8 @@ ModulePlayerDhalsim::SetPlayerState (PlayerState playerState)
   m_PlayerState = playerState;
 }
 
-ComboTypes ModulePlayerDhalsim::GetStartingCombo ()const
+ComboTypes
+ModulePlayerDhalsim::GetStartingCombo () const
 {
   return m_StartingCombo;
 }

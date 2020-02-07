@@ -84,10 +84,10 @@ ModuleInput::Start ()
 }
 
 // Called each loop iteration
-UpdateStatus ModuleInput::PreUpdate ()
+UpdateStatus
+ModuleInput::PreUpdate ()
 {
-  static SDL_Event
-    event;
+  static SDL_Event event;
 
   mouse_motion = { 0, 0 };
   memset (windowEvents, false, WE_COUNT * sizeof (bool));
@@ -100,8 +100,7 @@ UpdateStatus ModuleInput::PreUpdate ()
 	joystick_buttons[i] = KEY_IDLE;
     }
 
-  const Uint8 *
-    keys = SDL_GetKeyboardState (NULL);
+  const Uint8 *keys = SDL_GetKeyboardState (NULL);
 
   for (int i = 0; i < MAX_KEYS; ++i)
     {

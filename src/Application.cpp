@@ -63,10 +63,10 @@ Application::Init ()
   return ret;
 }
 
-UpdateStatus Application::Update ()
+UpdateStatus
+Application::Update ()
 {
-  UpdateStatus
-    ret = UpdateStatus_Continue;
+  UpdateStatus ret = UpdateStatus_Continue;
 
   for (list < Module * >::iterator it = modules.begin ();
        it != modules.end () && ret == UpdateStatus_Continue; ++it)

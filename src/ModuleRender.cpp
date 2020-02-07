@@ -46,18 +46,16 @@ ModuleRender::Init ()
 }
 
 // PreUpdate
-UpdateStatus ModuleRender::PreUpdate ()
+UpdateStatus
+ModuleRender::PreUpdate ()
 {
   SDL_SetRenderDrawColor (renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
   SDL_RenderClear (renderer);
 
-  int
-    player_one_y_pos = App->player_one->GetDistanceJumped ();
-  int
-    player_two_y_pos = App->player_two->GetDistanceJumped ();
+  int player_one_y_pos = App->player_one->GetDistanceJumped ();
+  int player_two_y_pos = App->player_two->GetDistanceJumped ();
 
-  int
-    max_y_distance = player_one_y_pos;
+  int max_y_distance = player_one_y_pos;
   if (player_two_y_pos > player_one_y_pos)
     max_y_distance = player_two_y_pos;
 
@@ -67,7 +65,8 @@ UpdateStatus ModuleRender::PreUpdate ()
 }
 
 // PostUpdate
-UpdateStatus ModuleRender::PostUpdate ()
+UpdateStatus
+ModuleRender::PostUpdate ()
 {
   SDL_RenderPresent (renderer);
   return UpdateStatus_Continue;

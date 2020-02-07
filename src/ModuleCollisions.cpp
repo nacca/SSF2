@@ -89,7 +89,8 @@ ModuleCollisions::~ModuleCollisions ()
 {
 }
 
-UpdateStatus ModuleCollisions::PreUpdate ()
+UpdateStatus
+ModuleCollisions::PreUpdate ()
 {
   if (App->input->GetKey (SDL_SCANCODE_Z) == KEY_DOWN)
     {
@@ -101,7 +102,8 @@ UpdateStatus ModuleCollisions::PreUpdate ()
   return UpdateStatus_Continue;
 }
 
-UpdateStatus ModuleCollisions::Update ()
+UpdateStatus
+ModuleCollisions::Update ()
 {
 
   for (list < Collider * >::iterator it1 = colliders.begin ();
@@ -129,7 +131,8 @@ UpdateStatus ModuleCollisions::Update ()
   return UpdateStatus_Continue;
 }
 
-UpdateStatus ModuleCollisions::PostUpdate ()
+UpdateStatus
+ModuleCollisions::PostUpdate ()
 {
   if (show_colliders)
     {

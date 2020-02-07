@@ -24,14 +24,13 @@ ModuleFadeToBlack::Start ()
 }
 
 // Update: draw background
-UpdateStatus ModuleFadeToBlack::Update ()
+UpdateStatus
+ModuleFadeToBlack::Update ()
 {
   if (start_time > 0)
     {
-      Uint32
-	now = SDL_GetTicks () - start_time;
-      float
-	normalized = (float) now / (float) total_time;
+      Uint32 now = SDL_GetTicks () - start_time;
+      float normalized = (float) now / (float) total_time;
 
       if (normalized > 1.0f)
 	normalized = 1.0f;

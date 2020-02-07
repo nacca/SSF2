@@ -24,7 +24,8 @@ ModuleParticleSystem::Start ()
   return true;
 }
 
-UpdateStatus ModuleParticleSystem::Update ()
+UpdateStatus
+ModuleParticleSystem::Update ()
 {
   for (list < Particle * >::iterator it = particleList.begin ();
        it != particleList.end (); ++it)
@@ -47,26 +48,26 @@ UpdateStatus ModuleParticleSystem::Update ()
 	    {
 	      App->renderer->Blit ((*it)->graphics,
 				   (*it)->position.x -
-				   (*it)->
-				   particleAnimation.GetCurrentPivot (),
+				   (*it)->particleAnimation.
+				   GetCurrentPivot (),
 				   (*it)->position.y -
-				   (*it)->
-				   particleAnimation.GetCurrentFrame ().h,
-				   &((*it)->
-				     particleAnimation.GetCurrentFrame ()));
+				   (*it)->particleAnimation.
+				   GetCurrentFrame ().h,
+				   &((*it)->particleAnimation.
+				     GetCurrentFrame ()));
 	    }
 	  else if ((*it)->speed < 0)
 	    {
 	      App->renderer->Blit ((*it)->graphics,
 				   (*it)->position.x -
-				   (*it)->
-				   particleAnimation.GetCurrentPivot (),
+				   (*it)->particleAnimation.
+				   GetCurrentPivot (),
 				   (*it)->position.y -
-				   (*it)->
-				   particleAnimation.GetCurrentFrame ().h,
-				   &((*it)->
-				     particleAnimation.GetCurrentFrame ()),
-				   1.0f, SDL_FLIP_HORIZONTAL);
+				   (*it)->particleAnimation.
+				   GetCurrentFrame ().h,
+				   &((*it)->particleAnimation.
+				     GetCurrentFrame ()), 1.0f,
+				   SDL_FLIP_HORIZONTAL);
 	    }
 	  (*it)->particleAnimation.NextFrame ();
 	}
@@ -76,13 +77,13 @@ UpdateStatus ModuleParticleSystem::Update ()
 	    {
 	      App->renderer->Blit ((*it)->graphics,
 				   (*it)->position.x -
-				   (*it)->
-				   particleDestruction.GetCurrentPivot (),
+				   (*it)->particleDestruction.
+				   GetCurrentPivot (),
 				   (*it)->position.y -
-				   (*it)->
-				   particleDestruction.GetCurrentFrame ().h,
-				   &((*it)->
-				     particleDestruction.GetCurrentFrame ()));
+				   (*it)->particleDestruction.
+				   GetCurrentFrame ().h,
+				   &((*it)->particleDestruction.
+				     GetCurrentFrame ()));
 	      (*it)->particleDestruction.NextFrame ();
 	    }
 	  else
@@ -93,7 +94,8 @@ UpdateStatus ModuleParticleSystem::Update ()
   return UpdateStatus_Continue;
 }
 
-UpdateStatus ModuleParticleSystem::PostUpdate ()
+UpdateStatus
+ModuleParticleSystem::PostUpdate ()
 {
   for (list < Particle * >::iterator it = particleList.begin ();
        it != particleList.end ();)
@@ -119,7 +121,7 @@ ModuleParticleSystem::newParticle (iPoint pos, SDL_Texture * graphics,
 {
   SDL_Rect rec_collider = { pos.x + particleAnimation.GetCurrentCollider ().x,
     pos.y + particleAnimation.GetCurrentCollider ().y,
-      particleAnimation.GetCurrentCollider ().w,
+    particleAnimation.GetCurrentCollider ().w,
     particleAnimation.GetCurrentCollider ().h
   };
   Collider *collider =
@@ -152,7 +154,8 @@ ModuleParticleSystem::GetNumberParticles () const
   return particleList.size ();
 }
 
-iPoint ModuleParticleSystem::GetParticlePosition (int id)
+iPoint
+ModuleParticleSystem::GetParticlePosition (int id)
 {
   list < Particle * >::iterator it1 = particleList.begin ();
   for (unsigned int i = 1; i < particleList.size (); ++i)

@@ -25,7 +25,7 @@ make dep
 
     make run
 
-![](demo.png)
+![](doc/demo.png)
 
 Controls
 
