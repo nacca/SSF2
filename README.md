@@ -1,10 +1,21 @@
-Tested on
+# Super Street Fighter 2 - Tribute
 
-    Ubuntu 19.04
+Tested on Ubuntu 19.04
+
+Credits [Oriol Romero](https://github.com/nacca)
 
 # Dep
 
-    make dep
+* make
+* g++
+* sdl2, image, mixer
+* libjsoncpp
+
+or
+
+```
+make dep
+```
 
 # Compile
 
@@ -14,6 +25,7 @@ Tested on
 
     make run
 
+![](demo.png)
 
 Controls
 
@@ -22,3 +34,9 @@ Controls
 |esc   | Quit   | 
 |space | Restart|
 |z     | Show colliders|
+
+
+# Ref
+
+* [Github](https://github.com/nacca/SSF2)
+* [YouTube](https://youtu.be/RwYQWtHCgrI=)

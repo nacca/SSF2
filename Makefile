@@ -12,4 +12,4 @@ format:
 	find . -name '*.cpp' -exec indent {} \;
 
 clean:
-	rm -f *.o SSF2
+	rm -f *.o SSF2 *~
