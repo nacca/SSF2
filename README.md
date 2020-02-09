@@ -36,7 +36,46 @@ Controls
 |z     | Show colliders|
 
 
+Player 1
+| Key  | Actions|
+|------|--------|      
+|i | jump  | 
+|k | crouch |
+|l | foward |
+|j | backward |
+|a | lower punch |
+|s | medium punch |
+|d | higher punch |
+|q | lower kick |
+|w | medium kick |
+|e | high kick |
+
+Player 2
+| Key  | Actions|
+|------|--------|      
+|arrow up | jump | 
+|arrow down | crouch |
+|arrow left | foward |
+|arrow right | backward |
+|button x| lower punch |
+|button y| medium punch |
+|button ?| higher punch |
+|button a | lower kick |
+|button b | medium kick |
+|button ?| high kick |
+
+![](doc/xbox-controller.png)
+
+
+Xbox One Wireless Controller (Model 1708)
+
+![](doc/xbox-gamepad.png)
+
+ [Gamepad Tool](http://generalarcade.com/gamepadtool)
+
+
 # Ref
 
 * [Github](https://github.com/nacca/SSF2)
 * [YouTube](https://youtu.be/RwYQWtHCgrI=)
+* [SDL GamePad](http://generalarcade.com/gamepadtool/)

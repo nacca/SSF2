@@ -2125,47 +2125,43 @@ ModulePlayerDhalsim::GetPlayerInput (InputType actionKey) const
       switch (actionKey)
 	{
 	case InputType_Up:
-	  return (App->input->GetButton (SDL_CONTROLLER_AXIS_LEFTX) ==
-		  KEY_REPEAT || App->input->yDir == -1
+	  return (App->input->yDir == -1
 		  || App->input->GetKey (SDL_SCANCODE_UP) == KEY_REPEAT);
 	  break;
 	case InputType_Down:
-	  return (App->input->GetButton (SDL_CONTROLLER_AXIS_LEFTY) ==
-		  KEY_REPEAT || App->input->yDir == 1
+	  return (App->input->yDir == 1
 		  || App->input->GetKey (SDL_SCANCODE_DOWN) == KEY_REPEAT);
 	  break;
 	case InputType_Left:
-	  return (App->input->GetButton (SDL_CONTROLLER_AXIS_RIGHTX) ==
-		  KEY_REPEAT || App->input->xDir == -1
+	  return (App->input->xDir == -1
 		  || App->input->GetKey (SDL_SCANCODE_LEFT) == KEY_REPEAT);
 	  break;
 	case InputType_Right:
-	  return (App->input->GetButton (SDL_CONTROLLER_AXIS_RIGHTY) ==
-		  KEY_REPEAT || App->input->xDir == 1
+	  return (App->input->xDir == 1
 		  || App->input->GetKey (SDL_SCANCODE_RIGHT) == KEY_REPEAT);
 	  break;
 	case InputType_LPunch:
-	  return (App->input->GetButton (12) == KEY_DOWN)
+	  return (App->input->GetButton (SDL_CONTROLLER_BUTTON_X) == KEY_DOWN)
 	    || (App->input->GetKey (SDL_SCANCODE_KP_4) == KEY_DOWN);
 	  break;
 	case InputType_LKick:
-	  return (App->input->GetButton (10) == KEY_DOWN)
+	  return (App->input->GetButton (SDL_CONTROLLER_BUTTON_A) == KEY_DOWN)
 	    || (App->input->GetKey (SDL_SCANCODE_KP_7) == KEY_DOWN);
 	  break;
 	case InputType_MPunch:
-	  return (App->input->GetButton (11) == KEY_DOWN)
+	  return (App->input->GetButton (SDL_CONTROLLER_BUTTON_Y) == KEY_DOWN)
 	    || (App->input->GetKey (SDL_SCANCODE_KP_5) == KEY_DOWN);
 	  break;
 	case InputType_MKick:
-	  return (App->input->GetButton (13) == KEY_DOWN)
+	  return (App->input->GetButton (SDL_CONTROLLER_BUTTON_B) == KEY_DOWN)
 	    || (App->input->GetKey (SDL_SCANCODE_KP_8) == KEY_DOWN);
 	  break;
 	case InputType_HPunch:
-	  return (App->input->GetButton (8) == KEY_DOWN)
+	  return (App->input->GetButton (SDL_CONTROLLER_BUTTON_LEFTSHOULDER) == KEY_DOWN)
 	    || (App->input->GetKey (SDL_SCANCODE_KP_6) == KEY_DOWN);
 	  break;
 	case InputType_HKick:
-	  return (App->input->GetButton (9) == KEY_DOWN)
+	  return (App->input->GetButton (SDL_CONTROLLER_BUTTON_RIGHTSHOULDER) == KEY_DOWN)
 	    || (App->input->GetKey (SDL_SCANCODE_KP_9) == KEY_DOWN);
 	  break;
 	}

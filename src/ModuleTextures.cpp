@@ -2,8 +2,8 @@
 #include "Application.h"
 #include "ModuleRender.h"
 #include "ModuleTextures.h"
-#include "SDL.h"
 
+#include "SDL.h"
 #include "SDL_image.h"
 
 using namespace std;
