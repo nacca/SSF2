@@ -1,8 +1,18 @@
 # Super Street Fighter 2 - Tribute
 
-Tested on Ubuntu 19.04
+Tested on Ubuntu 19.10
 
 Credits [Oriol Romero](https://github.com/nacca)
+
+## TODO
+* [x] Cross building platform
+* [x] Xbox controller mapping
+* [ ] Xbox port
+* [ ] PSVita port
+* [ ] Android port
+* [ ] Intro Scene
+* [ ] Character selector scene
+* [ ] New characters
 
 # Dep
 
