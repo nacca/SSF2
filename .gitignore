@@ -198,3 +198,6 @@ FakesAssemblies/
 *.o
 SSF2
 build
+
+
+.DS_Store

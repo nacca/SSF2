@@ -7,7 +7,7 @@
 #include "Globals.h"
 #include "Point.h"
 #include "ModuleCollisions.h"
-#include <jsoncpp/json/json.h>
+#include <json/json.h>
 #include "ModuleComboDetection.h"
 
 #include <memory>
