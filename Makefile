@@ -20,4 +20,8 @@ format:
 	find include/ -name '*.h' -exec indent {} \;
 
 clean:
-	rm -f **/*.o **/*~ SSF2 
+	rm -f **/*.o **/*~ SSF2
+
+.PHONY: build
+build:
+	rm -rf build && mkdir -p build && cd build && cmake .. && make

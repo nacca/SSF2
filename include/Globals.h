@@ -1,7 +1,7 @@
 #ifndef __GLOBALS_H__
 #define __GLOBALS_H__
 
-#include "SDL2/SDL_rect.h"
+#include "SDL_rect.h"
 
 #define LOG(format, ...) log(__FILE__, __LINE__, format, ##__VA_ARGS__);
 
@@ -126,7 +126,7 @@ enum LookingDirection
        if( x != nullptr )\
        {\
          delete x;\
-	     /*x = nullptr;*/\
+	       x = nullptr;\
        }\
     }
 
@@ -135,8 +135,8 @@ enum LookingDirection
 	{\
        if( x != nullptr )\
        {\
-           delete[] x;\
-	       /*x = nullptr;*/\
+         delete[] x;\
+	       x = nullptr;\
 		 }\
 	 }
 

@@ -17,6 +17,7 @@ Credits [Oriol Romero](https://github.com/nacca)
 # Dep
 
 * make
+* cmake
 * g++
 * sdl2, image, mixer
 * libjsoncpp
@@ -27,9 +28,9 @@ or
 make dep
 ```
 
-# Compile
+# Build
 
-    make compile
+    make build
 
 # Run
 
