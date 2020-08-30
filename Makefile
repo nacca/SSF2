@@ -1,5 +1,5 @@
 INC := `sdl2-config --cflags`
-INC += -Iinclude
+INC += -Iinclude -I/usr/include/jsoncpp
 
 LIB := `sdl2-config --libs`
 LIB += -lSDL2_image -lSDL2_mixer
