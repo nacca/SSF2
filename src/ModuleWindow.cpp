@@ -1,5 +1,4 @@
 #include "Globals.h"
-#include "Application.h"
 #include "ModuleWindow.h"
 #include "ModuleRender.h"
 
@@ -32,7 +31,7 @@ ModuleWindow::Init ()
       int height = SCREEN_HEIGHT * SCREEN_SIZE;
       Uint32 flags = SDL_WINDOW_SHOWN;
 
-      if (FULLSCREEN == true)
+      if (FULLSCREEN)
 	{
 	  flags |= SDL_WINDOW_FULLSCREEN;
 	}
@@ -46,11 +45,6 @@ ModuleWindow::Init ()
 	  LOG ("Window could not be created! SDL_Error: %s\n",
 	       SDL_GetError ());
 	  ret = false;
-	}
-      else
-	{
-	  //Get window surface
-	  screen_surface = SDL_GetWindowSurface (window);
 	}
     }
 
