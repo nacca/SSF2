@@ -10,7 +10,7 @@ find_package(SDL2_mixer REQUIRED)
 find_package(JsonCpp REQUIRED)
 
 include_directories(
-    ${SDL2_INCLUDE_DIRS}
+    ${SDL2_INCLUDE_DIR}
     ${SDL2_IMAGE_INCLUDE_DIR}
     ${SDL2_MIXER_INCLUDE_DIR}
     ${JSONCPP_INCLUDE_DIRS}
@@ -20,7 +20,7 @@ include_directories(
 file(GLOB_RECURSE HEADERS "include/*.h")
 file(GLOB_RECURSE CPP_SOURCES "src/*.cpp")
 
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 add_executable(${PROJECT_NAME} src/Main.cpp ${HEADERS} ${CPP_SOURCES})
