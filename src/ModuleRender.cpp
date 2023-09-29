@@ -29,7 +29,7 @@ ModuleRender::Init ()
   bool ret = true;
   Uint32 flags = 0;
 
-  if (VSYNC == true)
+  if (VSYNC)
     {
       flags |= SDL_RENDERER_PRESENTVSYNC;
     }

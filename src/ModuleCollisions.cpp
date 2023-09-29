@@ -2,9 +2,7 @@
 #include "Application.h"
 #include "ModuleRender.h"
 #include "SDL.h"
-#include <queue>
 #include "ModuleInput.h"
-#include <iostream>
 
 ModuleCollisions::ModuleCollisions (bool start_enabled):
 Module (start_enabled)

@@ -1,5 +1,4 @@
 #include "Globals.h"
-#include "Application.h"
 #include "ModuleAudio.h"
 #include "SDL.h"
 #include "SDL_mixer.h"

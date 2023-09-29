@@ -35,7 +35,7 @@ ModuleFadeToBlack::Update ()
       if (normalized > 1.0f)
 	normalized = 1.0f;
 
-      if (fading_in == false)
+      if (!fading_in)
 	normalized = 1.0f - normalized;
 
       // Draw a screen-size balck rectangle with alpha
@@ -51,7 +51,7 @@ ModuleFadeToBlack::Update ()
 
       if (now >= total_time)
 	{
-	  if (fading_in == true)
+	  if (fading_in)
 	    {
 	      if (module_off != nullptr)
 		module_off->Disable ();

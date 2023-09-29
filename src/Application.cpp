@@ -34,10 +34,9 @@ Application::Application ()
 
 Application::~Application ()
 {
-  for (list < Module * >::iterator it = modules.begin ();
-       it != modules.end (); ++it)
+  for (auto & module : modules)
     {
-      RELEASE (*it);
+      RELEASE (module);
     }
 }
 
@@ -46,14 +45,14 @@ Application::Init ()
 {
   bool ret = true;
 
-  for (list < Module * >::iterator it = modules.begin ();
+  for (auto it = modules.begin ();
        it != modules.end () && ret; ++it)
     ret = (*it)->Init ();	// we init everything, even if not anabled
 
-  for (list < Module * >::iterator it = modules.begin ();
+  for (auto it = modules.begin ();
        it != modules.end () && ret; ++it)
     {
-      if ((*it)->IsEnabled () == true)
+      if ((*it)->IsEnabled())
 	ret = (*it)->Start ();
     }
 
@@ -68,19 +67,19 @@ Application::Update ()
 {
   UpdateStatus ret = UpdateStatus_Continue;
 
-  for (list < Module * >::iterator it = modules.begin ();
+  for (auto it = modules.begin ();
        it != modules.end () && ret == UpdateStatus_Continue; ++it)
-    if ((*it)->IsEnabled () == true)
+    if ((*it)->IsEnabled())
       ret = (*it)->PreUpdate ();
 
-  for (list < Module * >::iterator it = modules.begin ();
+  for (auto it = modules.begin ();
        it != modules.end () && ret == UpdateStatus_Continue; ++it)
-    if ((*it)->IsEnabled () == true)
+    if ((*it)->IsEnabled())
       ret = (*it)->Update ();
 
-  for (list < Module * >::iterator it = modules.begin ();
+  for (auto it = modules.begin ();
        it != modules.end () && ret == UpdateStatus_Continue; ++it)
-    if ((*it)->IsEnabled () == true)
+    if ((*it)->IsEnabled())
       ret = (*it)->PostUpdate ();
 
   return ret;
@@ -91,10 +90,10 @@ Application::CleanUp ()
 {
   bool ret = true;
 
-  for (list < Module * >::reverse_iterator it = modules.rbegin ();
+  for (auto it = modules.rbegin ();
        it != modules.rend () && ret; ++it)
     {
-      if ((*it)->IsEnabled () == true)
+      if ((*it)->IsEnabled())
 	ret = (*it)->CleanUp ();
     }
 

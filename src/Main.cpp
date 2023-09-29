@@ -1,86 +1,83 @@
-#include <stdlib.h>
+#include <cstdlib>
 #include "Application.h"
 #include "Globals.h"
 
-#include "SDL.h"
 
 enum main_states
 {
-  MAIN_CREATION,
-  MAIN_START,
-  MAIN_UPDATE,
-  MAIN_FINISH,
-  MAIN_EXIT
+	MAIN_CREATION,
+	MAIN_START,
+	MAIN_UPDATE,
+	MAIN_FINISH,
+	MAIN_EXIT
 };
 
 Application *App = nullptr;
 
-int
-main (int argc, char **argv)
+int main(int argc, char **argv)
 {
-  int main_return = EXIT_FAILURE;
-  main_states state = MAIN_CREATION;
+	int main_return = EXIT_FAILURE;
+	main_states state = MAIN_CREATION;
 
-  while (state != MAIN_EXIT)
-    {
-      switch (state)
+	while (state != MAIN_EXIT)
 	{
-	case MAIN_CREATION:
+		switch (state)
+		{
+		case MAIN_CREATION:
 
-	  LOG ("Application Creation --------------");
-	  App = new Application ();
-	  state = MAIN_START;
-	  break;
+			LOG("Application Creation --------------");
+			App = new Application();
+			state = MAIN_START;
+			break;
 
-	case MAIN_START:
+		case MAIN_START:
 
-	  LOG ("Application Init --------------");
-	  if (App->Init () == false)
-	    {
-	      LOG ("Application Init exits with error -----");
-	      state = MAIN_EXIT;
-	    }
-	  else
-	    {
-	      state = MAIN_UPDATE;
-	      LOG ("Application Update --------------");
-	    }
+			LOG("Application Init --------------");
+			if (!App->Init())
+			{
+				LOG("Application Init exits with error -----");
+				state = MAIN_EXIT;
+			}
+			else
+			{
+				state = MAIN_UPDATE;
+				LOG("Application Update --------------");
+			}
 
-	  break;
+			break;
 
-	case MAIN_UPDATE:
-	  {
-	    int update_return = App->Update ();
+		case MAIN_UPDATE:
+		{
+			int update_return = App->Update();
 
-	    if (update_return == UpdateStatus_Error)
-	      {
-		LOG ("Application Update exits with error -----");
-		state = MAIN_EXIT;
-	      }
+			if (update_return == UpdateStatus_Error)
+			{
+				LOG("Application Update exits with error -----");
+				state = MAIN_EXIT;
+			}
 
-	    if (update_return == UpdateStatus_Stop)
-	      state = MAIN_FINISH;
-	  }
-	  break;
+			if (update_return == UpdateStatus_Stop)
+				state = MAIN_FINISH;
+		}
+		break;
 
-	case MAIN_FINISH:
+		case MAIN_FINISH:
 
-	  LOG ("Application CleanUp --------------");
-	  if (App->CleanUp () == false)
-	    {
-	      LOG ("Application CleanUp exits with error -----");
-	    }
-	  else
-	    main_return = EXIT_SUCCESS;
+			LOG("Application CleanUp --------------");
+			if (!App->CleanUp())
+			{
+				LOG("Application CleanUp exits with error -----");
+			}
+			else
+				main_return = EXIT_SUCCESS;
 
-	  state = MAIN_EXIT;
+			state = MAIN_EXIT;
 
-	  break;
-
+			break;
+		}
 	}
-    }
 
-  // RELEASE(App);
-  LOG ("Bye :)\n");
-  return main_return;
+	//RELEASE(App);
+	LOG("Bye :)\n");
+	return main_return;
 }

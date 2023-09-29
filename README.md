@@ -1,6 +1,6 @@
 # Super Street Fighter 2 - Tribute
 
-Tested on Ubuntu 19.10 and Mac OS Catalina
+Tested on Ubuntu 23.10 and Mac OS Sonoma
 
 Credits [Oriol Romero](https://github.com/nacca)
 
